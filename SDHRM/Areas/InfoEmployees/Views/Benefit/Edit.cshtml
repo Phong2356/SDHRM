@@ -1,0 +1,353 @@
+﻿@model SDHRM.Models.PhucLoi
+@{
+    ViewData["Title"] = "Cập nhật chương trình phúc lợi";
+}
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 25px;
+    }
+
+    .sub-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-group-row label {
+            width: 35%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 65%;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        outline: none;
+        box-shadow: none;
+    }
+
+    .form-control-readonly {
+        background-color: #f1f5f9;
+        cursor: not-allowed;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .text-danger {
+        color: #ef4444 !important;
+    }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .detail-table th {
+        background-color: #f8fafc;
+        font-weight: 600;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 10px;
+        white-space: nowrap;
+    }
+
+    .detail-table td {
+        padding: 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        white-space: nowrap;
+        color: #1e293b;
+    }
+</style>
+
+<form asp-action="Edit" method="post" class="d-flex flex-column" style="height: calc(100vh - 80px);">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="NgayTao" />
+
+    <div class="top-action-bar d-flex justify-content-between align-items-center m-0">
+        <h4 class="fw-bold text-dark" style="font-size: 1.25rem;">Cập nhật: @Model.TenChuongTrinh</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4 shadow-none">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-primary px-4 shadow-none">Lưu thay đổi</button>
+        </div>
+    </div>
+
+    <div class="container-fluid pt-3 flex-grow-1" style="overflow-y: auto;">
+        <div class="form-container">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row"><label>Tên CT phúc lợi <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="TenChuongTrinh" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Ngày bắt đầu <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="NgayBatDau" type="date" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Ngày kết thúc <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="NgayKetThuc" type="date" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Địa điểm tổ chức</label><div class="input-wrapper"><input asp-for="DiaDiem" class="form-control-custom" /></div></div>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row"><label>Nhóm phúc lợi</label><div class="input-wrapper"><select asp-for="NhomPhucLoi" class="form-control-custom form-select shadow-none"><option value="Du lịch/Nghỉ mát">Du lịch/Nghỉ mát</option><option value="Khám sức khỏe">Khám sức khỏe</option><option value="Đào tạo">Đào tạo</option></select></div></div>
+                    <div class="form-group-row"><label>Mục đích tổ chức</label><div class="input-wrapper"><input asp-for="MucDich" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Hình thức thực hiện</label><div class="input-wrapper"><select asp-for="HinhThucThucHien" class="form-control-custom form-select shadow-none"><option value="Tập trung">Tập trung</option><option value="Tự túc">Tự túc</option></select></div></div>
+                    <div class="form-group-row"><label>Trạng thái <span class="text-danger">*</span></label><div class="input-wrapper"><select asp-for="TrangThai" class="form-control-custom form-select shadow-none"><option value="Chưa thực hiện">Chưa thực hiện</option><option value="Đang thực hiện">Đang thực hiện</option><option value="Đã hoàn thành">Đã hoàn thành</option></select></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container px-0 pb-0 overflow-hidden">
+            <div class="d-flex justify-content-between align-items-center px-4 mb-3 border-bottom pb-3">
+                <h5 class="section-title mb-0 border-0">Nhân viên tham gia</h5>
+                <button type="button" class="btn btn-sm btn-link text-primary text-decoration-none shadow-none p-0" data-bs-toggle="modal" data-bs-target="#modalThemNhanVien"><i class="bi bi-plus"></i> Thêm nhân viên</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="table detail-table mb-0" id="tblNhanVien">
+                    <thead><tr><th>Mã NV</th><th>Họ và tên</th><th>Đơn vị</th><th>Ghi chú</th><th class="text-center">Xóa</th></tr></thead>
+                    <tbody>
+                        @if (Model.PhucLoiNhanViens != null && Model.PhucLoiNhanViens.Any())
+                        {
+                            int i = 0;
+                            foreach (var nv in Model.PhucLoiNhanViens)
+                            {
+                                <tr>
+                                    <td>@nv.NhanSuId</td>
+                                    <td class="fw-medium text-dark">@nv.NhanSu?.HoTen</td>
+                                    <td>@(nv.NhanSu?.PhongBan?.TenPhongBan ?? "-")</td>
+                                    <td>@(nv.GhiChu ?? "-")</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm text-danger p-0" onclick="this.closest('tr').remove(); tinhToanChiPhi();"><i class="bi bi-trash"></i></button>
+                                        <input type="hidden" name="PhucLoiNhanViens[@i].NhanSuId" value="@nv.NhanSuId" />
+                                        <input type="hidden" name="PhucLoiNhanViens[@i].GhiChu" value="@nv.GhiChu" />
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr id="emptyTextNV"><td colspan="5" class="text-center text-muted py-3">Chưa có dữ liệu</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <h5 class="section-title mb-4">Chi phí thực hiện</h5>
+
+            <div class="sub-title">Chi phí dự kiến cho một nhân viên</div>
+            <div class="row mb-4">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row"><label>Số tiền nhân viên đóng</label><div class="input-wrapper"><input asp-for="TienNVDongMoiNguoi" type="number" class="form-control-custom input-tinh-toan" /></div></div>
+                    <div class="form-group-row"><label>Tổng chi phí một NV</label><div class="input-wrapper"><input asp-for="TongChiPhiMoiNguoi" class="form-control-custom form-control-readonly text-primary" readonly /></div></div>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row"><label>Số tiền công ty hỗ trợ</label><div class="input-wrapper"><input asp-for="TienCongTyHoTroMoiNguoi" type="number" class="form-control-custom input-tinh-toan" /></div></div>
+                </div>
+            </div>
+
+            
+            <div class="d-flex justify-content-between align-items-center mb-3 border-top pt-4">
+                <div class="sub-title mb-0 border-0 pt-0">Danh sách khoản chi thực tế</div>
+                <button type="button" class="btn btn-sm btn-link text-primary text-decoration-none shadow-none p-0" data-bs-toggle="modal" data-bs-target="#modalThemChiPhi"><i class="bi bi-plus"></i> Thêm khoản chi</button>
+            </div>
+
+            <table class="table detail-table border" id="tblChiPhi">
+                <thead class="bg-light"><tr><th>Tên khoản chi</th><th>Số tiền</th><th>Ghi chú</th><th class="text-center">Xóa</th></tr></thead>
+                <tbody>
+                    @if (Model.PhucLoiChiPhis != null && Model.PhucLoiChiPhis.Any())
+                    {
+                        int j = 0;
+                        foreach (var cp in Model.PhucLoiChiPhis)
+                        {
+                            <tr>
+                                <td class="fw-medium text-dark">@cp.TenKhoanChi</td>
+                                <td class="text-danger fw-bold">@(cp.SoTien?.ToString("N0") ?? "0")</td>
+                                <td>@(cp.GhiChu ?? "-")</td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm text-danger p-0" onclick="this.closest('tr').remove();"><i class="bi bi-trash"></i></button>
+                                    <input type="hidden" name="PhucLoiChiPhis[@j].TenKhoanChi" value="@cp.TenKhoanChi" />
+                                    <input type="hidden" name="PhucLoiChiPhis[@j].SoTien" value="@cp.SoTien" />
+                                    <input type="hidden" name="PhucLoiChiPhis[@j].GhiChu" value="@cp.GhiChu" />
+                                </td>
+                            </tr>
+                            j++;
+                        }
+                    }
+                    else
+                    {
+                        <tr id="emptyTextChiPhi"><td colspan="4" class="text-center text-muted py-3">Chưa có dữ liệu</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" id="modalThemNhanVien" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light"><h5 class="modal-title fw-bold text-dark">Thêm nhân viên tham gia</h5></div>
+            <div class="modal-body p-4 bg-light">
+                <div class="form-group-row"><label style="width: 30%">Họ và tên *</label><div class="input-wrapper" style="width: 70%"><select id="modalNhanSuId" class="form-control-custom form-select shadow-none"><option value="">Chọn nhân viên</option>@foreach (var ns in ViewBag.NhanSuList)
+                            {
+                                <option value="@ns.Value">@ns.Text</option>
+                            }</select></div></div>
+                <div class="form-group-row"><label style="width: 30%">Mã nhân viên</label><div class="input-wrapper" style="width: 70%"><input type="text" id="modalMaNV" class="form-control-custom form-control-readonly" readonly /></div></div>
+                <div class="form-group-row"><label style="width: 30%">Đơn vị</label><div class="input-wrapper" style="width: 70%"><input type="text" id="modalDonVi" class="form-control-custom form-control-readonly" readonly /></div></div>
+            </div>
+            <div class="modal-footer border-top-0 bg-light">
+                <button type="button" class="btn btn-sm btn-light border px-4" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-sm btn-primary px-4" onclick="themNhanVien()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalThemChiPhi" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light"><h5 class="modal-title fw-bold text-dark">Thêm khoản chi thực tế</h5></div>
+            <div class="modal-body p-4 bg-light">
+                <div class="form-group-row"><label style="width: 30%">Tên khoản chi *</label><div class="input-wrapper" style="width: 70%"><input type="text" id="modalTenKhoanChi" class="form-control-custom" /></div></div>
+                <div class="form-group-row"><label style="width: 30%">Số tiền *</label><div class="input-wrapper" style="width: 70%"><input type="number" id="modalSoTienChi" class="form-control-custom" /></div></div>
+                <div class="form-group-row"><label style="width: 30%">Ghi chú</label><div class="input-wrapper" style="width: 70%"><input type="text" id="modalGhiChuChiPhi" class="form-control-custom" /></div></div>
+            </div>
+            <div class="modal-footer border-top-0 bg-light">
+                <button type="button" class="btn btn-sm btn-light border px-4" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-sm btn-primary px-4" onclick="themChiPhi()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let rowIndexNV = @(Model.PhucLoiNhanViens?.Count ?? 0);
+    let rowIndexChiPhi = @(Model.PhucLoiChiPhis?.Count ?? 0);
+
+    function tinhToanChiPhi() {
+        const tienNVDong = parseFloat(document.getElementById('TienNVDongMoiNguoi').value) || 0;
+        const tienCtyHoTro = parseFloat(document.getElementById('TienCongTyHoTroMoiNguoi').value) || 0;
+
+        // 1. Tổng 1 người
+        const tong1Nguoi = tienNVDong + tienCtyHoTro;
+        document.getElementById('TongChiPhiMoiNguoi').value = tong1Nguoi;
+
+        // 2. Lấy số lượng NV tham gia trong bảng
+        const soNguoi = document.querySelectorAll('#tblNhanVien tbody tr').length;
+    }
+
+    // Lắng nghe sự kiện người dùng gõ tiền vào ô dự kiến
+    document.querySelectorAll('.input-tinh-toan').forEach(input => {
+        input.addEventListener('input', tinhToanChiPhi);
+    });
+
+    // --- LOGIC THÊM NHÂN VIÊN ---
+    document.getElementById('modalNhanSuId').addEventListener('change', function () {
+        if (!this.value) {
+            document.getElementById('modalMaNV').value = '';
+            document.getElementById('modalDonVi').value = '';
+            return;
+        }
+        fetch(`/InfoEmployees/Benefit/GetNhanSuInfo?id=${this.value}`)
+            .then(res => res.json()).then(data => {
+                document.getElementById('modalMaNV').value = data.maNV;
+                document.getElementById('modalDonVi').value = data.tenPhongBan;
+            });
+    });
+
+    function themNhanVien() {
+        const ddlNs = document.getElementById('modalNhanSuId');
+        if(!ddlNs.value) { alert("Chọn nhân viên!"); return; }
+
+        const nsId = ddlNs.value, ten = ddlNs.options[ddlNs.selectedIndex].text;
+        const ma = document.getElementById('modalMaNV').value, dv = document.getElementById('modalDonVi').value;
+
+        const tr = `<tr>
+            <td>${ma}</td><td class="fw-medium text-dark">${ten}</td><td>${dv}</td><td>-</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm text-danger p-0" onclick="this.closest('tr').remove(); tinhToanChiPhi();"><i class="bi bi-trash"></i></button>
+                <input type="hidden" name="PhucLoiNhanViens[${rowIndexNV}].NhanSuId" value="${nsId}" />
+            </td>
+        </tr>`;
+
+        document.querySelector('#tblNhanVien tbody').insertAdjacentHTML('beforeend', tr);
+        document.getElementById('emptyTextNV').style.display = 'none';
+
+        rowIndexNV++;
+        tinhToanChiPhi();
+
+        ddlNs.value = ''; document.getElementById('modalMaNV').value = ''; document.getElementById('modalDonVi').value = '';
+        bootstrap.Modal.getInstance(document.getElementById('modalThemNhanVien')).hide();
+    }
+
+    // --- LOGIC THÊM CHI PHÍ THỰC TẾ ---
+    function themChiPhi() {
+        const ten = document.getElementById('modalTenKhoanChi').value;
+        const tien = document.getElementById('modalSoTienChi').value;
+        const ghiChu = document.getElementById('modalGhiChuChiPhi').value;
+
+        if(!ten || !tien) { alert("Nhập đủ Tên khoản chi và Số tiền!"); return; }
+
+        const tr = `<tr>
+            <td class="fw-medium text-dark">${ten}</td>
+            <td class="text-danger fw-bold">${Number(tien).toLocaleString()}</td>
+            <td>${ghiChu}</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm text-danger p-0" onclick="this.closest('tr').remove();"><i class="bi bi-trash"></i></button>
+                <input type="hidden" name="PhucLoiChiPhis[${rowIndexChiPhi}].TenKhoanChi" value="${ten}" />
+                <input type="hidden" name="PhucLoiChiPhis[${rowIndexChiPhi}].SoTien" value="${tien}" />
+                <input type="hidden" name="PhucLoiChiPhis[${rowIndexChiPhi}].GhiChu" value="${ghiChu}" />
+            </td>
+        </tr>`;
+
+        document.querySelector('#tblChiPhi tbody').insertAdjacentHTML('beforeend', tr);
+        document.getElementById('emptyTextChiPhi').style.display = 'none';
+
+        rowIndexChiPhi++;
+        document.getElementById('modalTenKhoanChi').value = ''; document.getElementById('modalSoTienChi').value = ''; document.getElementById('modalGhiChuChiPhi').value = '';
+        bootstrap.Modal.getInstance(document.getElementById('modalThemChiPhi')).hide();
+    }
+    // Khởi chạy hàm tính toán 1 lần khi vừa load trang xong để số liệu được đồng bộ
+    document.addEventListener("DOMContentLoaded", function () {
+        tinhToanChiPhi();
+    });
+</script>

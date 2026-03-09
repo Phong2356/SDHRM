@@ -1,0 +1,99 @@
+﻿@model SDHRM.Models.ChungChi
+@{
+    ViewData["Title"] = "Thêm Chứng chỉ";
+}
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-group-row label {
+            width: 35%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 65%;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        outline: none;
+        box-shadow: none;
+    }
+
+        .form-control-custom:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+</style>
+
+<form asp-action="AddChungChi" method="post" enctype="multipart/form-data" class="d-flex flex-column" style="height: calc(100vh - 80px);">
+    <input type="hidden" asp-for="NhanSuId" />
+    <div class="top-action-bar d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold text-dark mb-0" style="font-size: 1.25rem;"><i class="bi bi-patch-check me-2"></i>Thêm Chứng chỉ</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4 shadow-none">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-primary px-4 shadow-none">Lưu thông tin</button>
+        </div>
+    </div>
+    <div class="container-fluid pt-4 flex-grow-1" style="overflow-y: auto; padding-bottom: 50px;">
+        <div class="form-container">
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row"><label>Nhóm chứng chỉ <span class="text-danger">*</span></label><div class="input-wrapper"><select asp-for="NhomChungChi" class="form-control-custom form-select shadow-none" required><option value="">Chọn nhóm</option><option value="Ngoại ngữ">Ngoại ngữ</option><option value="Tin học">Tin học</option><option value="Chuyên môn">Chuyên môn</option></select></div></div>
+                    <div class="form-group-row"><label>Số chứng chỉ</label><div class="input-wrapper"><input asp-for="SoChungChi" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Ngày cấp</label><div class="input-wrapper"><input asp-for="NgayCap" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Nơi cấp</label><div class="input-wrapper"><input asp-for="NoiCap" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Xếp loại</label><div class="input-wrapper"><input asp-for="XepLoai" class="form-control-custom" /></div></div>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row"><label>Tên chứng chỉ <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="TenChungChi" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Trình độ đào tạo</label><div class="input-wrapper"><input asp-for="TrinhDoDaoTao" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Ngày hết hạn</label><div class="input-wrapper"><input asp-for="NgayHetHan" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Điểm số</label><div class="input-wrapper"><input asp-for="DiemSo" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Tệp đính kèm</label><div class="input-wrapper"><input type="file" name="fileDinhKem" class="form-control-custom" /></div></div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12"><div class="form-group-row align-items-start"><label style="width: 17%; padding-top: 8px;">Ghi chú</label><div class="input-wrapper" style="width: 83%;"><textarea asp-for="GhiChu" class="form-control-custom" rows="3"></textarea></div></div></div>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,128 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SDHRM</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style_sidebar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SDHRM.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+            <div class="container-fluid d-flex align-items-center justify-content-start">
+                <!-- ICON GRID -->
+                <a  asp-area="" asp-controller="Home" asp-action="Index" class="icon-menu">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                </a>
+                <!-- ICON SYSTEM (SVG) -->
+                <div> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 48 48" fill="none">
+                        <path d="M0 24C0 4.8 4.8 0 24 0C43.2 0 48 4.8 48 24C48 43.2 43.2 48 24 48C4.8 48 0 43.2 0 24Z" fill="url(#paint0_linear_177_37)" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M24.0001 25.6147C24.5352 25.6147 24.969 26.0485 24.969 26.5836C24.969 28.0746 25.5108 31.0831 29.2507 32.8092C30.035 33.1712 30.9895 33.2529 31.8072 33.2226C32.206 33.2079 32.5499 33.1674 32.7922 33.131C32.9129 33.1128 33.0072 33.0958 33.069 33.0839C33.0999 33.0779 33.1226 33.0732 33.1364 33.0703L33.1502 33.0674C33.1511 33.0672 33.1516 33.067 33.1518 33.067L33.1502 33.0674C33.6716 32.9482 34.1912 33.2741 34.3107 33.7956C34.4301 34.3172 34.1041 34.8369 33.5825 34.9563L33.3662 34.0119C33.5825 34.9563 33.5827 34.9563 33.5825 34.9563L33.5801 34.9569L33.5768 34.9576L33.5675 34.9597L33.5377 34.9661C33.5131 34.9713 33.479 34.9783 33.4362 34.9866C33.3507 35.0031 33.23 35.0247 33.0805 35.0472C32.7823 35.0921 32.3647 35.1411 31.8789 35.1591C30.9277 35.1943 29.6214 35.1146 28.4386 34.5686C23.7813 32.4191 23.0312 28.5376 23.0312 26.5836C23.0312 26.0485 23.465 25.6147 24.0001 25.6147Z" fill="white" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.0901 15.038C21.5437 13.9644 26.8548 13.0606 31.3637 16.4423C35.8083 19.7757 36.7169 24.5543 36.5941 26.6404C36.5937 26.6483 36.5931 26.6562 36.5925 26.664C36.527 27.4497 36.222 28.6019 35.4921 29.5838C34.7335 30.6044 33.5174 31.428 31.7513 31.4281C29.9498 31.4281 28.7645 30.6009 28.0303 29.5668C27.3332 28.5849 27.0601 27.4463 26.9256 26.7736C26.6378 25.335 26.0905 24.5925 25.5852 24.1994C25.0707 23.7992 24.4906 23.6768 24 23.6768C22.8099 23.6768 22.1084 24.21 21.6757 24.8598C21.2089 25.5609 21.0634 26.3981 21.0914 26.8462C21.2431 29.2724 21.9196 31.1151 22.9367 32.5681C23.9585 34.0278 25.3624 35.1488 27.0477 36.068C27.5175 36.3243 27.6906 36.9128 27.4344 37.3826C27.1781 37.8524 26.5896 38.0255 26.1198 37.7692C24.2525 36.7507 22.5882 35.4494 21.3492 33.6794C20.1055 31.9027 19.3287 29.7083 19.1574 26.967C19.1046 26.1232 19.3467 24.8611 20.0628 23.7858C20.8129 22.6592 22.0896 21.739 24 21.739C24.8013 21.739 25.8361 21.9396 26.7749 22.6698C27.7229 23.4072 28.4675 24.6025 28.8257 26.3935C28.9496 27.0127 29.161 27.812 29.6104 28.445C30.0227 29.0257 30.646 29.4903 31.7512 29.4903C32.8273 29.4902 33.4952 29.022 33.9369 28.4277C34.4038 27.7996 34.616 27.0211 34.6604 26.5145C34.7485 24.9316 34.0147 20.8528 30.201 17.9926C26.442 15.1733 21.9347 15.9085 19.8668 16.8133C18.0554 17.6059 14.654 19.474 13.6462 24.5129C13.4471 25.5082 13.0504 28.0902 14.2417 31.0683C14.4404 31.5652 14.1987 32.129 13.7019 32.3278C13.205 32.5265 12.6412 32.2848 12.4424 31.788C11.0499 28.3068 11.5144 25.2907 11.746 24.1328C12.9345 18.1906 17.0259 15.9411 19.0901 15.038Z" fill="white" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M18.7223 19.5994C20.5139 18.2943 22.5973 17.8634 24.0001 17.8634C24.0269 17.8634 24.0538 17.8645 24.0805 17.8668C27.4572 18.1481 29.6509 19.6345 30.981 21.4386C32.2841 23.2063 32.7202 25.2244 32.7202 26.5836C32.7202 27.1187 32.2864 27.5525 31.7513 27.5525C31.2162 27.5525 30.7824 27.1187 30.7824 26.5836C30.7824 25.5743 30.4434 23.9751 29.4212 22.5885C28.4307 21.2449 26.7603 20.045 23.9607 19.8014C22.8864 19.8097 21.2467 20.1579 19.8633 21.1657C18.5086 22.1526 17.3392 23.8118 17.2177 26.6042C17.2177 27.939 17.2256 31.4318 20.2465 35.3589C20.5727 35.7831 20.4934 36.3914 20.0693 36.7176C19.6451 37.0439 19.0368 36.9646 18.7105 36.5404C15.2877 32.0907 15.2799 28.0635 15.2799 26.5836C15.2799 26.5701 15.2802 26.5567 15.2807 26.5432C15.4223 23.1465 16.8882 20.9356 18.7223 19.5994Z" fill="white" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.2028 14.3618C14.2025 15.6312 12.9493 17.0639 12.5581 17.716C12.2828 18.1749 11.6876 18.3237 11.2288 18.0484C10.7699 17.7731 10.6211 17.1779 10.8964 16.7191C11.474 15.7563 12.9661 14.1208 15.1644 12.7257C17.3842 11.317 20.3877 10.1123 24.0001 10.1122C30.6053 10.1122 34.992 13.8948 37.048 16.6362C37.3691 17.0643 37.2823 17.6716 36.8542 17.9927C36.4261 18.3138 35.8188 18.227 35.4977 17.7989C33.6781 15.3727 29.8076 12.05 24.0001 12.0501C20.83 12.0501 18.1816 13.106 16.2028 14.3618Z" fill="white" />
+                        <defs>
+                            <linearGradient id="paint0_linear_177_37" x1="24" y1="0" x2="24" y2="48" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#FF9F58" />
+                                <stop offset="1" stop-color="#FF6340" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <!-- TITLE -->
+                <span class="title-name">
+                    Chấm công
+                </span>
+            </div>
+            <partial name="_LoginPartial" />
+        </nav>
+    </header>
+    <div class="app-container d-flex">
+        <aside class="sidebar-main-timesheet d-flex flex-column flex-shrink-0">
+            <ul class="nav nav-pills flex-column mb-auto pt-2">
+                <li class="nav-item">
+                    <a asp-area="Timesheet" asp-controller="Dashboard" asp-action="Dashboard" class="nav-link">
+                        <i class="bi bi-house-door"></i>
+                        <span class="link-text">Tổng quan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link menu-has-sub" data-target="#submenu-chamcong">
+                        <i class="bi bi-list-check"></i>
+                        <span class="link-text">Chấm công</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link menu-has-sub" data-target="#submenu-quanlydon">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span class="link-text">Quản lý đơn</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="Timesheet" asp-controller="Report" asp-action="Index" class="nav-link">
+                        <i class="bi bi-clipboard-data"></i>
+                        <span class="link-text">Báo cáo</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="Timesheet" asp-controller="Setting" asp-action="Index" class="nav-link">
+                        <i class="bi bi-gear"></i>
+                        <span class="link-text">Thiết lập</span>
+                    </a>
+                </li>               
+            </ul>
+
+            <div class="sidebar-footer mt-auto">
+                <button class="btn-toggle-sidebar" id="toggleSidebar">
+                    <i class="bi bi-chevron-left toggle-icon"></i>
+                    <span class="toggle-label">Thu gọn</span>
+                </button>
+            </div>
+        </aside>
+
+        <aside class="sidebar-sub" id="sub-sidebar" style="display: none;">
+            <div class="sub-sidebar-content">
+
+                <nav class="nav flex-column sub-menu-group" id="submenu-chamcong" style="display: none;">
+                    <div class="px-3 py-2 text-muted fw-bold small text-uppercase">Chấm công</div>
+                    <a asp-area="Timesheet" asp-controller="Timekeeping" asp-action="TimesheetDetail" class="nav-link">Bảng chấm công chi tiết</a>
+                    <a asp-area="Timesheet" asp-controller="Timekeeping" asp-action="Timekeeper" class="nav-link">Dữ liệu chấm công</a>
+                </nav>
+
+                <nav class="nav flex-column sub-menu-group" id="submenu-quanlydon" style="display: none;">
+                    <div class="px-3 py-2 text-muted fw-bold small text-uppercase">Quản lý Đơn từ</div>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="Attendance" class="nav-link">Đơn xin nghỉ</a>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="LateInEarlyOut" class="nav-link">Đăng ký đi muộn, về sớm</a>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="Overtime" class="nav-link">Đăng ký tăng ca</a>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="UpdateWorking" class="nav-link">Đề nghị cập nhật công</a>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="LeaveSummary" class="nav-link">Bảng tổng hợp ngày nghỉ</a>
+                </nav>               
+            </div>
+        </aside>
+
+        <div class="main-content p-3">
+            <div class="card border-0 shadow-sm h-100">
+                <main role="main" class="h-100 d-flex flex-column">
+                        @RenderBody()
+                </main>
+            </div>
+        </div>
+    </div>
+     
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/js_sidebar.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

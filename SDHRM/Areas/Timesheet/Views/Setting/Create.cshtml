@@ -1,0 +1,106 @@
+﻿@model SDHRM.Models.CauHinhWifi
+@{
+    ViewData["Title"] = "Thêm cấu hình WiFi";
+}
+
+<div class="container-fluid p-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center mb-4">
+                <a asp-action="Index" class="text-dark fs-5 me-3"><i class="bi bi-arrow-left"></i></a>
+                <h4 class="mb-0 fw-bold">Thêm cấu hình WiFi mới</h4>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Tên văn phòng/Chi nhánh <span class="text-danger">*</span></label>
+                            <input asp-for="TenVanPhong" class="form-control" placeholder="VD: Văn phòng Tầng 3 - Tòa nhà Sông Đà" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Tên WiFi (SSID) <span class="text-danger">*</span></label>
+                            <input asp-for="TenWifi" class="form-control" placeholder="VD: SongDa_Corp_5G" required />
+                            <small class="text-muted"><i class="bi bi-info-circle me-1"></i> Tên này chỉ để hiển thị cho nhân viên dễ nhận biết.</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Địa chỉ IP Public của mạng WiFi <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-globe"></i></span>
+                                <input asp-for="DiaChiIP" id="inputIP" class="form-control font-monospace" placeholder="VD: 113.190.23.45" required />
+                                <button type="button" class="btn btn-outline-primary" onclick="suDungIPHienTai()">
+                                    <i class="bi bi-crosshair me-1"></i> Lấy IP hiện tại của bạn
+                                </button>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                Hệ thống phát hiện IP hiện tại của máy bạn đang là: <strong class="text-primary" id="currentIP">@ViewBag.CurrentIP</strong>.
+                                Nếu bạn đang kết nối đúng mạng WiFi của công ty, hãy bấm nút lấy IP bên trên.
+                            </small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Trạng thái</label>
+                            <select asp-for="TrangThai" class="form-select">
+                                <option value="true">Đang hoạt động (Cho phép chấm công)</option>
+                                <option value="false">Khóa tạm thời</option>
+                            </select>
+                        </div>
+
+                        <hr class="my-4 text-muted">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Index" class="btn btn-light border px-4">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary px-5 fw-medium"><i class="bi bi-save me-1"></i> Lưu cấu hình</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-4 border-0 shadow-sm" style="background-color: #e0f2fe; color: #0369a1;">
+                <strong><i class="bi bi-lightbulb-fill text-warning me-2"></i> Mẹo dành cho Quản trị viên:</strong><br />
+                Để lấy chính xác địa chỉ IP của công ty, hãy dùng điện thoại hoặc laptop của bạn kết nối vào mạng WiFi công ty, sau đó vào trang này và bấm nút <b>"Lấy IP hiện tại của bạn"</b>.
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function suDungIPHienTai() {
+        // Thay đổi giao diện nút bấm thành "Đang quét..."
+        var button = event.currentTarget;
+        var originalText = button.innerHTML;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang quét IP...';
+        button.disabled = true;
+
+        // Gọi ra ngoài Internet (dùng API miễn phí của ipify) để xin Public IP thật
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                var ip = data.ip; // Đây chính là Public IP thật của bạn
+
+                // Điền vào ô input
+                document.getElementById('inputIP').value = ip;
+
+                // Đổi luôn chữ ::1 ở bên dưới thành IP thật cho đẹp
+                document.getElementById('currentIP').innerText = ip;
+
+                // Hiệu ứng nháy xanh lá báo thành công
+                var input = document.getElementById('inputIP');
+                input.style.transition = "all 0.3s";
+                input.style.backgroundColor = "#dcfce7";
+                setTimeout(() => { input.style.backgroundColor = ""; }, 500);
+            })
+            .catch(error => {
+                alert("Không thể lấy IP Public lúc này. Bạn có thể lên Google gõ 'What is my IP' và tự copy vào nhé!");
+                console.error("Lỗi lấy IP:", error);
+            })
+            .finally(() => {
+                // Trả lại trạng thái nút bấm ban đầu
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+    }
+</script>

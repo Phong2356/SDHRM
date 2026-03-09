@@ -1,0 +1,85 @@
+﻿@model SDHRM.Models.DeNghiCapNhatCong
+@{
+    ViewData["Title"] = "Đề nghị cập nhật công";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom p-4 rounded-top-4">
+                    <h5 class="fw-bold text-dark mb-0">Tạo đề nghị cập nhật công</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3 rounded-3"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="NgayCapNhat" class="form-label fw-medium">Ngày cần cập nhật <span class="text-danger">*</span></label>
+                            <input asp-for="NgayCapNhat" type="date" class="form-control shadow-none" />
+                            <div class="form-text">Chọn ngày mà bạn quên chấm công hoặc máy chấm công bị lỗi.</div>
+                            <span asp-validation-for="NgayCapNhat" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-4 p-3 bg-light rounded-3 border">
+                            <p class="mb-3 fw-medium text-dark"><i class="bi bi-clock-history me-1"></i> Bổ sung thời gian thực tế</p>
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label asp-for="GioVao" class="form-label text-muted">Giờ vào</label>
+                                <input asp-for="GioVao" type="time" class="form-control shadow-none" />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="GioRa" class="form-label text-muted">Giờ ra</label>
+                                <input asp-for="GioRa" type="time" class="form-control shadow-none" />
+                            </div>
+                            <div class="col-12 mt-2">
+                                <small class="text-primary"><i class="bi bi-info-circle me-1"></i>Chỉ cần nhập ô mà bạn bị thiếu. Ví dụ: Sáng đến quên chấm vân tay thì chỉ nhập Giờ vào.</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="LyDo" class="form-label fw-medium">Lý do giải trình <span class="text-danger">*</span></label>
+                            <textarea asp-for="LyDo" class="form-control shadow-none" rows="3" placeholder="Nhập lý do chi tiết (VD: Đi gặp khách hàng A tại Quận 1, Quên chấm vân tay, Máy chấm công lỗi không nhận diện...)"></textarea>
+                            <span asp-validation-for="LyDo" class="text-danger small"></span>
+
+                            <div class="mt-2 d-flex gap-2 flex-wrap">
+                                <span class="badge rounded-pill bg-light text-dark border p-2 cursor-pointer" onclick="dienLyDo('Quên chấm công (Sáng)')">Quên chấm công sáng</span>
+                                <span class="badge rounded-pill bg-light text-dark border p-2 cursor-pointer" onclick="dienLyDo('Quên chấm công (Chiều)')">Quên chấm công chiều</span>
+                                <span class="badge rounded-pill bg-light text-dark border p-2 cursor-pointer" onclick="dienLyDo('Đi gặp khách hàng/Đối tác bên ngoài')">Đi gặp khách ngoài</span>
+                                <span class="badge rounded-pill bg-light text-dark border p-2 cursor-pointer" onclick="dienLyDo('Máy chấm công bị lỗi/Không nhận vân tay')">Máy chấm công lỗi</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Tệp đính kèm / Minh chứng <span class="text-muted fw-normal">(Không bắt buộc)</span></label>
+                            <input type="file" name="fileUpload" class="form-control shadow-none" accept=".jpg,.jpeg,.png,.pdf" />
+                            <div class="form-text">Có thể tải lên hình ảnh chụp tin nhắn báo sếp, hoặc hình ảnh gặp khách hàng.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                            <a asp-action="Index" class="btn btn-light px-4 border shadow-none">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm"><i class="bi bi-send me-1"></i> Gửi đề nghị</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .cursor-pointer:hover {
+            background-color: #e2e8f0 !important;
+        }
+</style>
+
+<script>
+    function dienLyDo(text) {
+        document.getElementById('LyDo').value = text;
+    }
+</script>

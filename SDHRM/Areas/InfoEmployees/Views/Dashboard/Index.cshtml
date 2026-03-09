@@ -1,0 +1,288 @@
+﻿@model SDHRM.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard Tổng Quan";
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    /* ĐÃ BỎ height: 100% để tránh lỗi bóp méo thẻ của trình duyệt */
+    .card-dash {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        padding: 20px;
+    }
+
+    /* Ép chiều cao tối thiểu cho các khung biểu đồ */
+    .chart-container {
+        min-height: 250px;
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 5px;
+    }
+
+    .card-subtitle {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    /* Banner AI */
+    .ai-banner {
+        background: linear-gradient(90deg, #e0e7ff, #f3e8ff, #fae8ff);
+        border-radius: 8px;
+        padding: 15px 20px;
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .ai-lines {
+        flex-grow: 1;
+        margin-left: 15px;
+    }
+
+    .ai-line {
+        height: 8px;
+        background: white;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        opacity: 0.7;
+    }
+
+    /* Danh sách thống kê phải */
+    .stat-list-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px dashed #e2e8f0;
+        font-size: 0.85rem;
+    }
+
+        .stat-list-item:last-child {
+            border-bottom: none;
+        }
+
+    .number-highlight {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .trend-down {
+        color: #ef4444;
+        font-size: 0.75rem;
+    }
+
+    .trend-neutral {
+        color: #eab308;
+        font-size: 0.75rem;
+    }
+</style>
+
+<div id="chartDataStorage"
+     data-hopdong='@Html.Raw(Json.Serialize(Model.HopDongTheoLoai ?? new List<int> { 0, 0 }))'
+     data-tiepnhan='@Html.Raw(Json.Serialize(Model.BienDongTiepNhan ?? new List<int>()))'
+     data-nghiviec='@Html.Raw(Json.Serialize(Model.BienDongNghiViec ?? new List<int>()))'
+     data-soluong='@Html.Raw(Json.Serialize(Model.SoLuongNhanSuThang ?? new List<int>()))'
+     data-pblabels='@Html.Raw(Json.Serialize(Model.PhongBanLabels ?? new List<string>()))'
+     data-pbdata='@Html.Raw(Json.Serialize(Model.PhongBanData ?? new List<int>()))'
+     style="display: none;"></div>
+
+<div class="container-fluid py-3 d-flex flex-column" style="height: calc(100vh - 60px); overflow-y: auto; overflow-x: hidden; padding-bottom: 50px;">
+    <div class="row g-3">
+        <div class="col-lg-9 d-flex flex-column gap-3">      
+            <div class="card-dash p-0 overflow-hidden m-0">
+                <div class="row g-0">
+                    <div class="col-4 p-3 border-end">
+                        <div class="d-flex justify-content-between mb-2"><span class="fw-medium text-dark">Nhân viên mới</span><span class="text-muted" style="font-size: 0.75rem;">Tuần này <i class="bi bi-chevron-down"></i></span></div>
+                        <div class="d-flex align-items-baseline gap-2 mb-3">
+                            <span class="number-highlight text-danger">@Model.NhanVienMoiTuanNay</span>
+                        </div>
+                        <div class="mt-2" style="height: 2px; background: #ef4444; width: 100%;"></div>
+                    </div>
+                    <div class="col-4 p-3 border-end">
+                        <div class="d-flex justify-content-between mb-2"><span class="fw-medium text-dark">Thử việc thành công</span><span class="text-muted" style="font-size: 0.75rem;">Tuần này <i class="bi bi-chevron-down"></i></span></div>
+                        <div class="d-flex align-items-baseline gap-2 mb-3">
+                            <span class="number-highlight text-warning">@Model.ThuViecThanhCongTuanNay</span>
+                        </div>
+                        <div class="mt-2" style="height: 2px; background: #eab308; width: 100%;"></div>
+                    </div>
+                    <div class="col-4 p-3">
+                        <div class="d-flex justify-content-between mb-2"><span class="fw-medium text-dark">Nghỉ việc</span><span class="text-muted" style="font-size: 0.75rem;">Tuần này <i class="bi bi-chevron-down"></i></span></div>
+                        <div class="d-flex align-items-baseline gap-2 mb-3">
+                            <span class="number-highlight text-warning">@Model.NghiViecTuanNay</span>
+                        </div>
+                        <div class="mt-2" style="height: 2px; background: #eab308; width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card-dash h-100">
+                        <div class="card-title">Cơ cấu nhân sự theo phòng ban</div>
+                        <span class="card-subtitle">Tất cả đơn vị - Đến ngày @DateTime.Now.ToString("dd/MM/yyyy")</span>
+                        <div class="chart-container"><canvas id="chartPhongBan"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-dash h-100">
+                        <div class="card-title">Thống kê hợp đồng theo loại</div>
+                        <span class="card-subtitle">Tất cả đơn vị - Đến ngày @DateTime.Now.ToString("dd/MM/yyyy")</span>
+                        <div class="chart-container"><canvas id="chartHopDong"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card-dash h-100">
+                        <div class="card-title">Biến động nhân sự</div>
+                        <span class="card-subtitle">Tất cả đơn vị - Năm @DateTime.Now.Year</span>
+                        <div class="chart-container"><canvas id="chartBienDong"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card-dash h-100">
+                        <div class="card-title">Số lượng nhân sự</div>
+                        <span class="card-subtitle">Tất cả đơn vị - Năm @DateTime.Now.Year</span>
+                        <div class="chart-container"><canvas id="chartSoLuong"></canvas></div>
+                    </div>
+                </div>
+            </div>           
+        </div>
+
+        <div class="col-lg-3 d-flex flex-column gap-3">
+            <div class="card-dash">
+                <div class="card-title mb-4">Tổng số nhân viên</div>
+                <div class="text-center mb-4"><span class="fw-bold text-primary" style="font-size: 2.5rem;">@Model.TongNhanVien</span></div>
+
+                <div class="stat-list-item"><span><i class="bi bi-person text-primary me-2"></i> Chính thức</span><span class="fw-medium text-primary">@Model.NhanVienChinhThuc</span></div>
+                <div class="stat-list-item"><span><i class="bi bi-person text-success me-2"></i> Thử việc</span><span class="fw-medium text-success">@Model.NhanVienThuViec</span></div>
+                <div class="stat-list-item"><span><i class="bi bi-mortarboard text-info me-2"></i> Học việc</span><span class="fw-medium text-info">0</span></div>
+                <div class="stat-list-item"><span><i class="bi bi-bag-plus text-danger me-2"></i> Nghỉ thai sản</span><span class="fw-medium text-danger">@Model.NhanVienNghiThaiSan</span></div>
+                <div class="stat-list-item"><span><i class="bi bi-person-slash text-warning me-2"></i> Khác</span><span class="fw-medium text-warning">0</span></div>
+            </div>
+
+            <div class="card-dash">
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="card-title m-0">Nhắc việc</div>
+                    <a href="#" class="text-decoration-none text-primary" style="font-size: 0.8rem;">Xem chi tiết</a>
+                </div>
+                <div class="d-flex justify-content-between align-items-center text-muted" style="font-size: 0.85rem;">
+                    <span>Chưa ký hợp đồng</span>
+                    <span class="fw-bold text-dark">@Model.ChuaKyHopDong</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        try {
+            // Lấy dữ liệu an toàn từ thẻ DIV ẩn
+            const storage = document.getElementById('chartDataStorage');
+            const dataHopDong = JSON.parse(storage.getAttribute('data-hopdong'));
+            const dataTiepNhan = JSON.parse(storage.getAttribute('data-tiepnhan'));
+            const dataNghiViec = JSON.parse(storage.getAttribute('data-nghiviec'));
+            const dataSoLuong = JSON.parse(storage.getAttribute('data-soluong'));
+
+            const labelsThang = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+            const dataPbLabels = JSON.parse(storage.getAttribute('data-pblabels'));
+            const dataPbData = JSON.parse(storage.getAttribute('data-pbdata'));
+
+            // 0. Biểu đồ Cơ cấu Phòng ban (Doughnut/Pie)
+            const ctxPhongBan = document.getElementById('chartPhongBan');
+            if (ctxPhongBan && dataPbData.length > 0) {
+                new Chart(ctxPhongBan, {
+                    type: 'doughnut',
+                    data: {
+                        labels: dataPbLabels,
+                        datasets: [{
+                            data: dataPbData,
+                            // Bộ màu ngẫu nhiên cho các phòng ban
+                            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } } }
+                    }
+                });
+            }
+            // 1. Biểu đồ Doughnut
+            const ctxHopDong = document.getElementById('chartHopDong');
+            if (ctxHopDong && dataHopDong.length > 0) {
+                new Chart(ctxHopDong, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Xác định thời hạn', 'Khác'],
+                        datasets: [{ data: dataHopDong, backgroundColor: ['#2563eb', '#e2e8f0'], borderWidth: 0, cutout: '75%' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } } } }
+                });
+            }
+
+            // 2. Biểu đồ Line
+            const ctxBienDong = document.getElementById('chartBienDong');
+            if (ctxBienDong && dataTiepNhan.length > 0) {
+                new Chart(ctxBienDong, {
+                    type: 'line',
+                    data: {
+                        labels: labelsThang,
+                        datasets: [
+                            { label: 'Tiếp nhận', data: dataTiepNhan, borderColor: '#38bdf8', backgroundColor: 'transparent', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                            { label: 'Nghỉ việc', data: dataNghiViec, borderColor: '#f87171', backgroundColor: 'transparent', tension: 0.4, borderWidth: 2, pointRadius: 0 }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }
+                    }
+                });
+            }
+
+            // 3. Biểu đồ Bar
+            const ctxSoLuong = document.getElementById('chartSoLuong');
+            if (ctxSoLuong && dataSoLuong.length > 0) {
+                new Chart(ctxSoLuong, {
+                    type: 'bar',
+                    data: {
+                        labels: labelsThang,
+                        datasets: [{ label: 'Số lượng', data: dataSoLuong, backgroundColor: '#8b5cf6', borderRadius: 2, barPercentage: 0.4 }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Lỗi khởi tạo biểu đồ: ", e);
+        }
+    });
+</script>

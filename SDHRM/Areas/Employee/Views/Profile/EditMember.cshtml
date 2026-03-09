@@ -1,0 +1,198 @@
+﻿@model SDHRM.Models.NhanSu
+@{
+    ViewData["Title"] = "Cập nhật thông tin hồ sơ";
+}
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .section-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .sub-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #475569;
+        margin: 15px 0;
+        padding-left: 5px;
+        border-left: 3px solid #3b82f6;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+        .form-group-row label {
+            width: 35%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 65%;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        outline: none;
+        box-shadow: none;
+    }
+
+        .form-control-custom:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+</style>
+
+<form asp-action="EditMember" method="post" class="d-flex flex-column" style="height: calc(100vh - 80px);">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ThongTinChung.Id" />
+    <input type="hidden" asp-for="ThongTinLienHe.Id" />
+
+    <div class="top-action-bar d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold text-dark mb-0" style="font-size: 1.25rem;">Cập nhật thông tin: @Model.HoTen</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4 shadow-none">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-primary px-4 shadow-none"><i class="bi bi-save me-1"></i> Lưu thay đổi</button>
+        </div>
+    </div>
+
+    <div class="container-fluid pt-3 flex-grow-1" style="overflow-y: auto; padding-bottom: 50px;">
+
+        <div class="form-container">
+            <h5 class="section-title text-primary"><i class="bi bi-person-lines-fill me-2"></i> Thông tin cơ bản & Cá nhân</h5>
+
+            <div class="sub-title">Thông tin chung</div>
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row"><label>Họ và tên <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="HoTen" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Ngày sinh</label><div class="input-wrapper"><input asp-for="NgaySinh" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row">
+                        <label>Giới tính</label>
+                        <div class="input-wrapper">
+                            <select asp-for="GioiTinh" class="form-control-custom form-select shadow-none">
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group-row"><label>Tình trạng hôn nhân</label><div class="input-wrapper"><select asp-for="ThongTinChung.TinhTrangHonNhan" class="form-control-custom form-select shadow-none"><option value="Độc thân">Độc thân</option><option value="Đã kết hôn">Đã kết hôn</option></select></div></div>
+                    <div class="form-group-row"><label>MST cá nhân</label><div class="input-wrapper"><input asp-for="ThongTinChung.MaSoThue" class="form-control-custom" /></div></div>
+                </div>
+
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row"><label>Quốc tịch</label><div class="input-wrapper"><input asp-for="ThongTinChung.QuocTich" class="form-control-custom" placeholder="VD: Việt Nam" /></div></div>
+                    <div class="form-group-row"><label>Dân tộc</label><div class="input-wrapper"><input asp-for="ThongTinChung.DanToc" class="form-control-custom" placeholder="VD: Kinh" /></div></div>
+                    <div class="form-group-row"><label>Tôn giáo</label><div class="input-wrapper"><input asp-for="ThongTinChung.TonGiao" class="form-control-custom" placeholder="VD: Không" /></div></div>
+                    <div class="form-group-row align-items-start mt-2"><label class="pt-2">Nơi sinh</label><div class="input-wrapper"><textarea asp-for="ThongTinChung.NoiSinh" class="form-control-custom" rows="2"></textarea></div></div>
+                    <div class="form-group-row align-items-start"><label class="pt-2">Nguyên quán</label><div class="input-wrapper"><textarea asp-for="ThongTinChung.NguyenQuan" class="form-control-custom" rows="2"></textarea></div></div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6 pe-md-4">
+                    <div class="sub-title">Chứng minh / CCCD</div>
+                    <div class="form-group-row"><label>Số CCCD</label><div class="input-wrapper"><input asp-for="ThongTinChung.SoCCCD" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Ngày cấp</label><div class="input-wrapper"><input asp-for="ThongTinChung.NgayCapGiayTo" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Ngày hết hạn</label><div class="input-wrapper"><input asp-for="ThongTinChung.NgayHetHanGiayTo" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row align-items-start mt-2"><label class="pt-2">Nơi cấp</label><div class="input-wrapper"><textarea asp-for="ThongTinChung.NoiCapGiayTo" class="form-control-custom" rows="2"></textarea></div></div>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <div class="sub-title">Hộ chiếu (Passport)</div>
+                    <div class="form-group-row"><label>Số Hộ chiếu</label><div class="input-wrapper"><input asp-for="ThongTinChung.SoHoChieu" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Ngày cấp</label><div class="input-wrapper"><input asp-for="ThongTinChung.NgayCapHoChieu" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Ngày hết hạn</label><div class="input-wrapper"><input asp-for="ThongTinChung.NgayHetHanHoChieu" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row align-items-start mt-2"><label class="pt-2">Nơi cấp</label><div class="input-wrapper"><textarea asp-for="ThongTinChung.NoiCapHoChieu" class="form-control-custom" rows="2"></textarea></div></div>
+                </div>
+            </div>
+
+            <div class="sub-title">Trình độ & Bằng cấp</div>
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row"><label>Trình độ văn hóa</label><div class="input-wrapper"><input asp-for="ThongTinChung.TrinhDoHocVan" class="form-control-custom" placeholder="VD: 12/12" /></div></div>
+                    <div class="form-group-row"><label>Trình độ đào tạo</label><div class="input-wrapper"><input asp-for="ThongTinChung.TrinhDoDaoTao" class="form-control-custom" placeholder="VD: Đại học" /></div></div>
+                    <div class="form-group-row"><label>Nơi đào tạo</label><div class="input-wrapper"><input asp-for="ThongTinChung.NoiDaoTao" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Khoa</label><div class="input-wrapper"><input asp-for="ThongTinChung.Khoa" class="form-control-custom" /></div></div>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row"><label>Chuyên ngành</label><div class="input-wrapper"><input asp-for="ThongTinChung.ChuyenNganh" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Năm tốt nghiệp</label><div class="input-wrapper"><input asp-for="ThongTinChung.NamTotNghiep" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Xếp loại tốt nghiệp</label><div class="input-wrapper"><input asp-for="ThongTinChung.XepLoaiTotNghiep" class="form-control-custom" /></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <h5 class="section-title text-primary"><i class="bi bi-telephone-fill me-2"></i> Thông tin liên hệ</h5>
+
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="sub-title">Điện thoại & Email</div>
+                    <div class="form-group-row"><label>ĐT di động <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="SoDienThoai" type="tel" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>ĐT cơ quan</label><div class="input-wrapper"><input asp-for="ThongTinLienHe.DTCoQuan" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>ĐT nhà riêng</label><div class="input-wrapper"><input asp-for="ThongTinLienHe.DTNhaRieng" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>ĐT khác</label><div class="input-wrapper"><input asp-for="ThongTinLienHe.DTKhac" class="form-control-custom" /></div></div>
+                    <div class="form-group-row mt-3"><label>Email cá nhân</label><div class="input-wrapper"><input asp-for="Email" type="email" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Email cơ quan</label><div class="input-wrapper"><input asp-for="ThongTinLienHe.EmailCoQuan" type="email" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Email khác</label><div class="input-wrapper"><input asp-for="ThongTinLienHe.EmailKhac" type="email" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Mạng xã hội</label><div class="input-wrapper"><input asp-for="ThongTinLienHe.LinkMangXaHoi" class="form-control-custom" placeholder="Link Facebook, Zalo, LinkedIn..." /></div></div>
+                </div>
+
+                <div class="col-md-6 ps-md-4">
+                    <div class="sub-title">Địa chỉ lưu trú</div>
+                    <div class="form-group-row align-items-start"><label class="pt-2">Địa chỉ thường trú</label><div class="input-wrapper"><textarea asp-for="ThongTinLienHe.DiaChiThuongTru" class="form-control-custom" rows="3"></textarea></div></div>
+                    <div class="form-group-row align-items-start mt-3"><label class="pt-2">Địa chỉ tạm trú</label><div class="input-wrapper"><textarea asp-for="ThongTinLienHe.DiaChiTamTru" class="form-control-custom" rows="3"></textarea></div></div>
+
+                    <div class="p-3 bg-light rounded-3 border mt-4">
+                        <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Liên hệ khẩn cấp</h6>
+                        <div class="form-group-row"><label>Họ tên (LHKC)</label><div class="input-wrapper"><input asp-for="ThongTinLienHe.HTLienHeKhanCap" class="form-control-custom bg-white" /></div></div>
+                        <div class="form-group-row"><label>SĐT (LHKC)</label><div class="input-wrapper"><input asp-for="ThongTinLienHe.DTLienHeKhanCap" class="form-control-custom bg-white" /></div></div>
+                        <div class="form-group-row"><label>Email (LHKC)</label><div class="input-wrapper"><input asp-for="ThongTinLienHe.EmailLienHeKhanCap" class="form-control-custom bg-white" /></div></div>
+                        <div class="form-group-row align-items-start mt-2"><label class="pt-2">Địa chỉ (LHKC)</label><div class="input-wrapper"><textarea asp-for="ThongTinLienHe.DiaChiLienHeKhanCap" class="form-control-custom bg-white" rows="2"></textarea></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>

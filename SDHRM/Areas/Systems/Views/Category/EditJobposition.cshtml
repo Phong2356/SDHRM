@@ -1,0 +1,79 @@
+﻿@model SDHRM.Models.ViTriCongViec
+
+@{
+    ViewData["Title"] = "Cập nhật vị trí công việc";
+}
+
+<style>
+    .form-label-custom {
+        font-weight: 500;
+        color: #333;
+        padding-top: calc(0.375rem + 1px);
+        font-size: 0.9rem;
+    }
+
+    .required-star {
+        color: #dc3545;
+        margin-left: 3px;
+    }
+
+    .page-container {
+        background-color: #f0f2f5;
+        min-height: 100%;
+    }
+</style>
+
+<div class="h-100 d-flex flex-column">
+    <form asp-action="EditJobposition" method="post">
+
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="TrangThai" />
+
+        <div class="d-flex justify-content-between align-items-center p-3 bg-white border-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <a asp-action="Jobposition" class="text-dark text-decoration-none fs-5">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="fw-normal">Cập nhật vị trí công việc</h4>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Jobposition" class="btn btn-white border">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary px-4">Lưu</button>
+            </div>
+        </div>
+
+        <div class="px-3 pb-4 pt-3">
+
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="bg-white p-4">
+                <div class="row">
+                    <div class="col-lg-6 pe-lg-5">
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Tên vị trí<span class="required-star">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="TenViTri" class="form-control" />
+                                <span asp-validation-for="TenViTri" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Nhóm công việc</label>
+                            <div class="col-sm-8">
+                                <select asp-for="NhomCongViec" class="form-select">
+                                    <option value="Hành chính">Hành chính</option>
+                                    <option value="Nhân sự">Nhân sự</option>
+                                    <option value="Kế toán">Kế toán</option>
+                                    <option value="Kinh doanh">Kinh doanh</option>
+                                    <option value="Kỹ thuật">Kỹ thuật</option>
+                                    <option value="Công nhân">Công nhân</option>
+                                    <option value="Quản lý">Quản lý</option>
+                                    <option value="Lãnh đạo">Lãnh đạo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,83 @@
+﻿@model SDHRM.Models.DonDiMuonVeSom
+@{
+    ViewData["Title"] = "Đăng ký đi muộn / Về sớm";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom p-4 rounded-top-4">
+                    <h5 class="fw-bold text-dark mb-0">Tạo đơn đăng ký Đi muộn / Về sớm</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="LoaiDangKy" class="form-label fw-medium">Loại đăng ký <span class="text-danger">*</span></label>
+                                <select asp-for="LoaiDangKy" class="form-select shadow-none">
+                                    <option value="Đi muộn">Đi muộn</option>
+                                    <option value="Về sớm">Về sớm</option>
+                                </select>
+                                <span asp-validation-for="LoaiDangKy" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mt-3 mt-md-0">
+                                <label asp-for="NgayApDung" class="form-label fw-medium">Ngày áp dụng <span class="text-danger">*</span></label>
+                                <input asp-for="NgayApDung" type="date" class="form-control shadow-none" />
+                                <span asp-validation-for="NgayApDung" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SoPhut" class="form-label fw-medium">Số phút <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="SoPhut" type="number" class="form-control shadow-none" min="1" max="480" />
+                                <span class="input-group-text bg-light text-muted">Phút</span>
+                            </div>
+                            <div class="form-text">Ví dụ: Kẹt xe đến trễ 30 phút thì nhập 30.</div>
+                            <span asp-validation-for="SoPhut" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="LyDo" class="form-label fw-medium">Lý do chi tiết <span class="text-danger">*</span></label>
+                            <textarea asp-for="LyDo" class="form-control shadow-none" rows="3" placeholder="Nhập lý do của bạn (Bắt buộc)..."></textarea>
+                            <span asp-validation-for="LyDo" class="text-danger small"></span>
+
+                            <div class="mt-2 d-flex gap-2">
+                                <span class="badge rounded-pill bg-light text-dark border p-2 cursor-pointer" onclick="dienLyDo('Kẹt xe/Hỏng xe trên đường đi làm')">Kẹt xe / Hỏng xe</span>
+                                <span class="badge rounded-pill bg-light text-dark border p-2 cursor-pointer" onclick="dienLyDo('Có việc gia đình đột xuất')">Việc gia đình</span>
+                                <span class="badge rounded-pill bg-light text-dark border p-2 cursor-pointer" onclick="dienLyDo('Khám bệnh/Sức khỏe không đảm bảo')">Lý do sức khỏe</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                            <a asp-action="Index" class="btn btn-light px-4 border shadow-none">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm"><i class="bi bi-send me-1"></i> Gửi đăng ký</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Hàm hỗ trợ điền lý do nhanh khi bấm vào các nút gợi ý
+    function dienLyDo(text) {
+        document.getElementById('LyDo').value = text;
+    }
+</script>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .cursor-pointer:hover {
+            background-color: #e9ecef !important;
+        }
+</style>

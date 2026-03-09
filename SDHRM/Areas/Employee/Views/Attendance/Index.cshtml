@@ -1,0 +1,321 @@
+﻿@model IEnumerable<SDHRM.Models.DonXinNghi>
+
+@{
+    ViewData["Title"] = "Đơn xin nghỉ";
+}
+
+@{
+    ViewData["Title"] = "Đơn xin nghỉ";
+
+    string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName)) return "NV";
+        var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0].Substring(0, 1).ToUpper();
+        return (parts[0].Substring(0, 1) + parts[^1].Substring(0, 1)).ToUpper();
+    }
+}
+
+<style>
+    /* ... (Giữ nguyên toàn bộ đoạn <style> từ câu trả lời trước của tôi ở đây) ... */
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .text-purple {
+        color: #5a67d8;
+    }
+
+    .bg-purple-light {
+        background-color: #ebedf9;
+    }
+
+    .btn-purple {
+        background-color: #5a67d8;
+        color: white;
+    }
+
+        .btn-purple:hover {
+            background-color: #434ce6;
+            color: white;
+        }
+
+    .custom-toggle-group {
+        background: #e2e8f0;
+        padding: 4px;
+        border-radius: 8px;
+    }
+
+    .custom-toggle-btn {
+        border: none;
+        background: transparent;
+        color: #64748b;
+        font-weight: 500;
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+        .custom-toggle-btn.active {
+            background: white;
+            color: #5a67d8;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 16px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .stat-title {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1;
+    }
+
+    .stat-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    .sidebar-menu .list-group-item {
+        border: none;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        color: #475569;
+        font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 6px;
+        margin-bottom: 2px;
+        text-decoration: none;
+    }
+
+        .sidebar-menu .list-group-item:hover {
+            background-color: #f8fafc;
+        }
+
+        .sidebar-menu .list-group-item.active {
+            background-color: #ebedf9;
+            color: #5a67d8;
+            font-weight: 600;
+        }
+
+    .custom-table th {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+        background-color: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 12px 16px;
+    }
+
+    .custom-table td {
+        font-size: 0.85rem;
+        color: #334155;
+        vertical-align: middle;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .avatar-circle {
+        width: 24px;
+        height: 24px;
+        background-color: #ec4899;
+        color: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    .row-cols-custom-5 > * {
+        flex: 0 0 auto;
+        width: 20%;
+    }
+</style>
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0 text-dark">Đơn xin nghỉ</h3>
+        
+        <a asp-action="Create" class="btn btn-purple px-3 py-2 fw-medium rounded-3 shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Thêm
+        </a>
+    </div>
+
+    <div class="row row-cols-custom-5 g-3 mb-4">
+        <div class="col"><div class="stat-card"><div class="stat-title">Số ngày phép cả năm</div><div class="d-flex justify-content-between align-items-end mt-2"><div class="stat-value">@ViewBag.TongPhepNam</div><div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-person-badge"></i></div></div></div></div>
+        <div class="col"><div class="stat-card"><div class="stat-title">Số ngày phép đã nghỉ</div><div class="d-flex justify-content-between align-items-end mt-2"><div class="stat-value">@ViewBag.PhepDaDung</div><div class="stat-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-x-square"></i></div></div></div></div>
+        <div class="col"><div class="stat-card"><div class="stat-title">Số ngày phép còn lại cả năm</div><div class="d-flex justify-content-between align-items-end mt-2"><div class="stat-value">@ViewBag.PhepConLai</div><div class="stat-icon bg-info bg-opacity-10 text-info"><i class="bi bi-shield-fill-check"></i></div></div></div></div>
+        <div class="col"><div class="stat-card"><div class="stat-title">Số ngày còn lại đến tháng hiện tại</div><div class="d-flex justify-content-between align-items-end mt-2"><div class="stat-value">@ViewBag.PhepTheoThang</div><div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-shield-check"></i></div></div></div></div>
+        <div class="col"><div class="stat-card"><div class="stat-title">Số ngày nghỉ không lương</div><div class="d-flex justify-content-between align-items-end mt-2"><div class="stat-value text-warning">@ViewBag.NghiKhongLuong</div><div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-exclamation-triangle-fill"></i></div></div></div></div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-3 col-lg-2">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-2 sidebar-menu">
+                    <a href="#" class="list-group-item active">
+                        <span>Tất cả</span><span class="fw-bold">@Model.Count()</span>
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span>Chờ duyệt</span><span>@Model.Count(x => x.TrangThai == "Chờ duyệt")</span>
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span>Đã duyệt</span><span>@Model.Count(x => x.TrangThai == "Đã duyệt")</span>
+                    </a>
+                    <a href="#" class="list-group-item">
+                        <span>Bị từ chối</span><span>@Model.Count(x => x.TrangThai == "Từ chối")</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9 col-lg-10">
+            <div class="card border-0 shadow-sm rounded-3 h-100">
+                <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+                    <div class="input-group input-group-sm" style="max-width: 400px;">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm...">
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="min-height: 540px;">
+                    <table class="table custom-table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Từ ngày</th>
+                                <th>Đến ngày</th>
+                                <th>Nhân viên xin nghỉ</th>
+                                <th class="text-center">Số ngày</th>
+                                <th class="text-center">Loại nghỉ</th>
+                                <th class="text-center">Trạng thái</th>
+                                <th>Lý do nghỉ</th>
+                                <th class="text-center">Người duyệt</th>
+                                <th class="text-center">Ý kiến quản lý</th>
+                                <th class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                @if (!Model.Any())
+                                {
+                                <tr>
+                                    <td colspan="12" class="text-center text-muted py-4">Chưa có dữ liệu xin nghỉ.</td>
+                                </tr>
+                                }
+                                else
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                    <tr>
+                                        <td>@item.TuNgay.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@item.DenNgay.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle">@GetInitials(item.NhanSu?.HoTen)</div>
+                                                <span>@item.NhanSu?.HoTen</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">@item.SoNgayNghi</td>
+                                        <td class="text-center">@(item.LoaiNghiPhep?.TenLoai ?? "N/A")</td>
+                                        <td class="text-center">
+                                                @if (item.TrangThai == "Chờ duyệt")
+                                                {
+                                                <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                                }
+                                                else if (item.TrangThai == "Đã duyệt")
+                                                {
+                                                <span class="badge bg-success">Đã duyệt</span>
+                                                }
+                                                else
+                                                {
+                                                <span class="badge bg-danger">@item.TrangThai</span>
+                                                }
+                                        </td>
+                                        <td class="text-truncate" style="max-width: 150px;" title="@item.LyDo">@item.LyDo</td>
+                                        <td class="text-center">@(item.NguoiDuyet?.HoTen ?? "-")</td>
+                                        <td class="text-center">@(item.GhiChuCuaNguoiDuyet ?? "-")</td>
+                                        <td class="text-center">
+                                                @if (item.TrangThai == "Chờ duyệt" || item.TrangThai == "Từ chối")
+                                                {
+                                                <div class="btn-group">
+                                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary shadow-none" title="Sửa đơn">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+                                                    <button type="button" onclick="xoaDonNghi(@item.Id)" class="btn btn-sm btn-outline-danger shadow-none" title="Xóa đơn">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                                }
+                                                else
+                                                {
+                                                <span class="text-muted small" title="Đơn đã duyệt không thể sửa">
+                                                    <i class="bi bi-lock-fill text-warning"></i> Đã khóa
+                                                </span>
+                                                }
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer bg-white border-top p-3 d-flex justify-content-between align-items-center">
+                    <span class="text-muted small">Tổng số bản ghi: <span class="fw-bold text-dark">@Model.Count()</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function xoaDonNghi(id) {
+        if (confirm("Bạn có chắc chắn muốn xóa đơn xin nghỉ này không?")) {
+            // Gọi API Delete trong Controller
+            fetch(`/Employee/Attendance/Delete/${id}`, {
+                method: 'POST',
+                headers: {
+                    // Yêu cầu token nếu bạn có bật AntiForgery (tuỳ chọn)
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload(); // Tải lại trang để cập nhật bảng
+                } else {
+                    alert("Lỗi: " + data.message);
+                }
+            })
+            .catch(err => console.error(err));
+        }
+    }
+</script>

@@ -1,0 +1,223 @@
+﻿@model IEnumerable<SDHRM.Models.LichSuChamCong>
+@{
+    ViewData["Title"] = "Dữ liệu chấm công";
+    var ngayChamCong = ViewBag.NgayChamCong as DateTime? ?? DateTime.Now.Date;
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .page-header {
+        background-color: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* CẬP NHẬT: Height để wrapper bám sát đáy hơn */
+    .table-wrapper {
+        overflow: x; /* Chỉ cho cuộn ngang */
+        background: white;
+        border: 1px solid #e2e8f0;
+        height: calc(100vh - 120px); /* Tăng chiều cao lên */
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column; /* Đẩy footer xuống đáy */
+    }
+
+    .grid-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: max-content;
+        margin-bottom: 0;
+    }
+
+        .grid-table th {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            font-size: 0.8rem;
+        }
+
+        .grid-table td {
+            padding: 8px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+    .btn-outline-custom {
+        border: 1px solid #d1d5db;
+        color: #374151;
+        background: white;
+        text-decoration: none;
+    }
+
+        .btn-outline-custom:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+    /* CSS cho ảnh chấm công nhỏ */
+    .table-img-thumb {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        object-fit: cover;
+        border: 1px solid #e2e8f0;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+        .table-img-thumb:hover {
+            transform: scale(3);
+            z-index: 10;
+            position: relative;
+        }
+</style>
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+        <h5 class="fw-bold mb-0 text-dark">Dữ liệu chấm công gốc</h5>
+        <span class="text-muted ms-2" style="font-size: 0.8rem;">
+            <i class="bi bi-info-circle text-warning"></i> Dữ liệu quẹt thẻ thực tế theo ngày
+        </span>
+    </div>
+    <button class="btn btn-sm btn-outline-custom shadow-sm px-3 fw-medium">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Nhập khẩu Excel
+    </button>
+</div>
+
+<div class="container-fluid p-3">
+    <div class="table-wrapper shadow-sm">
+
+        <div class="p-2 border-bottom bg-white d-flex justify-content-between align-items-center">
+            <div class="input-group input-group-sm w-25">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="searchInput" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm nhân viên..." onkeyup="searchTable()">
+            </div>
+
+            <div class="d-flex gap-2 align-items-center">
+                <a href="@Url.Action("Timekeeper", new { ngayChamCong = DateTime.Now.ToString("yyyy-MM-dd") })" class="btn btn-sm btn-outline-custom shadow-none">Hôm nay</a>
+
+                <div class="btn-group">
+                    <a href="@Url.Action("Timekeeper", new { ngayChamCong = ngayChamCong.AddDays(-1).ToString("yyyy-MM-dd") })" class="btn btn-sm btn-outline-custom shadow-none" title="Ngày hôm qua">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                    <a href="@Url.Action("Timekeeper", new { ngayChamCong = ngayChamCong.AddDays(1).ToString("yyyy-MM-dd") })" class="btn btn-sm btn-outline-custom shadow-none" title="Ngày mai">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+
+                <form asp-action="Timekeeper" method="get" class="d-flex gap-2 m-0 align-items-center">
+                    <div class="input-group input-group-sm">
+                        <input type="date" name="ngayChamCong" class="form-control shadow-none fw-bold text-primary" value="@ngayChamCong.ToString("yyyy-MM-dd")" onchange="this.form.submit()">
+                    </div>
+                </form>
+
+                <select class="form-select form-select-sm shadow-none w-auto text-muted">
+                    <option>Tất cả phòng ban</option>
+                </select>
+
+                <a href="@Url.Action("Timekeeper", new { ngayChamCong = ngayChamCong.ToString("yyyy-MM-dd") })" class="btn btn-sm btn-outline-custom shadow-none" title="Tải lại trang"><i class="bi bi-arrow-counterclockwise"></i></a>
+            </div>
+        </div>
+
+        <div class="flex-grow-1" style="overflow-y: auto;">
+            <table class="table grid-table table-hover mb-0" id="mainTable">
+                <thead>
+                    <tr>
+                        <th class="text-center">#Ảnh</th>
+                        <th>Mã NV</th>
+                        <th>Họ và tên</th>
+                        <th>Phòng ban</th>
+                        <th>Ngày chấm</th>
+                        <th class="text-primary">Giờ chấm</th>
+                        <th>Hình thức</th>
+                        <th>IP Mạng / Ghi chú</th>
+                        <th>Mã Log</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <div class="text-muted d-flex flex-column align-items-center my-4">
+                                    <i class="bi bi-file-earmark-text text-black-50" style="font-size: 3rem; opacity: 0.3;"></i>
+                                    <span class="mt-2">Không có nhân viên nào quẹt thẻ trong ngày <strong>@ngayChamCong.ToString("dd/MM/yyyy")</strong></span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="data-row">
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(item.AnhChamCong))
+                                    {
+                                        <img src="~/uploads/chamcong/@item.AnhChamCong" alt="Check-in" class="table-img-thumb" onerror="this.src='/images/no-avatar.png'; this.onerror=null;" />
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted" style="font-size: 1.2rem;" title="Không có ảnh"><i class="bi bi-person-bounding-box"></i></span>
+                                    }
+                                </td>
+                                <td class="text-muted">NV000@(item.NhanSuId)</td>
+                                <td>
+                                    <span class="fw-medium text-dark search-name">@item.NhanSu?.HoTen</span>
+                                </td>
+                                <td class="text-dark fw-medium">
+                                    @(item.NhanSu?.PhongBan?.TenPhongBan ?? "Chưa cập nhật")
+                                </td>
+                                <td class="fw-medium">@item.ThoiGianCham.ToString("dd/MM/yyyy")</td>
+                                <td class="fw-bold text-primary fs-6">@item.ThoiGianCham.ToString("HH:mm:ss")</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border fw-normal">@item.LoaiChamCong</span>
+                                </td>
+                                <td class="text-muted" style="font-size: 0.8rem;">@item.IPNguoiDung</td>
+                                <td class="text-muted" style="font-size: 0.7rem;">LOG_@item.Id</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-white border-top p-2 px-3 d-flex justify-content-between align-items-center mt-auto" style="position: sticky; bottom: 0; z-index: 5;">
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted"><strong>@Model.Count()</strong> bản ghi</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-4 text-dark fw-medium">
+                <span>Tổng số bản ghi: <strong class="fs-6 text-primary">@Model.Count()</strong></span>
+                <span>Dữ liệu ngày: <strong class="fs-6 text-success">@ngayChamCong.ToString("dd/MM/yyyy")</strong></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function searchTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".data-row");
+
+        rows.forEach(row => {
+            let name = row.querySelector(".search-name").innerText.toLowerCase();
+            row.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+</script>

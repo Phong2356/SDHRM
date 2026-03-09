@@ -1,0 +1,104 @@
+﻿@model SDHRM.Models.PhucLoi
+@{
+    ViewData["Title"] = "Chi tiết phúc lợi";
+}
+
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-dark"><i class="bi bi-gift text-success me-2"></i>CT Phúc lợi: @Model.TenChuongTrinh</h4>
+        <a href="@Url.Action("Index")" class="btn btn-light border"><i class="bi bi-arrow-left"></i> Quay lại</a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 pe-lg-3">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold border-bottom pb-2 mb-3">Thông tin chung</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex mb-2"><span class="text-muted w-50">Thời gian:</span> <span>@Model.NgayBatDau.ToString("dd/MM/yyyy") - @Model.NgayKetThuc.ToString("dd/MM/yyyy")</span></div>
+                            <div class="d-flex mb-2"><span class="text-muted w-50">Địa điểm:</span> <span>@(Model.DiaDiem ?? "-")</span></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex mb-2"><span class="text-muted w-50">Nhóm phúc lợi:</span> <span>@(Model.NhomPhucLoi ?? "-")</span></div>
+                            <div class="d-flex mb-2"><span class="text-muted w-50">Trạng thái:</span> <span class="badge bg-primary">@Model.TrangThai</span></div>
+                            <div class="d-flex mb-2"><span class="text-muted w-50">Dự kiến tham gia:</span> <span>@(Model.PhucLoiNhanViens?.Count ?? 0) người</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                        <h5 class="fw-bold mb-0">Nhân viên tham gia thực tế</h5>
+                        <span class="badge bg-secondary">@(Model.PhucLoiNhanViens?.Count ?? 0) người</span>
+                    </div>
+                    <table class="table table-bordered table-striped">
+                        <thead class="bg-light"><tr><th>STT</th><th>Họ và tên</th><th>Vị trí</th><th>Ghi chú</th></tr></thead>
+                        <tbody>
+                            @if (Model.PhucLoiNhanViens != null && Model.PhucLoiNhanViens.Any())
+                            {
+                                int stt = 1;
+                                foreach (var nv in Model.PhucLoiNhanViens)
+                                {
+                                    <tr>
+                                        <td class="text-center">@(stt++)</td>
+                                        <td class="fw-medium text-dark">@nv.NhanSu?.HoTen</td>
+                                        <td>@(nv.NhanSu?.ViTriCongViec?.TenViTri ?? "-")</td>
+                                        <td>@(nv.GhiChu ?? "-")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="4" class="text-center text-muted">Chưa có danh sách</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 ps-lg-3">
+            <div class="card border-0 shadow-sm mb-4" style="background-color: #f8fafc;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold border-bottom pb-2 mb-3 text-primary"><i class="bi bi-wallet2"></i> Bảng tính chi phí</h5>
+
+                    <div class="mb-4">
+                        <div class="text-muted mb-1" style="font-size: 0.85rem;">Chi phí 1 người:</div>
+                        <div class="d-flex justify-content-between mb-1"><span>NV đóng:</span> <span class="fw-medium">@(Model.TienNVDongMoiNguoi?.ToString("N0") ?? "0")</span></div>
+                        <div class="d-flex justify-content-between mb-1"><span>Cty hỗ trợ:</span> <span class="fw-medium">@(Model.TienCongTyHoTroMoiNguoi?.ToString("N0") ?? "0")</span></div>
+                        <div class="d-flex justify-content-between fw-bold text-dark pt-1 border-top"><span>Tổng 1 người:</span> <span>@(Model.TongChiPhiMoiNguoi?.ToString("N0") ?? "0")</span></div>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold border-bottom pb-2 mb-3">Danh sách khoản chi thực tế</h6>
+                    <table class="table table-sm">
+                        <tbody>
+                            @if (Model.PhucLoiChiPhis != null && Model.PhucLoiChiPhis.Any())
+                            {
+                                foreach (var cp in Model.PhucLoiChiPhis)
+                                {
+                                    <tr>
+                                        <td>@cp.TenKhoanChi</td>
+                                        <td class="text-end fw-bold text-danger">@(cp.SoTien?.ToString("N0") ?? "0")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td class="text-center text-muted fst-italic py-3">Không phát sinh chi phí lẻ</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

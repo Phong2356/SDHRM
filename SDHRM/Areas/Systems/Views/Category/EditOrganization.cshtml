@@ -1,0 +1,82 @@
+﻿@model SDHRM.Models.PhongBan
+
+@{
+    ViewData["Title"] = "Cập nhật cơ cấu tổ chức";
+}
+
+<style>
+    .form-label-custom {
+        font-weight: 500;
+        color: #333;
+        padding-top: calc(0.375rem + 1px);
+        font-size: 0.9rem;
+    }
+
+    .required-star {
+        color: #dc3545;
+        margin-left: 3px;
+    }
+
+    .page-container {
+        background-color: #f0f2f5;
+        min-height: 100%;
+    }
+</style>
+
+<div class="h-100 d-flex flex-column">
+    <form asp-action="EditOrganization" method="post">
+
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="TrangThai" />
+        <div class="d-flex justify-content-between align-items-center p-3 bg-white border-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <a asp-action="Organization" class="text-dark text-decoration-none fs-5">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="fw-normal">Cập nhật cơ cấu tổ chức</h4>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Organization" class="btn btn-white border">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary px-4">Lưu</button>
+            </div>
+        </div>
+
+        <div class="px-3 pb-4 pt-3">
+            <div class="bg-white p-4">
+                <div class="row">
+                    <div class="col-lg-6 pe-lg-5">
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Tên phòng ban <span class="required-star">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="TenPhongBan" class="form-control" />
+                                <span asp-validation-for="TenPhongBan" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Ký hiệu</label>
+                            <div class="col-sm-8">
+                                <input asp-for="KyHieu" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Mô tả</label>
+                            <div class="col-sm-8">
+                                <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Trưởng đơn vị</label>
+                            <div class="col-sm-8">
+                                <select asp-for="IDTruongPhong" class="form-select" asp-items="ViewBag.NhanSuList">
+                                    <option value="">-- Chọn trưởng phòng --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>                   
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,347 @@
+﻿@model IEnumerable<SDHRM.Models.ViewModels.EmployeeProfileVM>
+@{
+    ViewData["Title"] = "Hồ sơ nhân viên";
+}
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .avatar-img {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* === CSS BỐ CỤC TOP CARDS BẰNG GRID === */
+    .top-stats-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 2.5fr 1fr 1fr 1fr 1fr; /* Chia tỷ lệ thẻ giống hệt thiết kế */
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 6px;
+        padding: 15px;
+        position: relative;
+        overflow: hidden;
+        height: 110px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+        .stat-card.colored {
+            color: white;
+        }
+
+        .stat-card .card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0;
+            z-index: 2;
+        }
+
+        .stat-card .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+            z-index: 2;
+            text-align: center;
+            margin-top: auto;
+        }
+
+    /* Màu nền cho từng thẻ */
+    .bg-white-card {
+        background: white;
+        color: #1e293b;
+        border: 1px solid #e2e8f0;
+    }
+
+    .bg-green-card {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .bg-cyan-card {
+        background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+    }
+
+    .bg-indigo-card {
+        background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+    }
+
+    .bg-yellow-card {
+        background: linear-gradient(135deg, #fcd34d 0%, #eab308 100%);
+    }
+
+    /* Vòng cung mờ trang trí thẻ Đang làm việc */
+    .circle-bg {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border: 15px solid #f1f5f9;
+        border-radius: 50%;
+        left: -30px;
+        bottom: -30px;
+        z-index: 1;
+    }
+
+    /* === CSS TOOLBAR & BẢNG === */
+    .main-container {
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 240px);
+    }
+
+    .toolbar-section {
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .btn-custom {
+        border: 1px solid #d1d5db;
+        background: white;
+        color: #374151;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+        .btn-custom:hover {
+            background: #f3f4f6;
+        }
+
+    .btn-primary-custom {
+        background: #2563eb;
+        color: white;
+        border: none;
+        font-size: 0.8rem;
+        padding: 5px 12px;
+    }
+
+    .grid-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .grid-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .grid-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            white-space: nowrap;
+            color: #1e293b;
+        }
+
+    /* Hình tròn Avatar hiển thị 2 chữ cái đầu */
+    .avatar-circle {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.65rem;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+</style>
+
+<div class="container-fluid py-3">
+    <div class="top-stats-grid">
+        <div class="stat-card bg-white-card">
+            <div class="circle-bg"></div>
+            <h6 class="card-title">Đang làm việc</h6>
+            <div class="card-value text-primary">@ViewBag.DangLamViec</div>
+        </div>
+
+        <div class="stat-card bg-white-card" style="flex-direction: row; justify-content: space-between; align-items: center;">
+            <div class="d-flex flex-column h-100" style="width: 50%;">
+                <h6 class="card-title d-flex align-items-center gap-1">Phân loại theo: Giới tính <i class="bi bi-chevron-down text-muted"></i></h6>
+                <div style="height: 70px; width: 70px; margin: auto;">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+            <div class="d-flex flex-column justify-content-center" style="width: 45%; font-size: 0.75rem;">
+                <div class="mb-1"><span class="text-success fw-bold">@ViewBag.SoNam</span> Nam</div>
+                <div class="mb-1"><span class="text-danger fw-bold">@ViewBag.SoNu</span> Nữ</div>
+            </div>
+        </div>
+
+        <div class="stat-card colored bg-green-card">
+            <h6 class="card-title">Thử việc</h6>
+            <div class="card-value">@ViewBag.ThuViec</div>
+        </div>
+        <div class="stat-card colored bg-cyan-card">
+            <h6 class="card-title">Chính thức</h6>
+            <div class="card-value">@ViewBag.ChinhThuc</div>
+        </div>
+        <div class="stat-card colored bg-indigo-card">
+            <h6 class="card-title">Nghỉ thai sản</h6>
+            <div class="card-value">@ViewBag.NghiThaiSan</div>
+        </div>
+        <div class="stat-card colored bg-yellow-card">
+            <h6 class="card-title">Khác</h6>
+            <div class="card-value">@ViewBag.Khac</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="toolbar-section d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.1rem;">Tất cả nhân viên </h5>
+            
+        </div>
+
+        <div class="toolbar-section d-flex justify-content-between py-2 bg-light">
+            <div class="input-group input-group-sm" style="width: 250px;">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="searchInput" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm" onkeyup="searchTable()">
+            </div>
+            <div class="d-flex gap-2">
+                <select class="form-select form-select-sm shadow-none" style="width: 150px; font-size: 0.8rem;">
+                    <option>Tất cả đơn vị</option>
+                </select>
+                <button class="btn btn-sm btn-custom" title="Lọc dữ liệu"><i class="bi bi-funnel"></i></button>
+                <button class="btn btn-sm btn-custom" title="Xuất dữ liệu"><i class="bi bi-box-arrow-right"></i></button>
+                <button class="btn btn-sm btn-custom" title="Cài đặt cột"><i class="bi bi-gear"></i></button>
+            </div>
+        </div>
+
+        <div class="flex-grow-1" style="overflow-x: auto;">
+            <table class="grid-table table-hover mb-0" id="mainTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40px; text-align: center;"><input type="checkbox" class="form-check-input"></th>
+                        <th>Mã nhân viên</th>
+                        <th>Họ và tên</th>
+                        <th>Giới tính</th>
+                        <th>Ngày sinh</th>
+                        <th>ĐT di động</th>
+                        <th>Email cơ quan</th>
+                        <th>Vị trí công việc</th>
+                        <th>Đơn vị công tác</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="9" class="text-center py-4 text-muted">Chưa có dữ liệu nhân viên</td></tr>
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr class="data-row">
+                            <td class="text-center"><input type="checkbox" class="form-check-input"></td>
+                            <td class="text-muted">@item.MaNV</td>
+                            <td class="fw-medium text-dark d-flex align-items-center search-name">
+                                @if (!string.IsNullOrEmpty(item.AnhDaiDien))
+                                {
+                                    <img src="@item.AnhDaiDien" alt="Avatar" class="avatar-img"
+                                         onerror="replaceBrokenAvatar(this, '@item.AvatarColor', '@item.Initials')" />
+                                }
+                                else
+                                {
+                                    <span class="avatar-circle" style="background-color: @item.AvatarColor;">@item.Initials</span>
+                                }
+
+                                @item.HoTen
+                            </td>
+                            <td>@item.GioiTinh</td>
+                            <td>@item.NgaySinh</td>
+                            <td>@item.DienThoai</td>
+                            <td><a href="mailto:@item.Email" class="text-decoration-none text-primary">@item.Email</a></td>
+                            <td>@item.ViTri</td>
+                            <td>@item.PhongBan</td>
+                            <td>
+                                <a href="@Url.Action("Details", "Profile", new { id = item.Id })" class="btn btn-sm">
+                                    <button class="btn btn-sm btn-light border shadow-none py-0 text-muted" title="Ghi chú:">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-2 px-3 d-flex justify-content-between align-items-center mt-auto" style="border-top: 1px solid #e2e8f0;">
+            <span class="text-muted">Tổng số bản ghi: <strong class="text-dark">@Model.Count()</strong></span>
+            <div class="d-flex align-items-center gap-3">
+                <select class="form-select form-select-sm shadow-none w-auto py-1"><option>25</option></select>
+                <span class="text-muted">Từ <strong>1</strong> đến <strong>@Model.Count()</strong></span>
+                <div>
+                    <button class="btn btn-sm text-muted border-0 bg-transparent"><i class="bi bi-chevron-left"></i></button>
+                    <button class="btn btn-sm text-muted border-0 bg-transparent"><i class="bi bi-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function replaceBrokenAvatar(imgElement, color, initials) {
+        imgElement.outerHTML = `<span class="avatar-circle" style="background-color: ${color};">${initials}</span>`;
+    }
+    // 1. TÍNH NĂNG TÌM KIẾM NHANH NHÂN VIÊN
+    function searchTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".data-row");
+        rows.forEach(row => {
+            let name = row.querySelector(".search-name").innerText.toLowerCase();
+            row.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+
+    // 2. VẼ BIỂU ĐỒ TRÒN CHO THẺ "PHÂN LOẠI GIỚI TÍNH" TỪ DỮ LIỆU THỰC
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById('genderChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Nam', 'Nữ', 'Không xác định'],
+                datasets: [{
+                    // Lấy số liệu thật được tính toán từ Controller
+                    data: [@ViewBag.SoNam, @ViewBag.SoNu, @ViewBag.SoKhongXacDinh],
+                    backgroundColor: ['#10b981', '#ef4444', '#3b82f6'], // Xanh lá, Đỏ, Xanh dương
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%', // Tạo độ rỗng ở giữa vành khuyên
+                plugins: {
+                    legend: { display: false }, // Ẩn ghi chú vì đã thiết kế bằng HTML
+                    tooltip: { enabled: false }
+                }
+            }
+        });
+    });
+</script>

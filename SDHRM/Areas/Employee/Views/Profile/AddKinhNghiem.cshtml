@@ -1,0 +1,97 @@
+﻿@model SDHRM.Models.KinhNghiemLamViec
+@{
+    ViewData["Title"] = "Thêm Kinh nghiệm làm việc";
+}
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-group-row label {
+            width: 35%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 65%;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        outline: none;
+        box-shadow: none;
+    }
+
+        .form-control-custom:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+</style>
+
+<form asp-action="AddKinhNghiem" method="post" class="d-flex flex-column" style="height: calc(100vh - 80px);">
+    <input type="hidden" asp-for="NhanSuId" />
+    <div class="top-action-bar d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold text-dark mb-0" style="font-size: 1.25rem;"><i class="bi bi-briefcase me-2"></i>Thêm Kinh nghiệm làm việc</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4 shadow-none">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-primary px-4 shadow-none">Lưu thông tin</button>
+        </div>
+    </div>
+    <div class="container-fluid pt-4 flex-grow-1" style="overflow-y: auto; padding-bottom: 50px;">
+        <div class="form-container">
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row"><label>Nơi làm việc (Công ty) <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="NoiLamViec" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Thời gian bắt đầu <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="ThoiGianBatDau" type="date" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Chức vụ</label><div class="input-wrapper"><input asp-for="ChucVu" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Người đối chiếu</label><div class="input-wrapper"><input asp-for="NguoiDoiChieu" class="form-control-custom" placeholder="SĐT hoặc Email người quản lý cũ" /></div></div>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row"><label>Vị trí công việc</label><div class="input-wrapper"><input asp-for="ViTriCongViec" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Thời gian kết thúc</label><div class="input-wrapper"><input asp-for="ThoiGianKetThuc" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Mức lương (tùy chọn)</label><div class="input-wrapper"><input asp-for="MucLuong" class="form-control-custom" placeholder="VD: 15.000.000 VNĐ" /></div></div>
+                    <div class="form-group-row"><label>Lý do nghỉ việc</label><div class="input-wrapper"><input asp-for="TrangThai" class="form-control-custom" /></div></div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12"><div class="form-group-row align-items-start"><label style="width: 17%; padding-top: 8px;">Mô tả công việc</label><div class="input-wrapper" style="width: 83%;"><textarea asp-for="MoTaCongViec" class="form-control-custom" rows="4" placeholder="Mô tả tóm tắt các công việc đã làm..."></textarea></div></div></div>
+            </div>
+        </div>
+    </div>
+</form>

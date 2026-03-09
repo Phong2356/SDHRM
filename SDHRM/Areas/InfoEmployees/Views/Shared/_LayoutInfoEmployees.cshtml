@@ -1,0 +1,180 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SDHRM</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style_sidebar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SDHRM.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .InfoEmployees .nav-link:hover,
+        .InfoEmployees .nav-link.active {
+            background-color: #384660;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+            <div class="container-fluid d-flex align-items-center justify-content-start">
+                <!-- ICON GRID -->
+                <a  asp-area="" asp-controller="Home" asp-action="Index" class="icon-menu">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                </a>
+                <!-- ICON SYSTEM (SVG) -->
+                <div class="me-2 d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 48 48" fill="none">
+
+                        <path d="M0 24C0 4.8 4.8 0 24 0C43.2 0 48 4.8 48 24C48 43.2 43.2 48 24 48C4.8 48 0 43.2 0 24Z" fill="url(#paint0_linear_177_40)" />
+
+                        <g filter="url(#filter0_d_177_40)">
+                            <path d="M17.4 37.8C13.4236 37.8 10.2 34.5764 10.2 30.6L10.2 17.4C10.2 13.4235 13.4236 10.2 17.4 10.2L20.496 10.2C21.1881 10.2 21.8464 10.4987 22.3021 11.0195L23.3979 12.2716C23.8536 12.7924 24.512 13.0911 25.204 13.0911L33 13.0911C35.651 13.0911 37.8 15.2401 37.8 17.8911L37.8 30.6C37.8 34.5764 34.5765 37.8 30.6 37.8L17.4 37.8Z" fill="white" />
+                        </g>
+
+                        <g clip-path="url(#clip0_177_40)">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M27.8501 24.1769C29.217 24.1769 30.3251 23.0404 30.3251 21.6385C30.3251 20.2365 29.217 19.1 27.8501 19.1C26.4832 19.1 25.3751 20.2365 25.3751 21.6385C25.3751 23.0404 26.4832 24.1769 27.8501 24.1769ZM31.6635 30.1H24.0328C23.6958 30.1 23.3903 29.9619 23.1672 29.7379C22.9069 29.4765 22.8928 29.0653 23.0016 28.7088C23.5783 26.8181 25.2994 25.4462 27.3329 25.4462H28.3635C30.397 25.4462 32.118 26.8181 32.6947 28.7087C32.8035 29.0651 32.7894 29.4763 32.5293 29.7376C32.3061 29.9618 32.0005 30.1 31.6635 30.1Z" fill="#86BEFF" />
+                        </g>
+
+                        <g clip-path="url(#clip1_177_40)">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M21.25 24.0923C22.9207 24.0923 24.275 22.7285 24.275 21.0462C24.275 19.3638 22.9207 18 21.25 18C19.5793 18 18.225 19.3638 18.225 21.0462C18.225 22.7285 19.5793 24.0923 21.25 24.0923ZM25.9108 31.2H16.5844C16.1726 31.2 15.7992 31.0342 15.5264 30.7654C15.2083 30.4518 15.1911 29.9583 15.324 29.5305C16.0289 27.2617 18.1324 25.6154 20.6178 25.6154H21.8775C24.3628 25.6154 26.4664 27.2617 27.1712 29.5305C27.3041 29.9581 27.2869 30.4516 26.969 30.7651C26.6963 31.0341 26.3227 31.2 25.9108 31.2Z" fill="url(#paint1_linear_177_40)" />
+                        </g>
+
+                        <defs>
+                            <filter id="filter0_d_177_40" x="6.2" y="8.2" width="35.6" height="35.6" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                                <feOffset dy="2" />
+                                <feGaussianBlur stdDeviation="2" />
+                                <feComposite in2="hardAlpha" operator="out" />
+                                <feColorMatrix type="matrix" values="0 0 0 0 0.182083 0 0 0 0 0.243258 0 0 0 0 0.316667 0 0 0 0.16 0" />
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_177_40" />
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_177_40" result="shape" />
+                            </filter>
+
+                            <linearGradient id="paint0_linear_177_40" x1="24" y1="0" x2="24" y2="48" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#3990FF" />
+                                <stop offset="1" stop-color="#2662FF" />
+                            </linearGradient>
+
+                            <linearGradient id="paint1_linear_177_40" x1="27.2495" y1="24.6" x2="11.9801" y2="24.6" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#3990FF" />
+                                <stop offset="1" stop-color="#3990FF" />
+                            </linearGradient>
+
+                            <clipPath id="clip0_177_40">
+                                <rect width="9.9" height="11" fill="white" transform="translate(22.9 19.1)" />
+                            </clipPath>
+                            <clipPath id="clip1_177_40">
+                                <rect width="12.1" height="13.2" fill="white" transform="translate(15.2 18)" />
+                            </clipPath>
+                        </defs>
+                    </svg>
+                </div>
+                <!-- TITLE -->
+                <span class="title-name">
+                    Thông tin nhân sự
+                </span>
+            </div>
+            <partial name="_LoginPartial" />
+        </nav>
+    </header>
+    <div class="app-container d-flex">
+        <aside class="sidebar-main-timesheet InfoEmployees d-flex flex-column flex-shrink-0" style="background-color: #22304C" >
+            <ul class="nav nav-pills flex-column mb-auto pt-2">
+                <li class="nav-item">
+                    <a asp-area="InfoEmployees" asp-controller="Dashboard" asp-action="Index" class="nav-link">
+                        <i class="bi bi-house-door"></i>
+                        <span class="link-text">Tổng quan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="InfoEmployees" asp-controller="Profile" asp-action="Index" class="nav-link">
+                        <i class="bi bi-person-fill"></i>
+                        <span class="link-text">Hồ sơ</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="InfoEmployees" asp-controller="Contract" asp-action="Index" class="nav-link">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span class="link-text">Hợp đồng</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="InfoEmployees" asp-controller="Reward" asp-action="Index" class="nav-link">
+                        <i class="bi bi-award-fill"></i>
+                        <span class="link-text">Khen thưởng</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="InfoEmployees" asp-controller="Discipline" asp-action="Index" class="nav-link">
+                        <i class="bi bi-shield-exclamation"></i>
+                        <span class="link-text">Kỷ luật</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="InfoEmployees" asp-controller="Benefit" asp-action="Index" class="nav-link">
+                        <i class="bi bi-gift"></i>
+                        <span class="link-text">Phúc lợi</span>
+                    </a>
+                </li>                
+                <li class="nav-item">
+                    <a asp-area="InfoEmployees" asp-controller="Setting" asp-action="Index" class="nav-link">
+                        <i class="bi bi-clipboard-data"></i>
+                        <span class="link-text">Báo cáo</span>
+                    </a>
+                </li>               
+            </ul>
+
+            <div class="sidebar-footer mt-auto">
+                <button class="btn-toggle-sidebar" id="toggleSidebar">
+                    <i class="bi bi-chevron-left toggle-icon"></i>
+                    <span class="toggle-label">Thu gọn</span>
+                </button>
+            </div>
+        </aside>
+
+        <aside class="sidebar-sub" id="sub-sidebar" style="display: none;">
+            <div class="sub-sidebar-content">
+
+                <nav class="nav flex-column sub-menu-group" id="submenu-chamcong" style="display: none;">
+                    <div class="px-3 py-2 text-muted fw-bold small text-uppercase">Chấm công</div>
+                    <a asp-area="Timesheet" asp-controller="Timekeeping" asp-action="TimesheetDetail" class="nav-link">Bảng chấm công chi tiết</a>
+                    <a asp-area="Timesheet" asp-controller="Timekeeping" asp-action="Timekeeper" class="nav-link">Dữ liệu chấm công</a>
+                </nav>
+
+                <nav class="nav flex-column sub-menu-group" id="submenu-quanlydon" style="display: none;">
+                    <div class="px-3 py-2 text-muted fw-bold small text-uppercase">Quản lý Đơn từ</div>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="Attendance" class="nav-link">Đơn xin nghỉ</a>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="LateInEarlyOut" class="nav-link">Đăng ký đi muộn, về sớm</a>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="Overtime" class="nav-link">Đăng ký tăng ca</a>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="UpdateWorking" class="nav-link">Đề nghị cập nhật công</a>
+                    <a asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="LeaveSummary" class="nav-link">Bảng tổng hợp ngày nghỉ</a>
+                </nav>               
+            </div>
+        </aside>
+
+        <div class="main-content p-3">
+            <div class="card border-0 shadow-sm h-100">
+                <main role="main" class="h-100 d-flex flex-column">
+                        @RenderBody()
+                </main>
+            </div>
+        </div>
+    </div>
+     
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/js_sidebar.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

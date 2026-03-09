@@ -1,0 +1,288 @@
+﻿@model SDHRM.Models.CongTy
+
+<style>
+    h3 {
+        color: #333;
+        font-weight: 400;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+        font-size: 0.95rem;
+    }
+
+    .fw-bold {
+        color: #2f2f2f;
+    }
+
+    .fw-medium {
+        font-weight: 500;
+        color: #2f2f2f;
+    }
+
+    .logo-placeholder {
+        width: 100px;
+        height: 100px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #495057;
+        padding: 10px;
+        line-height: 1.2;
+    }
+
+    .logo-upload-box {
+        width: 80px;
+        height: 80px;
+        border: 1px dashed #ced4da;
+        border-radius: 4px;
+        position: relative;
+        background-color: #f8f9fa;
+        transition: 0.2s;
+    }
+
+        .logo-upload-box:hover {
+            background-color: #e9ecef;
+            border-color: #0d6efd;
+        }
+
+    .logo-img {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        border: 1px solid #dee2e6;
+    }
+</style>
+
+<div class="h-100 w-100 overflow-auto bg-white p-4">
+
+    <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-4">
+        <h3 class="fs-4 fw-normal mb-2">Thông tin công ty</h3>
+        <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#editModal">
+            Chỉnh sửa
+        </button>
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="row py-3 border-bottom">
+            <div class="col-md-2"><h6 class="text-uppercase fw-bold text-dark small">Công ty</h6></div>
+            <div class="col-md-10">
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Tên đầy đủ</div>
+                    <div class="col-md-9 text-uppercase fw-bold">@(Model.TenDayDu ?? "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Tên giao dịch/viết tắt</div>
+                    <div class="col-md-9 text-uppercase">@(Model.TenVietTat ?? "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Mã số thuế</div>
+                    <div class="col-md-9 fw-medium">@(Model.MaSoThue ?? "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Ngày thành lập</div>
+                    <div class="col-md-9 fw-medium">@(Model.NgayThanhLap.HasValue ? Model.NgayThanhLap.Value.ToString("dd/MM/yyyy") : "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Logo công ty</div>
+                    <div class="col-md-9">
+                        @if (!string.IsNullOrEmpty(Model.Logo))
+                        {
+                            <img src="@Model.Logo" alt="Logo" class="logo-img" />
+                        }
+                        else
+                        {
+                            <div class="logo-placeholder"><span>Chưa có ảnh</span></div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row py-4 border-bottom">
+            <div class="col-md-2"><h6 class="text-uppercase fw-bold text-dark small">Đăng ký kinh doanh</h6></div>
+            <div class="col-md-10">
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Mã số ĐKKD</div>
+                    <div class="col-md-9 fw-medium">@(Model.SoGiayPhepDKKD ?? "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Ngày cấp</div>
+                    <div class="col-md-9 fw-medium">@(Model.NgayCap.HasValue ? Model.NgayCap.Value.ToString("dd/MM/yyyy") : "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Nơi cấp</div>
+                    <div class="col-md-9 fw-medium">@(Model.NoiCap ?? "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Người đại diện pháp luật</div>
+                    <div class="col-md-9 fw-medium">@(Model.DaiDienPhapLuat ?? "--")</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row py-4 pb-5">
+            <div class="col-md-2"><h6 class="text-uppercase fw-bold text-dark small">Liên hệ</h6></div>
+            <div class="col-md-10">
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Địa chỉ</div>
+                    <div class="col-md-9 fw-medium">@(Model.DiaChi ?? "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Điện thoại</div>
+                    <div class="col-md-9 fw-medium">@(Model.SoDienThoai ?? "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Fax</div>
+                    <div class="col-md-9 text-muted">@(Model.SoFax ?? "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Email</div>
+                    <div class="col-md-9 fw-medium">@(Model.Email ?? "--")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-muted">Website</div>
+                    <div class="col-md-9 fw-medium">@(Model.Website ?? "--")</div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Chưa có dữ liệu thông tin công ty. Vui lòng thêm mới trong cơ sở dữ liệu.
+        </div>
+    }
+</div>
+
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 800px;">
+        <div class="modal-content">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="Id" /> <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="editModalLabel">Chỉnh sửa thông tin công ty</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-3"><h6 class="text-uppercase fw-bold small mt-2">Công ty</h6></div>
+                        <div class="col-md-9">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Tên đầy đủ <span class="text-danger">*</span></label>
+                                <input asp-for="TenDayDu" class="form-control" required />
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold">Tên giao dịch/viết tắt</label>
+                                    <input asp-for="TenVietTat" class="form-control" />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold">Mã số thuế <span class="text-danger">*</span></label>
+                                    <input asp-for="MaSoThue" class="form-control" required />
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label small fw-bold">Ngày thành lập</label>
+                                    <input asp-for="NgayThanhLap" type="date" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label small fw-bold">Logo công ty</label>
+                                    <div class="logo-upload-box">
+                                        <input type="file" name="LogoFile" id="logoInput" accept="image/*" class="d-none" onchange="previewImage(event)" />
+                                        <label for="logoInput" class="d-flex flex-column align-items-center justify-content-center h-100 w-100" style="cursor: pointer;">
+                                            <i class="bi bi-plus-lg fs-3 text-primary"></i>
+                                            <span class="text-primary small">LOGO</span>
+                                            <img id="logoPreview" src="@Model?.Logo" class="@(string.IsNullOrEmpty(Model?.Logo) ? "d-none" : "")" style="position: absolute; width: 100%; height: 100%; object-fit: contain; background: white;" />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4 pt-2">
+                        <div class="col-md-3"><h6 class="text-uppercase fw-bold small mt-2">Đăng ký kinh doanh</h6></div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Mã số ĐKKD</label>
+                                    <input asp-for="SoGiayPhepDKKD" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Ngày cấp</label>
+                                    <input asp-for="NgayCap" type="date" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Nơi cấp</label>
+                                    <input asp-for="NoiCap" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Người đại diện pháp luật</label>
+                                    <input asp-for="DaiDienPhapLuat" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pt-2">
+                        <div class="col-md-3"><h6 class="text-uppercase fw-bold small mt-2">Liên hệ</h6></div>
+                        <div class="col-md-9">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Địa chỉ <span class="text-danger">*</span></label>
+                                <input asp-for="DiaChi" class="form-control" />
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Điện thoại <span class="text-danger">*</span></label>
+                                    <input asp-for="SoDienThoai" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Fax</label>
+                                    <input asp-for="SoFax" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Email</label>
+                                    <input asp-for="Email" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small fw-bold">Website</label>
+                                    <input asp-for="Website" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-white border" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary px-4">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+            var output = document.getElementById('logoPreview');
+            output.src = reader.result;
+            output.classList.remove('d-none');
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>

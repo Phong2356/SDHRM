@@ -1,0 +1,358 @@
+﻿@model SDHRM.Models.KhenThuong
+@{
+    ViewData["Title"] = "Cập nhật đợt khen thưởng";
+}
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 25px;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-group-row label {
+            width: 35%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 65%;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        outline: none;
+        box-shadow: none;
+    }
+
+    .form-control-readonly {
+        background-color: #f1f5f9;
+        cursor: not-allowed;
+    }
+
+    .text-danger {
+        color: #ef4444 !important;
+    }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .detail-table th {
+        background-color: #f8fafc;
+        font-weight: 600;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 10px;
+        white-space: nowrap;
+    }
+
+    .detail-table td {
+        padding: 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        white-space: nowrap;
+        color: #1e293b;
+    }
+
+    .avatar-circle {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: bold;
+        margin-right: 8px;
+        background-color: #ec4899;
+    }
+</style>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data" id="frmKhenThuong" class="d-flex flex-column" style="height: calc(100vh - 80px);">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="TepDinhKem" />
+    <input type="hidden" asp-for="NgayTao" />
+
+    <div class="top-action-bar d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold text-dark" style="font-size: 1.25rem;">Cập nhật khen thưởng: @Model.TenDotKhenThuong</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4 shadow-none">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-primary px-4 shadow-none">Lưu thay đổi</button>
+        </div>
+    </div>
+
+    <div class="container-fluid pt-3 flex-grow-1" style="overflow-y: auto;">
+        <div class="form-container">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row"><label>Tên đợt khen thưởng <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="TenDotKhenThuong" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Ngày khen thưởng</label><div class="input-wrapper"><input asp-for="NgayKhenThuong" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Số quyết định <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="SoQuyetDinh" class="form-control-custom" /></div></div>
+                    <div class="form-group-row">
+                        <label>Người quyết định</label>
+                        <div class="input-wrapper"><select asp-for="NguoiQuyetDinhId" asp-items="ViewBag.NhanSuList" class="form-control-custom form-select shadow-none"><option value="">Chọn sếp</option></select></div>
+                    </div>
+                    <div class="form-group-row">
+                        <label>Hình thức khen thưởng</label>
+                        <div class="input-wrapper"><select asp-for="HinhThucKhenThuong" class="form-control-custom form-select shadow-none"><option value="Bằng khen">Bằng khen</option><option value="Tiền mặt">Tiền mặt</option></select></div>
+                    </div>
+                    <div class="form-group-row"><label>Đối tượng khen thưởng <span class="text-danger">*</span></label><div class="input-wrapper"><select asp-for="DoiTuongKhenThuong" class="form-control-custom form-select shadow-none"><option value="Cá nhân">Cá nhân</option><option value="Tập thể">Tập thể</option></select></div></div>
+                    <div class="form-group-row"><label>Cấp khen thưởng</label><div class="input-wrapper"><select asp-for="CapKhenThuong" class="form-control-custom form-select shadow-none"><option value="Cấp Công ty">Cấp Công ty</option></select></div></div>
+                    <div class="form-group-row align-items-start mt-3"><label class="pt-2">Lý do</label><div class="input-wrapper"><textarea asp-for="LyDo" class="form-control-custom" rows="3"></textarea></div></div>
+                </div>
+
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row">
+                        <label>Đơn vị áp dụng <span class="text-danger">*</span></label>
+                        <div class="input-wrapper"><select asp-for="PhongBanId" asp-items="ViewBag.PhongBanList" class="form-control-custom form-select shadow-none"><option value="">Chọn đơn vị</option></select></div>
+                    </div>
+                    <div class="form-group-row"><label>Loại khen thưởng <span class="text-danger">*</span></label><div class="input-wrapper"><select asp-for="LoaiKhenThuong" class="form-control-custom form-select shadow-none"><option value="Bằng văn bản">Bằng văn bản</option></select></div></div>
+                    <div class="form-group-row"><label>Ngày quyết định <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="NgayQuyetDinh" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Chức danh người QĐ</label><div class="input-wrapper"><input asp-for="ChucDanhNguoiQuyetDinh" class="form-control-custom form-control-readonly" readonly /></div></div>
+                    <div class="form-group-row"><label>Tổng giá trị</label><div class="input-wrapper"><input asp-for="TongGiaTri" type="number" class="form-control-custom form-control-readonly" id="TongGiaTri" readonly /></div></div>
+                    <div class="form-group-row"><label>Chi tiết đối tượng</label><div class="input-wrapper"><select asp-for="ChiTietDoiTuong" class="form-control-custom form-select shadow-none"><option value="Nhân viên">Nhân viên</option></select></div></div>
+                    <div class="form-group-row align-items-start mt-3"><label class="pt-2">Căn cứ</label><div class="input-wrapper"><textarea asp-for="CanCu" class="form-control-custom" rows="2"></textarea></div></div>
+                    <div class="form-group-row mt-2"><label>Trạng thái <span class="text-danger">*</span></label><div class="input-wrapper"><select asp-for="TrangThai" class="form-control-custom form-select shadow-none"><option value="Chưa thực hiện">Chưa thực hiện</option><option value="Đã thực hiện">Đã thực hiện</option></select></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container px-0 pb-0 overflow-hidden">
+            <div class="d-flex justify-content-between align-items-center px-4 mb-3">
+                <h5 class="section-title mb-0 border-0">Danh sách khen thưởng</h5>
+                <button type="button" class="btn btn-sm btn-light border text-primary shadow-none" data-bs-toggle="modal" data-bs-target="#modalThemDoiTuong"><i class="bi bi-plus"></i> Thêm</button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="table detail-table mb-0" id="tblDanhSachKhenThuong">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 40px;"><input type="checkbox" class="form-check-input shadow-none"></th>
+                            <th>Mã nhân viên</th>
+                            <th>Họ và tên</th>
+                            <th>Đơn vị công tác</th>
+                            <th>Vị trí công việc</th>
+                            <th>Giá trị khen thưởng</th>
+                            <th>Lý do</th>
+                            <th>Tệp đính kèm</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center"><i class="bi bi-gear"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ChiTietKhenThuongs != null && Model.ChiTietKhenThuongs.Any())
+                        {
+                            int i = 0;
+                            foreach (var ct in Model.ChiTietKhenThuongs)
+                            {
+                                <tr>
+                                    <td class="text-center"><input type="checkbox" class="form-check-input shadow-none"></td>
+                                    <td class="text-muted">@(ct.NhanSuId)</td>
+                                    <td class="fw-medium text-dark">
+                                        <span class="avatar-circle" style="background-color:#ec4899;">@(ct.NhanSu?.HoTen?.Substring(0, 1) ?? "N")</span> @ct.NhanSu?.HoTen
+                                    </td>
+                                    <td>@(ct.NhanSu?.PhongBan?.TenPhongBan ?? "-")</td>
+                                    <td>@(ct.NhanSu?.ViTriCongViec?.TenViTri ?? "-")</td>
+                                    <td>@(ct.GiaTriKhenThuong?.ToString("N0") ?? "")</td>
+                                    <td>@(ct.LyDo ?? "-")</td>
+                                    <td>-</td>
+                                    <td>@ct.TrangThai</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm text-danger border-0 shadow-none p-0" onclick="this.closest('tr').remove(); capNhatTongTien();"><i class="bi bi-trash"></i></button>
+
+                                        <input type="hidden" name="ChiTietKhenThuongs[@i].NhanSuId" value="@ct.NhanSuId" />
+                                        <input type="hidden" name="ChiTietKhenThuongs[@i].GiaTriKhenThuong" class="gia-tri-item" value="@ct.GiaTriKhenThuong" />
+                                        <input type="hidden" name="ChiTietKhenThuongs[@i].LyDo" value="@ct.LyDo" />
+                                        <input type="hidden" name="ChiTietKhenThuongs[@i].TrangThai" value="@ct.TrangThai" />
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr id="emptyTextRow"><td colspan="10" class="text-center text-muted fst-italic py-4" id="emptyText">Chưa có dữ liệu</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <h5 class="section-title mb-3">Tài liệu đính kèm mới</h5>
+            <input type="file" name="fileDinhKem" class="form-control-custom w-50" />
+            @if (!string.IsNullOrEmpty(Model.TepDinhKem))
+            {
+                <div class="mt-2"><small class="text-muted">Đang đính kèm: <a href="~/uploads/rewards/@Model.TepDinhKem" target="_blank">Xem file hiện tại</a></small></div>
+            }
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" id="modalThemDoiTuong" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light"><h5 class="modal-title fw-bold text-dark">Thêm đối tượng khen thưởng</h5></div>
+            <div class="modal-body p-4 bg-light">
+                <div class="row">
+                    <div class="col-md-6 pe-md-4">
+                        <div class="form-group-row">
+                            <label>Họ và tên *</label><div class="input-wrapper">
+                                <select id="modalNhanSuId" class="form-control-custom form-select shadow-none">
+                                    <option value="">Chọn nhân viên</option>@foreach (var ns in ViewBag.NhanSuList)
+                                    {
+                                        <option value="@ns.Value">@ns.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group-row"><label>Đơn vị</label><div class="input-wrapper"><input type="text" id="modalDonVi" class="form-control-custom form-control-readonly" readonly /></div></div>
+                        <div class="form-group-row"><label>Giá trị</label><div class="input-wrapper"><input type="number" id="modalGiaTri" class="form-control-custom" /></div></div>
+                        <div class="form-group-row"><label>Trạng thái *</label>
+                            <div class="input-wrapper">
+                                <select id="modalTrangThai" class="form-control-custom form-select shadow-none">
+                                    <option value="Chưa thực hiện">Chưa thực hiện</option>
+                                    <option value="Đã thực hiện">Đã thực hiện</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 ps-md-4">
+                        <div class="form-group-row"><label>Mã nhân viên</label><div class="input-wrapper"><input type="text" id="modalMaNV" class="form-control-custom form-control-readonly" readonly /></div></div>
+                        <div class="form-group-row"><label>Vị trí</label><div class="input-wrapper"><input type="text" id="modalViTri" class="form-control-custom form-control-readonly" readonly /></div></div>
+                        <div class="form-group-row align-items-start mt-3"><label class="pt-2">Lý do</label><div class="input-wrapper"><textarea id="modalLyDo" class="form-control-custom" rows="3"></textarea></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 bg-light">
+                <button type="button" class="btn btn-sm btn-light border px-4" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-sm btn-primary px-4" onclick="themDoiTuong(false)">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // THỦ THUẬT: Đặt rowIndex bắt đầu từ số lượng nhân viên cũ đã có
+    let rowIndex = @(Model.ChiTietKhenThuongs?.Count ?? 0);
+
+    function capNhatTongTien() {
+        let tong = 0;
+        document.querySelectorAll('.gia-tri-item').forEach(el => {
+            let rawValue = (el.value || "0").toString().replace(/,/g, '.');
+            let val = parseFloat(rawValue);
+            if (!isNaN(val)) {
+                tong += val;
+            }
+        });
+
+        // Gắn trở lại ô Tổng giá trị
+        document.getElementById('TongGiaTri').value = tong;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Lấy thông tin người quyết định
+        document.getElementById('NguoiQuyetDinhId').addEventListener('change', function () {
+            if (!this.value) { document.getElementById('ChucDanhNguoiQuyetDinh').value = ''; return; }
+            fetch(`/InfoEmployees/Reward/GetChucDanh?id=${this.value}`)
+                .then(res => res.json()).then(data => document.getElementById('ChucDanhNguoiQuyetDinh').value = data.chucDanh);
+        });
+
+        // Lấy thông tin NV trong Modal
+        document.getElementById('modalNhanSuId').addEventListener('change', function () {
+            if (!this.value) return;
+            fetch(`/InfoEmployees/Reward/GetNhanSuInfo?id=${this.value}`)
+                .then(res => res.json()).then(data => {
+                    document.getElementById('modalMaNV').value = data.maNV;
+                    document.getElementById('modalViTri').value = data.viTri;
+                    document.getElementById('modalDonVi').value = data.tenPhongBan;
+                });
+        });
+        capNhatTongTien();
+    });
+
+    function themDoiTuong(isKeepOpen) {
+        const ddlNhanSu = document.getElementById('modalNhanSuId');
+        if(!ddlNhanSu.value) { alert("Vui lòng chọn nhân viên!"); return; }
+
+        const nsId = ddlNhanSu.value, ten = ddlNhanSu.options[ddlNhanSu.selectedIndex].text;
+        const ma = document.getElementById('modalMaNV').value, dv = document.getElementById('modalDonVi').value;
+        const viTri = document.getElementById('modalViTri').value;
+        const giaTri = document.getElementById('modalGiaTri').value, lyDo = document.getElementById('modalLyDo').value;
+        const tt = document.getElementById('modalTrangThai').value;
+
+        // Chuỗi HTML mới khớp 100% với ảnh thiết kế
+        const trHtml = `
+            <tr>
+                <td class="text-center"><input type="checkbox" class="form-check-input shadow-none"></td>
+                <td class="text-muted">${ma}</td>
+                <td class="fw-medium text-dark"><span class="avatar-circle" style="background-color:#ec4899;">${ten.charAt(0)}</span> ${ten}</td>
+                <td>${dv}</td>
+                <td>${viTri}</td>
+                <td>${giaTri ? Number(giaTri).toLocaleString() : ''}</td>
+                <td>${lyDo ? lyDo : '-'}</td>
+                <td>-</td>
+                <td>${tt}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm text-danger border-0 shadow-none p-0" onclick="this.closest('tr').remove(); capNhatTongTien();"><i class="bi bi-trash"></i></button>
+                    <input type="hidden" name="ChiTietKhenThuongs[${rowIndex}].NhanSuId" value="${nsId}" />
+                    <input type="hidden" name="ChiTietKhenThuongs[${rowIndex}].GiaTriKhenThuong" class="gia-tri-item" value="${giaTri}" />
+                    <input type="hidden" name="ChiTietKhenThuongs[${rowIndex}].LyDo" value="${lyDo}" />
+                    <input type="hidden" name="ChiTietKhenThuongs[${rowIndex}].TrangThai" value="${tt}" />
+                </td>
+            </tr>`;
+
+        document.querySelector('#tblDanhSachKhenThuong tbody').insertAdjacentHTML('beforeend', trHtml);
+        const emptyTextEl = document.getElementById('emptyText');
+        if (emptyTextEl) {
+            emptyTextEl.style.display = 'none';
+        }
+
+        rowIndex++;
+        capNhatTongTien();
+
+        ddlNhanSu.value = ''; document.getElementById('modalMaNV').value = '';
+        document.getElementById('modalGiaTri').value = ''; document.getElementById('modalLyDo').value = '';
+        if (!isKeepOpen) bootstrap.Modal.getInstance(document.getElementById('modalThemDoiTuong')).hide();
+    }
+</script>

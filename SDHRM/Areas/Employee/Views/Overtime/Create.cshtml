@@ -1,0 +1,83 @@
+﻿@model SDHRM.Models.DonTangCa
+@{
+    ViewData["Title"] = "Đăng ký tăng ca";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom p-4 rounded-top-4">
+                    <h5 class="fw-bold text-dark mb-0">Tạo đề nghị tăng ca (OT)</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3 rounded-3"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="NgayTangCa" class="form-label fw-medium">Ngày tăng ca <span class="text-danger">*</span></label>
+                            <input asp-for="NgayTangCa" type="date" class="form-control shadow-none" />
+                            <span asp-validation-for="NgayTangCa" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-4 p-3 bg-light rounded-3 border">
+                            <p class="mb-3 fw-medium text-dark"><i class="bi bi-clock-history me-1"></i> Khung giờ làm việc</p>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label asp-for="TuGio" class="form-label text-muted">Từ giờ</label>
+                                <input asp-for="TuGio" type="time" class="form-control shadow-none time-input" id="TuGio" />
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <label asp-for="DenGio" class="form-label text-muted">Đến giờ</label>
+                                <input asp-for="DenGio" type="time" class="form-control shadow-none time-input" id="DenGio" />
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="SoGio" class="form-label text-muted">Tổng số giờ (Tạm tính)</label>
+                                <div class="input-group">
+                                    <input asp-for="SoGio" type="number" step="0.5" class="form-control shadow-none fw-bold text-primary" id="SoGio" readonly />
+                                    <span class="input-group-text bg-white text-muted">Giờ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="LyDoTangCa" class="form-label fw-medium">Nội dung công việc <span class="text-danger">*</span></label>
+                            <textarea asp-for="LyDoTangCa" class="form-control shadow-none" rows="3" placeholder="Ghi rõ công việc bạn dự định hoàn thành trong thời gian OT..."></textarea>
+                            <span asp-validation-for="LyDoTangCa" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                            <a asp-action="Index" class="btn btn-light px-4 border shadow-none">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm"><i class="bi bi-send me-1"></i> Gửi đề nghị</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JS Tự động tính số giờ dựa vào Khung giờ
+    document.querySelectorAll('.time-input').forEach(input => {
+        input.addEventListener('change', function() {
+            let tuGio = document.getElementById('TuGio').value;
+            let denGio = document.getElementById('DenGio').value;
+
+            if(tuGio && denGio) {
+                let start = new Date("1970-01-01T" + tuGio + "Z");
+                let end = new Date("1970-01-01T" + denGio + "Z");
+
+                // Nếu OT xuyên đêm qua 12h đêm
+                if (end < start) end.setDate(end.getDate() + 1);
+
+                let diff = (end - start) / 1000 / 60 / 60; // Tính ra số giờ
+
+                // Trừ đi 1 tiếng nghỉ giữa ca (nếu tăng ca dài hơn 4 tiếng, VD: từ 8h sáng CN đến 5h chiều)
+                // if (diff > 4) diff -= 1;
+
+                document.getElementById('SoGio').value = Math.round(diff * 10) / 10;
+            }
+        });
+    });
+</script>

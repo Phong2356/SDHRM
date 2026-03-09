@@ -1,0 +1,378 @@
+﻿@model IEnumerable<SDHRM.Models.DonDiMuonVeSom>
+@{
+    ViewData["Title"] = "Đăng ký đi muộn, về sớm";
+
+    // Hàm tạo Avatar chữ cái đầu
+    string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName)) return "NV";
+        var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0].Substring(0, 1).ToUpper();
+        return (parts[0].Substring(0, 1) + parts[^1].Substring(0, 1)).ToUpper();
+    }
+
+    // Đếm số lượng cho thanh Sidebar
+    int countTatCa = Model.Count();
+    int countChoDuyet = Model.Count(x => x.TrangThai == "Chờ duyệt");
+    int countDaDuyet = Model.Count(x => x.TrangThai == "Đã duyệt");
+    int countTuChoi = Model.Count(x => x.TrangThai == "Từ chối");
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    /* Top Header */
+    .page-header {
+        background-color: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .btn-purple {
+        background-color: #6366f1;
+        color: white;
+        font-weight: 500;
+    }
+
+        .btn-purple:hover {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+    /* Segmented Control (Của tôi / Tôi duyệt) */
+    .segmented-control {
+        background-color: #e2e8f0;
+        border-radius: 6px;
+        padding: 2px;
+        display: inline-flex;
+    }
+
+        .segmented-control .btn {
+            font-size: 0.85rem;
+            padding: 4px 16px;
+            border: none;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+            .segmented-control .btn.active {
+                background-color: white;
+                color: #6366f1;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                border-radius: 4px;
+            }
+
+    /* Sidebar Filter */
+    .sidebar-filter .list-group-item {
+        border: none;
+        padding: 10px 16px;
+        margin-bottom: 2px;
+        border-radius: 6px;
+        font-weight: 500;
+        color: #475569;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .sidebar-filter .list-group-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .sidebar-filter .list-group-item.active {
+            background-color: #eef2ff;
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+    /* Table Styling */
+    .table-wrapper {
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        height: calc(100vh - 160px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .custom-table th {
+        background-color: #f8fafc;
+        color: #475569;
+        font-weight: 600;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+    }
+
+    .custom-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .table-toolbar {
+        padding: 10px 16px;
+        border-bottom: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 8px 8px 0 0;
+    }
+
+    /* Avatar */
+    .avatar-circle {
+        width: 24px;
+        height: 24px;
+        background-color: #ec4899;
+        color: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+</style>
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h5 class="fw-bold mb-0 text-dark">Đăng ký đi muộn, về sớm</h5>
+    <a asp-action="Create" class="btn btn-sm btn-purple shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Thêm
+    </a>
+</div>
+
+<div class="container-fluid py-3">
+    <div class="row gx-3">
+        <div class="col-md-2">
+            <div class="sidebar-filter list-group">
+                <div class="list-group-item active" onclick="filterStatus('Tất cả', this)">
+                    Tất cả <span class="badge bg-transparent text-primary fs-6 p-0">@countTatCa</span>
+                </div>
+                <div class="list-group-item" onclick="filterStatus('Chờ duyệt', this)">
+                    Chờ duyệt <span class="badge bg-transparent text-muted fs-6 p-0">@countChoDuyet</span>
+                </div>
+                <div class="list-group-item" onclick="filterStatus('Đã duyệt', this)">
+                    Đã duyệt <span class="badge bg-transparent text-muted fs-6 p-0">@countDaDuyet</span>
+                </div>
+                <div class="list-group-item" onclick="filterStatus('Từ chối', this)">
+                    Bị từ chối <span class="badge bg-transparent text-muted fs-6 p-0">@countTuChoi</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+            <div class="table-wrapper shadow-sm">
+
+                <div class="table-toolbar d-flex justify-content-between align-items-center">
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm shadow-none w-auto">
+                            <option>2026</option>
+                            <option>2025</option>
+                        </select>
+                        <button class="btn btn-sm btn-light border shadow-none"><i class="bi bi-funnel"></i></button>
+                        <button class="btn btn-sm btn-light border shadow-none"><i class="bi bi-gear"></i></button>
+                    </div>
+                </div>
+
+                <div class="flex-grow-1 overflow-auto">
+                    <table class="table custom-table table-hover mb-0" id="mainTable">
+                        <thead>
+                            <tr>                                
+                                <th>Ngày nộp đơn</th>
+                                <th>Từ ngày</th>
+                                <th>Đến ngày</th>
+                                <th>Nhân viên đi muộn, về sớm</th>
+                                <th>Loại đăng ký</th>
+                                <th>Số phút</th>
+                                <th>Lý do</th>
+                                <th>Trạng thái</th>
+                                <th>Người duyệt</th>
+                                <th>Ý kiến của quản lý</th>
+                                <th><input type="checkbox" class="form-check-input shadow-none"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.Any())
+                            {
+                                <tr><td colspan="11" class="text-center py-5 text-muted">Chưa có đơn đăng ký nào.</td></tr>
+                            }
+                            else
+                            {
+                                foreach (var item in Model)                                {
+                                    <tr class="data-row" data-status="@item.TrangThai">
+                                        
+                                        <td>@item.NgayTao.ToString("dd/MM/yyyy HH:mm")</td>
+
+                                        <td>@item.NgayApDung.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.NgayApDung.ToString("dd/MM/yyyy")</td>                                       
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle">@GetInitials(item.NhanSu?.HoTen)</div>
+                                                <span class="fw-medium text-dark search-name">@item.NhanSu?.HoTen</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if (item.LoaiDangKy == "Đi muộn")
+                                            {
+                                                <span class="text-warning fw-medium"><i class="bi bi-box-arrow-in-right"></i> Đi muộn</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-info fw-medium"><i class="bi bi-box-arrow-left"></i> Về sớm</span>
+                                            }
+                                        </td>
+
+                                        <td>@item.SoPhut</td>
+                                        <td class="text-truncate" style="max-width: 200px;" title="@item.LyDo">
+                                            @item.LyDo
+                                        </td>
+
+
+                                        <td>
+                                            @if (item.TrangThai == "Chờ duyệt")
+                                            {
+                                                <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                            }
+                                            else if (item.TrangThai == "Đã duyệt")
+                                            {
+                                                <span class="badge bg-success">Đã duyệt</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Bị từ chối</span>
+                                            }
+                                        </td>
+                                        <td>@(item.NguoiDuyet?.HoTen ?? "-")</td>
+                                        <td>@(item.GhiChuCuaNguoiDuyet ?? "-")</td>
+
+                                        <td class="sticky-col-1 text-center">
+                                            @if (item.TrangThai == "Chờ duyệt")
+                                            {
+                                                <div class="d-flex gap-1 justify-content-center">
+                                                    <a href="/Employee/SoonLateRegister/Edit/@item.Id" class="btn btn-sm btn-light border rounded-circle p-1 shadow-none text-primary" style="width: 26px; height: 26px; display: flex; align-items:center; justify-content:center;" title="Sửa">
+                                                        <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                                                    </a>
+
+                                                    <button onclick="xoaDon(@item.Id)" class="btn btn-sm btn-light border rounded-circle p-1 shadow-none text-danger" style="width: 26px; height: 26px; display: flex; align-items:center; justify-content:center;" title="Xóa">
+                                                        <i class="bi bi-trash3" style="font-size: 0.75rem;"></i>
+                                                    </button>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted" title="Đơn đã khóa"><i class="bi bi-lock"></i></span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-white border-top p-2 px-3 d-flex justify-content-between align-items-center mt-auto">
+                    <span class="text-muted">Tổng số bản ghi: <strong class="text-dark" id="recordCount">@Model.Count()</strong></span>
+                    <div class="d-flex align-items-center gap-3">
+                        <select class="form-select form-select-sm shadow-none w-auto py-1">
+                            <option>50</option>
+                        </select>
+                        <span class="text-muted">Từ <strong>1</strong> đến <strong id="currentCount">@Model.Count()</strong> bản ghi</span>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-light border shadow-none disabled"><i class="bi bi-chevron-left"></i></button>
+                            <button class="btn btn-sm btn-light border shadow-none disabled"><i class="bi bi-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        // 2. Tính năng Lọc theo Sidebar Trạng Thái
+    function filterStatus(status, element) {
+        // Cập nhật giao diện menu bên trái
+        document.querySelectorAll('.sidebar-filter .list-group-item').forEach(el => {
+            el.classList.remove('active');
+            let badge = el.querySelector('.badge');
+            if (badge) {
+                badge.classList.remove('text-primary');
+                badge.classList.add('text-muted');
+            }
+        });
+
+        element.classList.add('active');
+        let activeBadge = element.querySelector('.badge');
+        if (activeBadge) {
+            activeBadge.classList.remove('text-muted');
+            activeBadge.classList.add('text-primary');
+        }
+
+        // Lọc các hàng trong bảng
+        let rows = document.querySelectorAll(".data-row");
+        let visibleCount = 0;
+        let searchElement = document.getElementById("searchInput");
+        let searchInput = searchElement ? searchElement.value.toLowerCase() : "";
+
+        rows.forEach(row => {
+            let rowStatus = row.getAttribute('data-status');
+            let nameElement = row.querySelector(".search-name");
+            let name = nameElement ? nameElement.innerText.toLowerCase() : "";
+
+            // Xóa cờ filter cũ
+            row.removeAttribute('data-filtered');
+
+            if ((status === 'Tất cả' || rowStatus === status) && name.includes(searchInput)) {
+                row.style.display = "";
+                visibleCount++;
+            } else {
+                row.style.display = "none";
+                if(status !== 'Tất cả' && rowStatus !== status) {
+                    row.setAttribute('data-filtered', 'true'); // Đánh dấu là bị ẩn do Sidebar
+                }
+            }
+        });
+
+        updateRecordCount(visibleCount);
+    }
+        // Tính năng Xóa đơn bằng AJAX
+    function xoaDon(id) {
+        if (confirm("Bạn có chắc chắn muốn xóa đơn đăng ký này không? Hành động này không thể hoàn tác.")) {
+
+            const formData = new URLSearchParams();
+            formData.append('id', id);
+
+            // ⚠️ Lưu ý: Kiểm tra kỹ lại đường dẫn Area của bạn
+            fetch('/Employee/SoonLateRegister/DeleteAjax', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Tải lại trang sau khi xóa thành công
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Lỗi kết nối máy chủ! Vui lòng thử lại.");
+            });
+        }
+    }
+    // Cập nhật con số hiển thị ở dưới cùng
+    function updateRecordCount(count) {
+        document.getElementById('recordCount').innerText = count;
+        document.getElementById('currentCount').innerText = count;
+    }
+</script>

@@ -1,0 +1,228 @@
+﻿@model IEnumerable<SDHRM.Models.HopDong>
+@{
+    ViewData["Title"] = "Quản lý hợp đồng";
+}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    /* Các thẻ thống kê */
+    .top-stats-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 6px;
+        padding: 15px;
+        position: relative;
+        overflow: hidden;
+        height: 110px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+        .stat-card .card-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .stat-card .card-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            z-index: 2;
+            position: relative;
+        }
+
+    .bg-white-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+    }
+
+    .bg-blue-card {
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        color: white;
+    }
+
+    .bg-yellow-card {
+        background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        color: white;
+    }
+
+    .bg-red-card {
+        background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+        color: white;
+    }
+
+    /* Bảng dữ liệu */
+    .main-container {
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 230px);
+    }
+
+    .toolbar-section {
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .grid-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .grid-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .grid-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+    .avatar-circle {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: bold;
+        margin-right: 8px;
+        background-color: #ec4899;
+    }
+</style>
+
+<div class="container-fluid py-3">
+    <div class="top-stats-grid">
+        <div class="stat-card bg-white-card d-flex align-items-center">
+            <div style="width: 80px; height: 80px; margin-right: 20px;">
+                <canvas id="activeContractChart"></canvas>
+            </div>
+            <div>
+                <h6 class="card-title text-dark">Đang có hiệu lực</h6>
+                <div class="text-success" style="font-size: 0.8rem;"><span class="fw-bold">@ViewBag.DangCoHieuLuc</span> Hợp đồng</div>
+            </div>
+        </div>
+        <div class="stat-card bg-blue-card d-flex flex-column justify-content-between">
+            <h6 class="card-title">Chưa có hợp đồng</h6>
+            <div class="card-value text-center">@ViewBag.ChuaCoHopDong</div>
+        </div>
+        <div class="stat-card bg-yellow-card d-flex flex-column justify-content-between">
+            <h6 class="card-title">Sắp hết hạn: 30 ngày <i class="bi bi-chevron-down ms-1" style="font-size: 0.7rem;"></i></h6>
+            <div class="card-value text-center">@ViewBag.SapHetHan</div>
+        </div>
+        <div class="stat-card bg-red-card d-flex flex-column justify-content-between">
+            <h6 class="card-title">Hết hạn chưa tái ký</h6>
+            <div class="card-value text-center">@ViewBag.HetHanChuaTaiKy</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="toolbar-section d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.1rem;">Tất cả hợp đồng</h5>
+            <div class="d-flex align-items-center gap-2">
+                
+                <a href="@Url.Action("Create")" class="btn btn-sm btn-primary"><i class="bi bi-plus"></i> Thêm <i class="bi bi-chevron-down ms-1"></i></a>
+                <button class="btn btn-sm border bg-white"><i class="bi bi-three-dots"></i></button>
+            </div>
+        </div>
+
+        <div class="toolbar-section d-flex justify-content-between py-2 bg-light">
+            <div class="input-group input-group-sm" style="width: 250px;">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm">
+            </div>
+            <div class="d-flex gap-2">
+                <select class="form-select form-select-sm shadow-none" style="width: 150px;"><option>Tất cả đơn vị</option></select>
+                <button class="btn btn-sm border bg-white"><i class="bi bi-funnel"></i></button>
+                <button class="btn btn-sm border bg-white"><i class="bi bi-box-arrow-right"></i></button>
+                <button class="btn btn-sm border bg-white"><i class="bi bi-gear"></i></button>
+            </div>
+        </div>
+
+        <div class="flex-grow-1" style="overflow-x: auto;">
+            <table class="grid-table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 40px;"><input type="checkbox"></th>
+                        <th>Ngày ký HĐ</th>
+                        <th>Số hợp đồng</th>
+                        <th>Họ và tên NLĐ</th>
+                        <th>Vị trí công việc</th>
+                        <th>Đơn vị ký hợp đồng</th>
+                        <th>Loại hợp đồng</th>
+                        <th>Thời hạn hợp đồng</th>
+                        <th>Ngày có hiệu lực</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center"><input type="checkbox"></td>
+                            <td>@item.NgayKy.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <a href="@Url.Action("Details", new { id = item.Id })" class="text-primary fw-medium text-decoration-none">@item.SoHopDong</a>
+                            </td>
+                            <td class="fw-medium text-dark"><span class="avatar-circle">NV</span> @(item.NhanSu?.HoTen)</td>
+                            <td>@(item.NhanSu?.ViTriCongViec?.TenViTri ?? "-")</td>
+                            <td>@(item.PhongBan?.TenPhongBan ?? "-")</td>
+                            <td>@item.LoaiHopDong</td>
+                            <td>@item.ThoiHanHopDong</td>
+                            <td>@item.NgayCoHieuLuc.ToString("dd/MM/yyyy")</td>
+
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-light border shadow-none text-primary" title="Xem chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa hợp đồng @item.SoHopDong không? Dữ liệu và file đính kèm sẽ bị xóa vĩnh viễn!');">
+                                        <button type="submit" class="btn btn-sm btn-light border shadow-none text-danger" title="Xóa hợp đồng">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById('activeContractChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: ['Đang có hiệu lực'], datasets: [{ data: [1], backgroundColor: ['#34d399'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+        });
+    });
+</script>

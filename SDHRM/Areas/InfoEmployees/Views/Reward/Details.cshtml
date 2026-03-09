@@ -1,0 +1,72 @@
+﻿@model SDHRM.Models.KhenThuong
+@{
+    ViewData["Title"] = "Chi tiết khen thưởng";
+}
+
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-dark"><i class="bi bi-award text-warning me-2"></i>Quyết định Khen thưởng: @Model.SoQuyetDinh</h4>
+        <a href="@Url.Action("Index")" class="btn btn-light border"><i class="bi bi-arrow-left"></i> Quay lại</a>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3">Thông tin chung</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex mb-2"><span class="text-muted w-50">Tên đợt khen thưởng:</span> <span class="fw-medium text-dark">@Model.TenDotKhenThuong</span></div>
+                    <div class="d-flex mb-2"><span class="text-muted w-50">Ngày quyết định:</span> <span>@Model.NgayQuyetDinh.ToString("dd/MM/yyyy")</span></div>
+                    <div class="d-flex mb-2"><span class="text-muted w-50">Đơn vị áp dụng:</span> <span>@(Model.PhongBan?.TenPhongBan ?? "-")</span></div>
+                    <div class="d-flex mb-2"><span class="text-muted w-50">Tổng tiền:</span> <span class="text-primary fw-bold">@(Model.TongGiaTri?.ToString("N0") ?? "0") VNĐ</span></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex mb-2"><span class="text-muted w-50">Người quyết định:</span> <span class="fw-medium">@(Model.NguoiQuyetDinh?.HoTen ?? "-")</span></div>
+                    <div class="d-flex mb-2"><span class="text-muted w-50">Chức danh:</span> <span>@Model.ChucDanhNguoiQuyetDinh</span></div>
+                    <div class="d-flex mb-2"><span class="text-muted w-50">Trạng thái:</span> <span class="badge bg-success">@Model.TrangThai</span></div>
+                    <div class="d-flex mb-2">
+                        <span class="text-muted w-50">Tệp đính kèm:</span>
+                        @if (!string.IsNullOrEmpty(Model.TepDinhKem))
+                        {
+                            <a href="~/uploads/rewards/@Model.TepDinhKem" target="_blank"><i class="bi bi-paperclip"></i> Xem tệp</a>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3">Danh sách Cá nhân/Tập thể nhận thưởng</h5>
+            <table class="table table-bordered table-striped">
+                <thead class="bg-light">
+                    <tr><th>STT</th><th>Họ và tên</th><th>Vị trí</th><th>Lý do khen thưởng</th><th class="text-end">Mức thưởng (VNĐ)</th></tr>
+                </thead>
+                <tbody>
+                    @if (Model.ChiTietKhenThuongs != null && Model.ChiTietKhenThuongs.Any())
+                    {
+                        int stt = 1;
+                        foreach (var ct in Model.ChiTietKhenThuongs)
+                        {
+                            <tr>
+                                <td class="text-center">@(stt++)</td>
+                                <td class="fw-medium text-primary">@(ct.NhanSu?.HoTen)</td>
+                                <td>@(ct.NhanSu?.ViTriCongViec?.TenViTri ?? "-")</td>
+                                <td>@ct.LyDo</td>
+                                <td class="text-end fw-bold">@(ct.GiaTriKhenThuong?.ToString("N0") ?? "0")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center text-muted">Không có danh sách chi tiết</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

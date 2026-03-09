@@ -1,0 +1,274 @@
+﻿@model SDHRM.Models.HopDong
+@{
+    ViewData["Title"] = "Cập nhật hợp đồng";
+}
+
+<style>
+    body {
+        background-color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 25px;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-group-row label {
+            width: 35%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 65%;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        outline: none;
+        box-shadow: none;
+    }
+
+        .form-control-custom:focus {
+            border-color: #3b82f6;
+        }
+
+    .form-control-readonly {
+        background-color: #f1f5f9;
+        cursor: not-allowed;
+    }
+
+    .text-danger {
+        color: #ef4444 !important;
+    }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        margin-bottom: 20px;
+    }
+</style>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="TepDinhKem" />
+    <input type="hidden" asp-for="NgayTao" />
+
+    <div class="top-action-bar d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold mb-0 text-dark">Cập nhật hợp đồng: @Model.SoHopDong</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-primary px-4">Lưu thay đổi</button>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="form-container">
+            <h5 class="section-title">Thông tin chung</h5>
+
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row">
+                        <label>Họ và tên NLĐ <span class="text-danger">*</span></label>
+                        <div class="input-wrapper">
+                            <select asp-for="NhanSuId" asp-items="ViewBag.NhanSuList" class="form-control-custom form-select shadow-none"></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Đơn vị ký hợp đồng <span class="text-danger">*</span></label>
+                        <div class="input-wrapper">
+                            <select asp-for="PhongBanId" asp-items="ViewBag.PhongBanList" class="form-control-custom form-select shadow-none"></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Số hợp đồng <span class="text-danger">*</span></label>
+                        <div class="input-wrapper"><input asp-for="SoHopDong" class="form-control-custom" readonly class="form-control-readonly" /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Tên hợp đồng</label>
+                        <div class="input-wrapper"><input asp-for="TenHopDong" class="form-control-custom" /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Thời hạn hợp đồng</label>
+                        <div class="input-wrapper">
+                            <select asp-for="ThoiHanHopDong" class="form-control-custom form-select shadow-none">
+                                <option value="1 năm">1 năm</option>
+                                <option value="2 năm">2 năm</option>
+                                <option value="Vô thời hạn">Vô thời hạn</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Ngày có hiệu lực <span class="text-danger">*</span></label>
+                        <div class="input-wrapper"><input asp-for="NgayCoHieuLuc" type="date" class="form-control-custom" /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Lương cơ bản</label>
+                        <div class="input-wrapper"><input asp-for="LuongCoBan" type="number" class="form-control-custom" /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Tỷ lệ hưởng lương (%)</label>
+                        <div class="input-wrapper"><input asp-for="TyLeHuongLuong" type="number" class="form-control-custom" /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Chức danh người đại diện</label>
+                        <div class="input-wrapper"><input asp-for="ChucDanhNguoiDaiDien" class="form-control-custom form-control-readonly" readonly /></div>
+                    </div>                    
+
+                    <div class="form-group-row">
+                        <label>Trạng thái ký</label>
+                        <div class="input-wrapper">
+                            <select asp-for="TrangThaiKy" class="form-control-custom form-select shadow-none">
+                                <option value="Chưa ký">Chưa ký</option>
+                                <option value="Đã ký">Đã ký</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row">
+                        <label>Mã nhân viên</label>
+                        <div class="input-wrapper"><input type="text" id="MaNV" class="form-control-custom form-control-readonly" readonly /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Vị trí công việc</label>
+                        <div class="input-wrapper"><input type="text" id="ViTri" class="form-control-custom form-control-readonly" readonly /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Ngày ký <span class="text-danger">*</span></label>
+                        <div class="input-wrapper"><input asp-for="NgayKy" type="date" class="form-control-custom" /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Loại hợp đồng <span class="text-danger">*</span></label>
+                        <div class="input-wrapper">
+                            <select asp-for="LoaiHopDong" class="form-control-custom form-select shadow-none">
+                                <option value="Hợp đồng thử việc">Hợp đồng thử việc</option>
+                                <option value="Hợp đồng xác định thời hạn">Hợp đồng xác định thời hạn</option>
+                                <option value="Hợp đồng vô thời hạn">Hợp đồng vô thời hạn</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Hình thức làm việc</label>
+                        <div class="input-wrapper">
+                            <select asp-for="HinhThucLamViec" class="form-control-custom form-select shadow-none">
+                                <option value="Toàn thời gian">Toàn thời gian</option>
+                                <option value="Bán thời gian">Bán thời gian</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Ngày hết hạn <span class="text-danger">*</span></label>
+                        <div class="input-wrapper"><input asp-for="NgayHetHan" type="date" class="form-control-custom" /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Lương đóng bảo hiểm</label>
+                        <div class="input-wrapper"><input asp-for="LuongDongBaoHiem" type="number" class="form-control-custom" /></div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Người đại diện công ty</label>
+                        <div class="input-wrapper">
+                            <select asp-for="NguoiDaiDienId" asp-items="ViewBag.NhanSuList" class="form-control-custom form-select shadow-none">
+                                <option value="">Chọn người đại diện</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <label>Tệp đính kèm mới</label>
+                        <div class="input-wrapper">
+                            <input type="file" name="fileDinhKem" class="form-control-custom" />
+                            @if (!string.IsNullOrEmpty(Model.TepDinhKem))
+                            {
+                                <small class="text-muted d-block mt-1">Đã đính kèm: <a href="~/uploads/contracts/@Model.TepDinhKem" target="_blank">Xem file hiện tại</a></small>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group-row align-items-start mt-3">
+                        <label class="pt-2">Ghi chú</label>
+                        <div class="input-wrapper"><textarea asp-for="GhiChu" class="form-control-custom" rows="3"></textarea></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ddlNhanSu = document.getElementById('NhanSuId');
+
+        function fetchNhanSuInfo(id) {
+            if (!id) return;
+            fetch(`/InfoEmployees/Contract/GetNhanSuInfo?id=${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('MaNV').value = data.maNV;
+                    document.getElementById('ViTri').value = data.viTri;
+                });
+        }
+
+        // Gọi ngay khi load trang để tự điền Mã NV và Vị trí của người hiện tại
+        if(ddlNhanSu.value) fetchNhanSuInfo(ddlNhanSu.value);
+
+        // Lắng nghe khi thay đổi người
+        ddlNhanSu.addEventListener('change', function () {
+            fetchNhanSuInfo(this.value);
+        });
+
+        // Tương tự cho người đại diện
+        const ddlNguoiDaiDien = document.getElementById('NguoiDaiDienId');
+        ddlNguoiDaiDien.addEventListener('change', function () {
+            const id = this.value;
+            if (id) {
+                fetch(`/InfoEmployees/Contract/GetNhanSuInfo?id=${id}`)
+                    .then(res => res.json())
+                    .then(data => document.getElementById('ChucDanhNguoiDaiDien').value = data.viTri);
+            }
+        });
+    });
+</script>

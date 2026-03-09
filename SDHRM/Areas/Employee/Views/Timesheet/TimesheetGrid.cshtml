@@ -1,0 +1,189 @@
+﻿@model SDHRM.Models.ViewModels.MonthlyAttendanceViewModel
+@{
+    ViewData["Title"] = "Bảng phân ca tháng";
+
+    // Tính toán tháng trước/sau cho nút điều hướng
+    DateTime currentDate = new DateTime(Model.Year, Model.Month, 1);
+    DateTime prevMonth = currentDate.AddMonths(-1);
+    DateTime nextMonth = currentDate.AddMonths(1);
+    DateTime today = DateTime.Today;
+}
+
+<style>
+    /* CSS Grid vẽ lịch 7 cột */
+    .calendar-wrapper {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    /* Tiêu đề Thứ (T2 -> CN) */
+    .calendar-header {
+        background-color: #f8fafc;
+        font-weight: 600;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #e2e8f0;
+        border-right: 1px solid #e2e8f0;
+        color: #475569;
+    }
+
+        .calendar-header:nth-child(7n) {
+            border-right: none;
+        }
+
+        .calendar-header.weekend {
+            color: #dc2626;
+        }
+    /* Màu đỏ cho T7, CN */
+
+    /* Ô hiển thị ngày */
+    .calendar-cell {
+        min-height: 120px;
+        padding: 8px;
+        border-right: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+        position: relative;
+    }
+
+        .calendar-cell:nth-child(7n) {
+            border-right: none;
+        }
+
+    /* Ngày của tháng khác (Hiệu ứng gạch chéo sọc mờ) */
+    .other-month {
+        background: repeating-linear-gradient( 45deg, #f8fafc, #f8fafc 10px, #f1f5f9 10px, #f1f5f9 20px );
+    }
+
+    /* Đánh dấu ngày hôm nay (Màu tím nhạt, viền dưới đậm) */
+    .is-today {
+        background-color: #e0e7ff;
+        border-bottom: 3px solid #4f46e5;
+    }
+
+    /* Số ngày góc trên bên phải */
+    .day-number {
+        font-size: 0.9rem;
+        color: #94a3b8;
+        position: absolute;
+        top: 8px;
+        right: 12px;
+    }
+
+    .other-month .day-number {
+        color: #cbd5e1;
+    }
+
+    .is-today .day-number {
+        color: #4f46e5;
+        font-weight: bold;
+    }
+
+    /* Hiển thị giờ chấm công */
+    .time-log {
+        margin-top: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .badge-time {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .badge-in {
+        background-color: #dcfce7;
+        color: #166534;
+        border-left: 2px solid #22c55e;
+    }
+
+    .badge-out {
+        background-color: #ffedd5;
+        color: #9a3412;
+        border-left: 2px solid #f97316;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3 bg-white p-3 rounded-3 shadow-sm border border-light">
+        <h4 class="mb-0 fw-bold text-dark">Bảng phân ca</h4>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="btn-group shadow-sm">
+                <a href="#" class="btn btn-light border text-muted">Tuần</a>
+                <a href="#" class="btn btn-white border fw-bold text-primary active">Tháng</a>
+            </div>
+
+            <div class="d-flex align-items-center bg-white border rounded shadow-sm px-3 py-1">
+                <span class="fw-medium text-dark me-3">Tháng @Model.Month/@Model.Year</span>
+                <div class="btn-group">
+                    <a asp-action="TimesheetGrid" asp-route-month="@prevMonth.Month" asp-route-year="@prevMonth.Year" class="btn btn-sm btn-light border-0">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <a asp-action="TimesheetGrid" asp-route-month="@today.Month" asp-route-year="@today.Year" class="btn btn-sm btn-light border-start border-end">
+                        Hôm nay
+                    </a>
+                    <a asp-action="TimesheetGrid" asp-route-month="@nextMonth.Month" asp-route-year="@nextMonth.Year" class="btn btn-sm btn-light border-0">
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="calendar-wrapper shadow-sm">
+        <div class="calendar-grid">
+            <div class="calendar-header">Thứ Hai</div>
+            <div class="calendar-header">Thứ Ba</div>
+            <div class="calendar-header">Thứ Tư</div>
+            <div class="calendar-header">Thứ Năm</div>
+            <div class="calendar-header">Thứ Sáu</div>
+            <div class="calendar-header weekend">Thứ Bảy</div>
+            <div class="calendar-header weekend">Chủ Nhật</div>
+        </div>
+
+        <div class="calendar-grid">
+            @foreach (var day in Model.Days)
+            {
+                var cellClass = "calendar-cell";
+                if (!day.IsCurrentMonth) { cellClass += " other-month"; }
+                if (day.IsToday) { cellClass += " is-today"; }
+
+                <div class="@cellClass">
+                    <span class="day-number">@day.Date.ToString("dd")</span>
+
+                    @if (day.IsCurrentMonth || day.IsToday)
+                    {
+                        <div class="time-log">
+                            @if (day.GioVao != null)
+                            {
+                                <span class="badge-time badge-in" title="Giờ đến">
+                                    <i class="bi bi-box-arrow-in-right"></i> @day.GioVao.Value.ToString(@"hh\:mm")
+                                </span>
+                            }
+                            @if (day.GioRa != null)
+                            {
+                                <span class="badge-time badge-out" title="Giờ về">
+                                    <i class="bi bi-box-arrow-right"></i> @day.GioRa.Value.ToString(@"hh\:mm")
+                                </span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

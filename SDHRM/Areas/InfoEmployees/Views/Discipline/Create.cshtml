@@ -1,0 +1,308 @@
+﻿@model SDHRM.Models.KyLuat
+@{
+    ViewData["Title"] = "Thêm kỷ luật/sự cố";
+}
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-group-row label {
+            width: 35%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 65%;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        outline: none;
+        box-shadow: none;
+    }
+
+        .form-control-custom:focus {
+            border-color: #3b82f6;
+        }
+
+    .text-danger {
+        color: #ef4444 !important;
+    }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        margin-bottom: 20px;
+    }
+
+    .detail-table th {
+        background-color: #f8fafc;
+        font-weight: 600;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 10px;
+        white-space: nowrap;
+    }
+
+    .detail-table td {
+        padding: 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        white-space: nowrap;
+        color: #1e293b;
+    }
+
+    .avatar-circle {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+</style>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="top-action-bar d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold mb-0 text-dark" style="font-size: 1.25rem;">Thêm kỷ luật/sự cố</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4 shadow-none">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-outline-primary px-3 shadow-none">Lưu và thêm</button>
+            <button type="submit" class="btn btn-sm btn-primary px-4 shadow-none">Lưu</button>
+        </div>
+    </div>
+
+    <div class="container-fluid pb-5">
+        <div class="form-container">
+            <h5 class="section-title">Thông tin chung <i class="bi bi-chevron-up text-muted"></i></h5>
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row"><label>Tên kỷ luật/sự cố <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="TenKyLuat" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Ngày xảy ra</label><div class="input-wrapper"><input asp-for="NgayXayRa" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row">
+                        <label>Nguyên nhân</label>
+                        <div class="input-wrapper">
+                            <select asp-for="NguyenNhan" class="form-control-custom form-select shadow-none"><option value="">Chọn nguyên nhân</option><option value="Vi phạm nội quy">Vi phạm nội quy</option><option value="Sơ suất công việc">Sơ suất công việc</option></select>
+                            <button type="button" class="btn btn-light border btn-sm shadow-none"><i class="bi bi-three-dots"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group-row mt-4"><label>Tổng giá trị thiệt hại</label><div class="input-wrapper"><input asp-for="TongGiaTriThietHai" type="number" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Trạng thái <span class="text-danger">*</span></label><div class="input-wrapper"><select asp-for="TrangThai" class="form-control-custom form-select shadow-none"><option value="Chưa xử lý">Chưa xử lý</option><option value="Đang xử lý">Đang xử lý</option><option value="Đã xử lý">Đã xử lý</option></select></div></div>
+                </div>
+
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row">
+                        <label>Loại kỷ luật/sự cố <span class="text-danger">*</span></label>
+                        <div class="input-wrapper">
+                            <select asp-for="LoaiKyLuat" class="form-control-custom form-select shadow-none" required><option value="Kỷ luật lao động">Kỷ luật lao động</option><option value="Sự cố vận hành">Sự cố vận hành</option></select>
+                            <button type="button" class="btn btn-light border btn-sm shadow-none"><i class="bi bi-three-dots"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group-row"><label>Nơi xảy ra</label><div class="input-wrapper"><input asp-for="NoiXayRa" class="form-control-custom" /></div></div>
+                    <div class="form-group-row align-items-start"><label class="pt-2">Mô tả kỷ luật/sự cố</label><div class="input-wrapper"><textarea asp-for="MoTa" class="form-control-custom" rows="3"></textarea></div></div>
+                    <div class="form-group-row mt-3">
+                        <label>Đơn vị liên quan <span class="text-danger">*</span></label>
+                        <div class="input-wrapper"><select asp-for="PhongBanId" asp-items="ViewBag.PhongBanList" class="form-control-custom form-select shadow-none" required><option value="">Chọn đơn vị</option></select></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container px-0 pb-0 overflow-hidden">
+            <h5 class="section-title px-4 mb-3">Danh sách nhân viên</h5>
+            <div class="px-4 pb-3 d-flex gap-2 border-bottom">
+                <span class="text-muted fst-italic mt-1 me-2" style="font-size: 0.8rem;" id="emptyText">Chưa có dữ liệu</span>
+                <button type="button" class="btn btn-sm btn-link text-primary text-decoration-none shadow-none p-0" data-bs-toggle="modal" data-bs-target="#modalThemNhanVien"><i class="bi bi-plus"></i> Thêm</button>
+                <button type="button" class="btn btn-sm btn-link text-primary text-decoration-none shadow-none p-0 ms-2"><i class="bi bi-box-arrow-in-right"></i> Nhập khẩu</button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="table detail-table mb-0" id="tblDanhSachKyLuat">
+                    <thead>
+                        <tr>
+                            <th>Mã NV</th>
+                            <th>Họ và tên</th>
+                            <th>Đơn vị</th>
+                            <th>Hình thức xử lý</th>
+                            <th>Số tiền phạt</th>
+                            <th>Lý do chi tiết</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <h5 class="section-title mb-3">Tài liệu đính kèm</h5>
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted fst-italic" style="font-size: 0.8rem;">Chưa có dữ liệu</span>
+                <button type="button" class="btn btn-sm btn-link text-primary text-decoration-none p-0" onclick="document.getElementById('fileUpload').click()"><i class="bi bi-plus"></i> Thêm</button>
+                <input type="file" id="fileUpload" name="fileDinhKem" class="d-none" />
+            </div>
+            <div id="fileNameDisplay" class="mt-2 text-dark fw-medium"></div>
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" id="modalThemNhanVien" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light"><h5 class="modal-title fw-bold text-dark">Thêm nhân viên vi phạm</h5></div>
+            <div class="modal-body p-4 bg-light">
+                <div class="row">
+                    <div class="col-md-6 pe-md-4">
+                        <div class="form-group-row"><label>Họ và tên *</label><div class="input-wrapper"><select id="modalNhanSuId" class="form-control-custom form-select shadow-none"><option value="">Chọn nhân viên</option>@foreach (var ns in ViewBag.NhanSuList)
+                                    {
+                                        <option value="@ns.Value">@ns.Text</option>
+                                    }</select></div></div>
+                        <div class="form-group-row"><label>Hình thức xử lý</label><div class="input-wrapper"><select id="modalHinhThuc" class="form-control-custom form-select shadow-none"><option value="Khiển trách">Khiển trách</option><option value="Cảnh cáo">Cảnh cáo</option><option value="Trừ lương">Trừ lương</option><option value="Sa thải">Sa thải</option></select></div></div>
+                        <div class="form-group-row"><label>Trạng thái *</label><div class="input-wrapper"><select id="modalTrangThai" class="form-control-custom form-select shadow-none"><option value="Chưa xử lý">Chưa xử lý</option><option value="Đã xử lý">Đã xử lý</option></select></div></div>
+                    </div>
+                    <div class="col-md-6 ps-md-4">
+                        <div class="form-group-row"><label>Mã nhân viên</label><div class="input-wrapper"><input type="text" id="modalMaNV" class="form-control-custom" readonly style="background:#f1f5f9; cursor:not-allowed;" /></div></div>
+                        <div class="form-group-row"><label>Đơn vị</label><div class="input-wrapper"><input type="text" id="modalDonVi" class="form-control-custom" readonly style="background:#f1f5f9; cursor:not-allowed;" /></div></div>
+                        <div class="form-group-row"><label>Số tiền phạt</label><div class="input-wrapper"><input type="number" id="modalTienPhat" class="form-control-custom" /></div></div>
+                        <div class="form-group-row align-items-start mt-3"><label class="pt-2">Lý do chi tiết</label><div class="input-wrapper"><textarea id="modalLyDo" class="form-control-custom" rows="2"></textarea></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 bg-light">
+                <button type="button" class="btn btn-sm btn-light border px-4" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-sm btn-primary px-4" onclick="themNhanVien()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let rowIndex = 0;
+
+    // Hiển thị tên file khi chọn đính kèm
+    document.getElementById('fileUpload').addEventListener('change', function(e) {
+        if(e.target.files[0]) {
+            document.getElementById('fileNameDisplay').innerHTML = '<i class="bi bi-file-earmark-text text-primary"></i> ' + e.target.files[0].name;
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // AJAX Modal lấy info NV
+        const ddlNs = document.getElementById('modalNhanSuId');
+        if (ddlNs) {
+            ddlNs.addEventListener('change', function () {
+                const id = this.value;
+
+                // 1. Nếu người dùng chọn "Chọn nhân viên" (rỗng) thì xóa trắng các ô
+                if (!id) {
+                    document.getElementById('modalMaNV').value = '';
+                    document.getElementById('modalDonVi').value = '';
+                    return;
+                }
+
+                // 2. Gọi API lấy dữ liệu
+                fetch(`/InfoEmployees/Discipline/GetNhanSuInfo?id=${id}`)
+                    .then(res => {
+                        if (!res.ok) throw new Error("Lỗi lấy dữ liệu từ Server");
+                        return res.json();
+                    })
+                    .then(data => {
+                        // Tự động điền dữ liệu vào ô tương ứng
+                        document.getElementById('modalMaNV').value = data.maNV;
+                        document.getElementById('modalDonVi').value = data.tenPhongBan;
+                    })
+                    .catch(err => console.error("Lỗi AJAX:", err));
+            });
+        }
+    });
+
+    function themNhanVien() {
+        const ddlNhanSu = document.getElementById('modalNhanSuId');
+        if(!ddlNhanSu.value) { alert("Vui lòng chọn nhân viên!"); return; }
+
+        const nsId = ddlNhanSu.value, ten = ddlNhanSu.options[ddlNhanSu.selectedIndex].text;
+        const ma = document.getElementById('modalMaNV').value, dv = document.getElementById('modalDonVi').value;
+        const hinhThuc = document.getElementById('modalHinhThuc').value;
+        const tienPhat = document.getElementById('modalTienPhat').value;
+        const lyDo = document.getElementById('modalLyDo').value;
+        const tt = document.getElementById('modalTrangThai').value;
+
+        const trHtml = `
+            <tr>
+                <td class="text-muted">${ma}</td>
+                <td class="fw-medium text-dark"><span class="avatar-circle bg-danger">${ten.charAt(0)}</span> ${ten}</td>
+                <td>${dv}</td>
+                <td>${hinhThuc}</td>
+                <td class="text-danger fw-bold">${tienPhat ? Number(tienPhat).toLocaleString() : ''}</td>
+                <td>${lyDo}</td>
+                <td>${tt}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm text-danger border-0 shadow-none p-0" onclick="this.closest('tr').remove();"><i class="bi bi-trash"></i></button>
+                    <input type="hidden" name="ChiTietKyLuats[${rowIndex}].NhanSuId" value="${nsId}" />
+                    <input type="hidden" name="ChiTietKyLuats[${rowIndex}].HinhThucXuLy" value="${hinhThuc}" />
+                    <input type="hidden" name="ChiTietKyLuats[${rowIndex}].SoTienPhat" value="${tienPhat}" />
+                    <input type="hidden" name="ChiTietKyLuats[${rowIndex}].LyDoChiTiet" value="${lyDo}" />
+                    <input type="hidden" name="ChiTietKyLuats[${rowIndex}].TrangThai" value="${tt}" />
+                </td>
+            </tr>`;
+
+        document.querySelector('#tblDanhSachKyLuat tbody').insertAdjacentHTML('beforeend', trHtml);
+        document.getElementById('emptyText').style.display = 'none';
+        rowIndex++;
+
+        // Reset Modal
+        ddlNhanSu.value = ''; document.getElementById('modalMaNV').value = '';
+        document.getElementById('modalTienPhat').value = ''; document.getElementById('modalLyDo').value = '';
+        bootstrap.Modal.getInstance(document.getElementById('modalThemNhanVien')).hide();
+    }
+</script>

@@ -1,0 +1,226 @@
+﻿@model SDHRM.Models.NhanSu
+
+@{
+    ViewData["Title"] = "Chi tiết đối tượng";
+    Layout = null; // BẮT BUỘC CÓ DÒNG NÀY ĐỂ TRÁNH BỊ LỒNG GIAO DIỆN
+}
+
+<style>
+    /* Tổng thể khung chứa */
+    .detail-panel {
+        background-color: #fff;
+        min-height: 100vh;
+        padding: 20px 30px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Style Avatar */
+    .avatar-large {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.2rem;
+        object-fit: cover;
+        border: 1px solid #e9ecef;
+    }
+
+    /* Tiêu đề tên */
+    .profile-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 2px;
+    }
+
+    .profile-subtext {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 8px;
+    }
+
+    /* Nút icon sửa, xóa */
+    .icon-btn {
+        color: #6c757d;
+        cursor: pointer;
+        margin-left: 5px;
+        font-size: 1rem;
+    }
+
+        .icon-btn:hover {
+            color: #333;
+        }
+
+    .icon-btn-danger:hover {
+        color: #dc3545;
+    }
+
+    /* Badges (Trạng thái) */
+    .badge-custom {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 50rem;
+        background-color: #f8f9fa;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-right: 8px;
+    }
+
+    .dot-green {
+        color: #0fb981;
+        font-size: 0.5rem;
+    }
+
+    .dot-orange {
+        color: #f59e0b;
+        font-size: 0.5rem;
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs-custom {
+        border-bottom: 1px solid #dee2e6;
+        margin-top: 20px;
+        margin-bottom: 25px;
+    }
+
+        .nav-tabs-custom .nav-link {
+            color: #495057;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: none;
+            padding: 10px 15px;
+            border-bottom: 2px solid transparent;
+        }
+
+            .nav-tabs-custom .nav-link:hover {
+                color: #2476d0;
+            }
+
+            .nav-tabs-custom .nav-link.active {
+                color: #2476d0;
+                border-bottom: 2px solid #2476d0;
+                background-color: transparent;
+            }
+
+    /* Bảng thông tin Data Grid */
+    .info-row {
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+    }
+
+    .info-label {
+        color: #6c757d;
+    }
+
+    .info-value {
+        color: #212529;
+        font-weight: 400;
+    }
+
+    .info-link {
+        color: #0984e3;
+        text-decoration: none;
+    }
+
+        .info-link:hover {
+            text-decoration: underline;
+        }
+</style>
+
+@{
+    var initials = string.Join("", Model.HoTen.Split(' ').Where(w => w.Length > 0).Select(w => w[0])).ToUpper();
+    var shortInitials = initials.Length > 2 ? initials.Substring(initials.Length - 2) : initials;
+    var colors = new[] { "#00b894", "#0984e3", "#ff7675", "#6c5ce7", "#e84393" };
+    var bgColor = colors[Model.HoTen.Length % colors.Length];
+}
+
+<div class="detail-panel">
+    <div class="d-flex justify-content-between align-items-start">
+        <div class="d-flex gap-3">
+            @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+            {
+                <img src="@Model.AnhDaiDien" alt="Avatar" class="avatar-large" />
+            }
+            else
+            {
+                <div class="avatar-large" style="background-color: @bgColor;">@shortInitials</div>
+            }
+
+            <div>
+                <div class="d-flex align-items-center mb-1">
+                    <h4 class="profile-name me-2">@Model.HoTen</h4>
+                    <a asp-action="EditMember" asp-route-id="@Model.Id" class="icon-btn text-decoration-none" title="Sửa"><i class="bi bi-pencil"></i></a>
+                    <a asp-action="DeleteMember" asp-route-id="@Model.Id" class="icon-btn icon-btn-danger text-decoration-none text-danger" title="Xóa"><i class="bi bi-trash"></i></a>
+                </div>
+                <div class="profile-subtext">
+                    @(Model.SoDienThoai ?? "NV------") • @(Model.Email ?? "Chưa có email")
+                </div>
+                <div class="d-flex flex-wrap mt-2">
+                    <span class="badge-custom border">
+                        Nhân viên <i class="bi bi-circle-fill dot-green mx-1"></i> @(Model.TrangThai ?? "Đang làm việc")
+                    </span>                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs nav-tabs-custom">
+        <li class="nav-item"><a class="nav-link active" href="#">Thông tin nhân viên</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Ứng dụng</a></li>
+    </ul>
+
+    <div class="mt-4" style="max-width: 600px;">
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Ma nhan vien</div>
+            <div class="col-sm-7 info-value">@Model.Id</div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Họ và tên</div>
+            <div class="col-sm-7 info-value">@Model.HoTen</div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Ngày sinh</div>
+            <div class="col-sm-7 info-value">@(Model.NgaySinh?.ToString("dd/MM/yyyy") ?? "--")</div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Giới tính</div>
+            <div class="col-sm-7 info-value">@(Model.GioiTinh ?? "--")</div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Địa chỉ</div>
+            <div class="col-sm-7 info-value">@(Model.DiaChi ?? "--")</div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Ma dinh danh</div>
+            <div class="col-sm-7 info-value">@(Model.MaDinhDanh ?? "--")</div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Phong ban</div>
+            <div class="col-sm-7 info-value">@(Model.PhongBan?.TenPhongBan ?? "--")</div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Vi tri cong viec</div>
+            <div class="col-sm-7 info-value">@(Model.ViTriCongViec?.TenViTri ?? "--")</div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Quan ly</div>
+            <div class="col-sm-7 info-value">@(Model.QuanLy?.HoTen ?? "--")</div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Email liên hệ</div>
+            <div class="col-sm-7 info-value">
+                <a href="mailto:@Model.Email" class="info-link">@(Model.Email ?? "--")</a>
+            </div>
+        </div>
+        <div class="row info-row">
+            <div class="col-sm-5 info-label">Số điện thoại</div>
+            <div class="col-sm-7 info-value">@(Model.SoDienThoai ?? "--")</div>
+        </div>
+    </div>
+</div>

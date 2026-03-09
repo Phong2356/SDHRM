@@ -1,0 +1,884 @@
+﻿@model SDHRM.Models.NhanSu
+
+@{
+    ViewData["Title"] = "Chi tiết nhân viên";
+    var initials = ViewBag.Initials as string;
+    var avatarColor = ViewBag.AvatarColor as string;
+}
+
+
+<style>
+    .profile-avatar-large {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    /* ================= CẤU HÌNH MÀU SẮC & FONT ================= */
+    .profile-page {
+        background-color: #f3f4f6; /* Màu nền xám nhạt của toàn trang */
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    /* ================= HEADER HỒ SƠ ================= */
+    .profile-header {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 16px 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .avatar-circle-lg {
+        width: 48px;
+        height: 48px;
+        background-color: #ec4899; /* Màu hồng giống ảnh */
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .header-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+
+    .header-id {
+        color: #6b7280;
+        font-weight: normal;
+        font-size: 1.1rem;
+    }
+
+    .header-company {
+        font-size: 0.85rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+
+    /* ================= SIDEBAR TRÁI (MENU) ================= */
+    .left-sidebar {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        padding: 15px 0;
+        height: calc(100vh - 150px);
+        overflow-y: auto;
+    }
+
+    .search-box-container {
+        padding: 0 15px 15px 15px;
+    }
+
+    .search-input {
+        border-radius: 6px;
+        background-color: #f9fafb;
+        font-size: 0.9rem;
+    }
+
+    /* Menu Item */
+    .nav-pills-custom .nav-link {
+        color: #4b5563;
+        font-size: 0.95rem;
+        padding: 10px 20px;
+        border-radius: 0;
+        text-align: left;
+        border-left: 3px solid transparent;
+        transition: all 0.2s;
+    }
+
+        .nav-pills-custom .nav-link:hover {
+            background-color: #f3f4f6;
+        }
+
+        .nav-pills-custom .nav-link.active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+            border-left: 3px solid #2563eb;
+        }
+
+    /* ================= NỘI DUNG PHẢI (DATA GRID) ================= */
+    .right-content {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        padding: 24px 32px;
+        height: calc(100vh - 150px);
+        overflow-y: auto;
+    }
+
+    .tab-title-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .tab-main-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+
+    .section-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 30px 0 15px 0;
+    }
+
+    /* Lưới hiển thị dữ liệu */
+    .data-row {
+        display: flex;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .data-label {
+        width: 40%;
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    .data-value {
+        width: 60%;
+        color: #111827;
+        font-size: 0.95rem;
+        word-break: break-word;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+</style>
+
+<div class="profile-page">
+
+    <div class="profile-header">
+        <div class="d-flex align-items-center gap-3">
+            <div class="profile-avatar-large" style="background-color: @avatarColor;">
+                @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+                {
+                    <img src="@Model.AnhDaiDien" alt="Avatar" onerror="this.outerHTML='@initials'" />
+                }
+                else
+                {
+                    @initials
+                }
+            </div>
+            <div>
+                <h2 class="header-name">
+                    @Model.HoTen <span class="header-id">(@(Model.Id))</span>
+                </h2>
+                <div class="header-company">CÔNG TY CỔ PHẦN ĐẦU TƯ VÀ THƯƠNG MẠI SÔNG ĐÀ - @(Model.PhongBan?.TenPhongBan)</div>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="EditMember" asp-route-id="1" class="btn btn-light border text-dark fw-medium btn-sm px-3">
+                <i class="bi bi-pencil me-1"></i> Cập nhật thông tin
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-md-3 col-lg-2 pe-0">
+            <div class="left-sidebar">
+                <div class="search-box-container">
+                    <div class="input-group">
+                        <span class="input-group-text bg-f9fafb border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" class="form-control search-input border-start-0" placeholder="Tìm kiếm">
+                    </div>
+                </div>
+
+                <div class="nav flex-column nav-pills nav-pills-custom" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+
+                    <button class="nav-link active" id="v-pills-basic-tab" data-bs-toggle="pill" data-bs-target="#v-pills-basic" type="button" role="tab">
+                        Thông tin cơ bản
+                    </button>
+
+                    <button class="nav-link" id="v-pills-contact-tab" data-bs-toggle="pill" data-bs-target="#v-pills-contact" type="button" role="tab">
+                        Thông tin liên hệ
+                    </button>
+
+                    <button class="nav-link" id="v-pills-job-tab" data-bs-toggle="pill" data-bs-target="#v-pills-job" type="button" role="tab">
+                        Thông tin công việc
+                    </button>
+
+                    <button class="nav-link" id="v-pills-account-tab" data-bs-toggle="pill" data-bs-target="#v-pills-account" type="button" role="tab">
+                        Thông tin tài khoản
+                    </button>
+
+                    <button class="nav-link" id="v-pills-WorkProcess-tab" data-bs-toggle="pill" data-bs-target="#v-pills-WorkProcess" type="button" role="tab">
+                        Quá trình công tác
+                    </button>
+
+                    <button class="nav-link" id="v-pills-Discipline-tab" data-bs-toggle="pill" data-bs-target="#v-pills-Discipline" type="button" role="tab">
+                        Kỷ luật
+                    </button>
+
+                    <button class="nav-link" id="v-pills-Reward-tab" data-bs-toggle="pill" data-bs-target="#v-pills-Reward" type="button" role="tab">
+                        Khen thưởng
+                    </button>
+
+                    <button class="nav-link" id="v-pills-Degree-tab" data-bs-toggle="pill" data-bs-target="#v-pills-Degree" type="button" role="tab">
+                        Bằng cấp
+                    </button>
+
+                    <button class="nav-link" id="v-pills-Certificate-tab" data-bs-toggle="pill" data-bs-target="#v-pills-Certificate" type="button" role="tab">
+                        Chứng chỉ
+                    </button>
+
+                    <button class="nav-link" id="v-pills-WorkExperience-tab" data-bs-toggle="pill" data-bs-target="#v-pills-WorkExperience" type="button" role="tab">
+                        Kinh nghiệm làm việc
+                    </button>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9 col-lg-10">
+            <div class="right-content tab-content" id="v-pills-tabContent">
+
+                <div class="tab-pane fade show active" id="v-pills-basic" role="tabpanel">
+
+                    <div class="tab-title-bar">
+                        <h4 class="tab-main-title">Thông tin cơ bản</h4>
+                    </div>
+
+                    <h5 class="section-title mt-0">Thông tin chung</h5>
+                    <div class="row">
+                        <div class="col-md-6 pe-md-4">
+                            <div class="data-row"><div class="data-label">Mã nhân viên</div><div class="data-value">@Model.Id</div></div>
+                            <div class="data-row"><div class="data-label">Họ và tên</div><div class="data-value">@Model.HoTen</div></div>
+                            <div class="data-row"><div class="data-label">Giới tính</div><div class="data-value">@(Model.GioiTinh ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Ngày sinh</div><div class="data-value">@(Model.NgaySinh?.ToString("dd/MM/yyyy") ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Nơi sinh</div><div class="data-value">@(Model.ThongTinChung?.NoiSinh ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Nguyên quán</div><div class="data-value">@(Model.ThongTinChung?.NguyenQuan ?? "-")</div></div>
+                        </div>
+                        <div class="col-md-6 ps-md-4">
+                            <div class="data-row"><div class="data-label">Tình trạng hôn nhân</div><div class="data-value">@(Model.ThongTinChung?.TinhTrangHonNhan ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">MST cá nhân</div><div class="data-value">@(Model.ThongTinChung?.MaSoThue ?? "-").</div></div>
+                            <div class="data-row"><div class="data-label">Dân tộc</div><div class="data-value">@(Model.ThongTinChung?.DanToc ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Tôn giáo</div><div class="data-value">@(Model.ThongTinChung?.TonGiao ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Quốc tịch</div><div class="data-value">@(Model.ThongTinChung?.QuocTich ?? "-")</div></div>
+                        </div>
+                    </div>
+
+                    <h5 class="section-title">CMND/Thẻ căn cước/Hộ chiếu</h5>
+                    <div class="row">
+                        <div class="col-md-6 pe-md-4">
+                            <div class="data-row"><div class="data-label">Số CCCD</div><div class="data-value">@(Model.ThongTinChung?.SoCCCD ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Ngày cấp CCCD</div><div class="data-value">@(Model.ThongTinChung?.NgayCapGiayTo?.ToString("dd/MM/yyyy") ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Nơi cấp CCCD</div><div class="data-value">@(Model.ThongTinChung?.NoiCapGiayTo ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Ngày hết hạn CCCD</div><div class="data-value">@(Model.ThongTinChung?.NgayHetHanGiayTo?.ToString("dd/MM/yyyy") ?? "-")</div></div>
+                        </div>
+                        <div class="col-md-6 ps-md-4">
+                            <div class="data-row"><div class="data-label">Số Hộ chiếu</div><div class="data-value">@(Model.ThongTinChung?.SoHoChieu ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Ngày cấp Hộ chiếu</div><div class="data-value">@(Model.ThongTinChung?.NgayCapHoChieu?.ToString("dd/MM/yyyy") ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Nơi cấp Hộ chiếu</div><div class="data-value">@(Model.ThongTinChung?.NoiCapHoChieu ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Ngày hết hạn Hộ chiếu</div><div class="data-value">@(Model.ThongTinChung?.NgayHetHanHoChieu?.ToString("dd/MM/yyyy") ?? "-")</div></div>
+                        </div>
+                    </div>
+
+                    <h5 class="section-title">Trình độ/Bằng cấp</h5>
+                    <div class="row">
+                        <div class="col-md-6 pe-md-4">
+                            <div class="data-row"><div class="data-label">Trình độ văn hóa</div><div class="data-value">@(Model.ThongTinChung?.TrinhDoHocVan ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Trình độ đào tạo</div><div class="data-value">@(Model.ThongTinChung?.TrinhDoDaoTao ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Nơi đào tạo</div><div class="data-value">@(Model.ThongTinChung?.NoiDaoTao ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Khoa</div><div class="data-value">@(Model.ThongTinChung?.Khoa ?? "-")</div></div>
+                        </div>
+                        <div class="col-md-6 ps-md-4">
+                            <div class="data-row"><div class="data-label">Chuyên ngành</div><div class="data-value">@(Model.ThongTinChung?.ChuyenNganh ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Năm tốt nghiệp</div><div class="data-value">@(Model.ThongTinChung?.NamTotNghiep ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Xếp loại</div><div class="data-value">@(Model.ThongTinChung?.XepLoaiTotNghiep ?? "-")</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-contact" role="tabpanel">
+
+                    <div class="tab-title-bar">
+                        <h4 class="tab-main-title">Thông tin liên hệ</h4>
+                    </div>
+
+                    <h5 class="section-title mt-0">Số điện thoại/Email/Khác</h5>
+                    <div class="row">
+                        <div class="col-md-6 pe-md-4">
+                            <div class="data-row"><div class="data-label">ĐT di động</div><div class="data-value">@(Model.SoDienThoai ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">ĐT cơ quan</div><div class="data-value">@(Model.ThongTinLienHe?.DTCoQuan ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">ĐT nhà riêng</div><div class="data-value">@(Model.ThongTinLienHe?.DTNhaRieng ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">ĐT khác</div><div class="data-value">@(Model.ThongTinLienHe?.DTKhac ?? "-")</div></div>
+                        </div>
+                        <div class="col-md-6 ps-md-4">
+                            <div class="data-row"><div class="data-label">Email cơ quan</div><div class="data-value">@(Model.ThongTinLienHe?.EmailCoQuan ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Email khác</div><div class="data-value">@(Model.ThongTinLienHe?.EmailKhac ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Link mạng xã hội</div><div class="data-value">@(Model.ThongTinLienHe?.LinkMangXaHoi ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Email cá nhân</div><div class="data-value text-primary">@Model.Email</div></div>
+                        </div>
+                    </div>
+
+                    <h5 class="section-title">Địa chỉ</h5>
+                    <div class="row">
+                        <div class="col-md-6 pe-md-4">
+                            <div class="data-row"><div class="data-label">Địa chỉ thường trú</div><div class="data-value">@(Model.ThongTinLienHe?.DiaChiThuongTru ?? "-")</div></div>
+                        </div>
+                        <div class="col-md-6 ps-md-4">
+                            <div class="data-row"><div class="data-label">Địa chỉ tạm trú</div><div class="data-value">@(Model.ThongTinLienHe?.DiaChiTamTru ?? "-")</div></div>
+                        </div>
+                    </div>
+
+                    <h5 class="section-title">Liên hệ khẩn cấp</h5>
+                    <div class="row">
+                        <div class="col-md-6 pe-md-4">
+                            <div class="data-row"><div class="data-label">Họ và tên (LHKC)</div><div class="data-value">@(Model.ThongTinLienHe?.HTLienHeKhanCap ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Điện thoại (LHKC)</div><div class="data-value">@(Model.ThongTinLienHe?.DTLienHeKhanCap ?? "-")</div></div>
+                        </div>
+                        <div class="col-md-6 ps-md-4">
+                            <div class="data-row"><div class="data-label">Email (LHKC)</div><div class="data-value">@(Model.ThongTinLienHe?.EmailLienHeKhanCap ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Địa chỉ (LHKC)</div><div class="data-value">@(Model.ThongTinLienHe?.DiaChiLienHeKhanCap ?? "-")</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-job" role="tabpanel">
+                    <div class="tab-title-bar">
+                        <h4 class="tab-main-title">Thông tin công việc</h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 pe-md-4">
+                            <div class="data-row"><div class="data-label">Vị trí công việc</div><div class="data-value">@(Model.ViTriCongViec?.TenViTri ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Chức danh</div><div class="data-value">@(Model.ViTriCongViec?.NhomCongViec ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Trạng thái lao động</div><div class="data-value">@(Model.ThongTinCongViec?.TrangThaiLaoDong ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Tính chất lao động</div><div class="data-value">@(Model.ThongTinCongViec?.TinhChatLaoDong ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Loại hợp đồng</div><div class="data-value">@(Model.ThongTinCongViec?.LoaiHopDong ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Mã chấm công</div><div class="data-value">@(Model.ThongTinCongViec?.MaChamCong ?? "-")</div></div>
+                        </div>
+                        <div class="col-md-6 ps-md-4">
+                            <div class="data-row"><div class="data-label">Ngày học việc</div><div class="data-value">@(Model.ThongTinCongViec?.NgayHocViec?.ToString("dd/MM/yyyy") ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Ngày thử việc</div><div class="data-value">@(Model.ThongTinCongViec?.NgayThuViec?.ToString("dd/MM/yyyy") ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Ngày chính thức</div><div class="data-value">@(Model.ThongTinCongViec?.NgayChinhThuc?.ToString("dd/MM/yyyy") ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Thâm niên</div><div class="data-value">@(Model.ThongTinCongViec?.ThamNien ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Ngày nghỉ hưu dự kiến</div><div class="data-value">@(Model.ThongTinCongViec?.NgayNghiHuuDuKien?.ToString("dd/MM/yyyy") ?? "-")</div></div>
+                            <div class="data-row"><div class="data-label">Quản lý trực tiếp</div><div class="data-value">@(Model.QuanLy?.HoTen ?? "-")</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-account" role="tabpanel">
+                    <div class="tab-title-bar">
+                        <h4 class="tab-main-title">Thông tin tài khoản</h4>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 pe-md-4">
+                            <div class="data-row"><div class="data-label">Email tài khoản</div><div class="data-value">@Model.Email</div></div>
+                            <div class="data-row"><div class="data-label">ĐT tài khoản</div><div class="data-value">@Model.SoDienThoai</div></div>
+                        </div>
+                        <div class="col-md-6 ps-md-4">
+                            <div class="data-row"><div class="data-label">Trạng thái tài khoản</div><div class="data-value">@Model.TrangThai</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-WorkExperience" role="tabpanel">
+
+                    <div class="tab-title-bar d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="tab-main-title mb-0">Kinh nghiệm làm việc</h4>
+                    </div>
+
+                    @if (Model.KinhNghiemLamViecs != null && Model.KinhNghiemLamViecs.Any())
+                    {
+                        <div class="experience-list mt-3">
+                            @foreach (var kn in Model.KinhNghiemLamViecs.OrderByDescending(x => x.ThoiGianBatDau))
+                            {
+                                <div class="experience-item mb-4 pb-3 border-bottom">
+                                    <div class="row">
+                                        <div class="col-md-3 text-muted fw-medium" style="font-size: 0.95rem;">
+                                            <i class="bi bi-calendar3 me-2"></i>
+                                            @kn.ThoiGianBatDau.ToString("MM/yyyy") -
+                                            @* Xử lý nếu thời gian kết thúc ở tương lai hoặc rỗng thì ghi là "Hiện tại" *@
+                                            @(kn.ThoiGianKetThuc > DateTime.Now ? "Hiện tại" : kn.ThoiGianKetThuc.ToString("MM/yyyy"))
+                                        </div>
+
+                                        <div class="col-md-9 ps-md-4 border-start">
+                                            <p class="text-primary mb-2 fw-medium">
+                                                <i class="bi bi-building me-1"></i> @kn.NoiLamViec
+                                            </p>
+                                            <p class="mb-2 text-dark">Vị trí công việc: @kn.ViTriCongViec</p>
+
+                                            @if (!string.IsNullOrEmpty(kn.ChucVu))
+                                            {
+                                                <div class="mb-2 text-dark" style="font-size: 0.9rem;">
+                                                    <span class="text-muted">Chức vụ:</span> @kn.ChucVu
+                                                </div>
+                                            }
+
+                                            @if (!string.IsNullOrEmpty(kn.MoTaCongViec))
+                                            {
+                                                <p class="mb-2 text-muted" style="font-size: 0.9rem; line-height: 1.5;">
+                                                    @kn.MoTaCongViec
+                                                </p>
+                                            }
+
+                                            <div class="d-flex gap-4 mt-3 pt-2 text-muted" style="font-size: 0.85rem; border-top: 1px dashed #e5e7eb;">
+                                                @if (!string.IsNullOrEmpty(kn.MucLuong))
+                                                {
+                                                    <span><i class="bi bi-cash-stack me-1"></i> Mức lương: @kn.MucLuong</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(kn.NguoiDoiChieu))
+                                                {
+                                                    <span><i class="bi bi-person-badge me-1"></i> Người đối chiếu: @kn.NguoiDoiChieu</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(kn.TrangThai))
+                                                {
+                                                    <span><i class="bi bi-info-circle me-1"></i> @kn.TrangThai</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 bg-light rounded-3 border" style="border-style: dashed !important;">
+                            <i class="bi bi-briefcase text-secondary mb-3 d-block" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                            <h6 class="text-dark">Chưa có kinh nghiệm làm việc</h6>
+                            <p class="text-muted small mb-0">Hồ sơ này chưa cập nhật quá trình công tác trước đây.</p>
+                        </div>
+                    }
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-Reward" role="tabpanel">
+                    <div class="tab-title-bar d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="tab-main-title mb-0">Khen thưởng</h4>
+                    </div>
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0" style="white-space: nowrap;">
+                                    <thead class="bg-light text-muted" style="font-size: 0.85rem;">
+                                        <tr>
+                                            <th class="ps-4 py-3">Tên đợt khen thưởng</th>
+                                            <th class="py-3">Số quyết định</th>
+                                            <th class="py-3">Ngày quyết định</th>
+                                            <th class="py-3">Ngày khen thưởng</th>
+                                            <th class="py-3">Loại khen thưởng</th>
+                                            <th class="py-3">Hình thức khen thưởng</th>
+                                            <th class="py-3">Đối tượng</th>
+                                            <th class="py-3">Giá trị khen thưởng</th>
+                                            <th class="py-3">Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="font-size: 0.9rem;">
+                                        @if (Model.ChiTietKhenThuongs != null && Model.ChiTietKhenThuongs.Any())
+                                        {
+                                            foreach (var ct in Model.ChiTietKhenThuongs.OrderByDescending(x => x.KhenThuong?.NgayKhenThuong))
+                                            {
+                                                <tr>
+                                                    <td class="ps-4 fw-medium text-dark">@(ct.KhenThuong?.TenDotKhenThuong ?? "-")</td>
+                                                    <td>@(ct.KhenThuong?.SoQuyetDinh ?? "-")</td>
+                                                    <td>@(ct.KhenThuong?.NgayQuyetDinh.ToString("dd/MM/yyyy") ?? "-")</td>
+                                                    <td>@(ct.KhenThuong?.NgayKhenThuong?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                                    <td><span class="badge bg-success bg-opacity-10 text-success fw-medium">@(ct.KhenThuong?.LoaiKhenThuong ?? "-")</span></td>
+                                                    <td>@(ct.KhenThuong?.HinhThucKhenThuong ?? "-")</td>
+                                                    <td>@(ct.KhenThuong?.DoiTuongKhenThuong ?? "-")</td>
+                                                    <td>@ct.GiaTriKhenThuong</td>
+                                                    <td>@(ct.TrangThai)</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted fst-italic py-5">
+                                                    <i class="bi bi-award text-secondary mb-3 d-block" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                                                    <h6 class="text-dark">Chưa có lịch sử khen thưởng</h6>
+                                                    <p class="text-muted small mb-0">Hồ sơ này chưa ghi nhận đợt khen thưởng nào trên hệ thống.</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-Discipline" role="tabpanel">
+
+                    <div class="tab-title-bar d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="tab-main-title mb-0">Lịch sử Kỷ luật / Sự cố</h4>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0" style="white-space: nowrap;">
+                                    <thead class="bg-light text-muted" style="font-size: 0.85rem;">
+                                        <tr>
+                                            <th class="ps-4 py-3">Tên sự cố / Kỷ luật</th>
+                                            <th class="py-3">Ngày xảy ra</th>
+                                            <th class="py-3">Nơi xảy ra</th>
+                                            <th class="py-3">Loại sự cố</th>
+                                            <th class="py-3">Hình thức xử lý</th>
+                                            <th class="py-3">Tiền phạt</th>
+                                            <th class="py-3">Tổng giá trị thiệt hại</th>
+                                            <th class="py-3">Nguyên nhân</th>
+                                            <th class="py-3">Mô tả</th>
+                                            <th class="py-3">Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="font-size: 0.9rem;">
+                                        @if (Model.ChiTietKyLuats != null && Model.ChiTietKyLuats.Any())
+                                        {
+                                            // Sắp xếp ngày xảy ra mới nhất lên đầu
+                                            foreach (var ct in Model.ChiTietKyLuats.OrderByDescending(x => x.KyLuat?.NgayXayRa))
+                                            {
+                                                <tr>
+                                                    <td class="ps-4 fw-medium text-dark">@(ct.KyLuat?.TenKyLuat ?? "-")</td>
+                                                    <td>@(ct.KyLuat?.NgayXayRa?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                                    <td>@(ct.KyLuat?.NoiXayRa ?? "-")</td>
+                                                    <td>
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger fw-medium">@(ct.KyLuat?.LoaiKyLuat ?? "-")</span>
+                                                    </td>
+
+                                                    <td>@(ct.HinhThucXuLy ?? "-")</td>
+                                                    <td class="text-danger fw-medium">@(ct.SoTienPhat?.ToString("N0") ?? "0")</td>
+                                                    <td>@(ct.KyLuat?.TongGiaTriThietHai)</td>
+                                                    <td>@(ct.KyLuat?.NguyenNhan ?? "-")</td>
+                                                    <td>@(ct.KyLuat?.MoTa ?? "-")</td>
+                                                    <td>@(ct.TrangThai ?? "-")</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted fst-italic py-5">
+                                                    <i class="bi bi-shield-exclamation text-secondary mb-3 d-block" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                                                    <h6 class="text-dark">Chưa có lịch sử kỷ luật</h6>
+                                                    <p class="text-muted small mb-0">Hồ sơ này chưa ghi nhận sự cố hay quyết định xử phạt nào.</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-Degree" role="tabpanel">
+
+                    <div class="tab-title-bar d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="tab-main-title mb-0">Bằng cấp / Trình độ đào tạo</h4>
+                    </div>
+
+                    @if (Model.BangCaps != null && Model.BangCaps.Any())
+                    {
+                        <div class="experience-list mt-3">
+                            @* Sắp xếp bằng cấp mới nhất lên đầu dựa vào Năm kết thúc *@
+                            @foreach (var bc in Model.BangCaps.OrderByDescending(x => x.DenNam ?? 9999))
+                            {
+                                <div class="experience-item mb-4 pb-3 border-bottom">
+                                    <div class="row">
+                                        <div class="col-md-3 text-muted fw-medium" style="font-size: 0.95rem;">
+                                            <i class="bi bi-calendar3 me-2"></i>
+                                            @(bc.TuNam?.ToString() ?? "...") - @(bc.DenNam?.ToString() ?? "Hiện tại")
+                                        </div>
+
+                                        <div class="col-md-9 ps-md-4 border-start">
+                                            <p class="text-primary mb-2 fw-medium">
+                                                <i class="bi bi-bank me-1"></i> @bc.NoiDaoTao
+                                            </p>
+
+                                            @if (!string.IsNullOrEmpty(bc.ChuyenNganh))
+                                            {
+                                                <p class="mb-2 text-dark">Chuyên ngành: <span class="fw-medium">@bc.ChuyenNganh</span></p>
+                                            }
+
+                                            <div class="mb-2 text-dark" style="font-size: 0.9rem;">
+                                                @if (!string.IsNullOrEmpty(bc.TrinhDoDaoTao))
+                                                {
+                                                    <span class="me-3"><span class="text-muted">Trình độ:</span> @bc.TrinhDoDaoTao</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(bc.Khoa))
+                                                {
+                                                    <span><span class="text-muted">Khoa:</span> @bc.Khoa</span>
+                                                }
+                                            </div>
+
+                                            @if (!string.IsNullOrEmpty(bc.GhiChu))
+                                            {
+                                                <p class="mb-2 text-muted" style="font-size: 0.9rem; line-height: 1.5;">
+                                                    <span class="text-muted">Ghi chú:</span> @bc.GhiChu
+                                                </p>
+                                            }
+
+                                            <div class="d-flex flex-wrap gap-4 mt-3 pt-2 text-muted" style="font-size: 0.85rem; border-top: 1px dashed #e5e7eb;">
+                                                @if (!string.IsNullOrEmpty(bc.HinhThuc))
+                                                {
+                                                    <span><i class="bi bi-book me-1"></i> Hình thức: @bc.HinhThuc</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(bc.XepLoai))
+                                                {
+                                                    <span><i class="bi bi-award me-1"></i> Xếp loại: @bc.XepLoai</span>
+                                                }
+
+                                                <span>
+                                                    @if (bc.DaTotNghiep)
+                                                    {
+                                                        <span class="text-success"><i class="bi bi-check-circle me-1"></i> Đã tốt nghiệp</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-warning"><i class="bi bi-hourglass-split me-1"></i> Đang theo học</span>
+                                                    }
+                                                </span>
+
+                                                @if (bc.NgayNhanBang.HasValue)
+                                                {
+                                                    <span><i class="bi bi-calendar-check me-1"></i> Ngày nhận bằng: @bc.NgayNhanBang.Value.ToString("dd/MM/yyyy")</span>
+                                                }
+
+                                                @if (!string.IsNullOrEmpty(bc.TepDinhKem))
+                                                {
+                                                    <a href="~/uploads/bangcap/@bc.TepDinhKem" target="_blank" class="text-primary text-decoration-none">
+                                                        <i class="bi bi-paperclip"></i> Xem đính kèm
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 bg-light rounded-3 border" style="border-style: dashed !important;">
+                            <i class="bi bi-mortarboard text-secondary mb-3 d-block" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                            <h6 class="text-dark">Chưa có thông tin bằng cấp</h6>
+                            <p class="text-muted small mb-0">Hồ sơ này chưa cập nhật quá trình đào tạo và bằng cấp.</p>
+                        </div>
+                    }
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-Certificate" role="tabpanel">
+
+                    <div class="tab-title-bar d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="tab-main-title mb-0">Chứng chỉ chuyên môn</h4>
+                    </div>
+
+                    @if (Model.ChungChis != null && Model.ChungChis.Any())
+                    {
+                        <div class="experience-list mt-3">
+                            @* Sắp xếp chứng chỉ mới nhất lên đầu dựa vào Ngày cấp *@
+                            @foreach (var cc in Model.ChungChis.OrderByDescending(x => x.NgayCap))
+                            {
+                                <div class="experience-item mb-4 pb-3 border-bottom">
+                                    <div class="row">
+                                        <div class="col-md-3 text-muted fw-medium" style="font-size: 0.95rem;">
+                                            <i class="bi bi-calendar-event me-2"></i>
+                                            @(cc.NgayCap?.ToString("MM/yyyy") ?? "...") -
+
+                                            @* Nếu không có ngày hết hạn thì báo là Vô thời hạn *@
+                                            @if (cc.NgayHetHan.HasValue)
+                                            {
+                                                <span class="@(cc.NgayHetHan.Value < DateTime.Now ? "text-danger" : "")">
+                                                    @cc.NgayHetHan.Value.ToString("MM/yyyy")
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span>Vô thời hạn</span>
+                                            }
+                                        </div>
+
+                                        <div class="col-md-9 ps-md-4 border-start">
+                                            <p class="text-primary mb-2 fw-medium" style="font-size: 1.05rem;">
+                                                <i class="bi bi-patch-check-fill me-1"></i> @cc.TenChungChi
+                                            </p>
+
+                                            <div class="mb-2 text-dark" style="font-size: 0.9rem;">
+                                                <span class="me-3"><span class="text-muted">Nhóm:</span> <span class="badge bg-light text-dark border">@cc.NhomChungChi</span></span>
+
+                                                @if (!string.IsNullOrEmpty(cc.NoiCap))
+                                                {
+                                                    <span><span class="text-muted">Nơi cấp:</span> @cc.NoiCap</span>
+                                                }
+                                            </div>
+
+                                            @if (!string.IsNullOrEmpty(cc.GhiChu))
+                                            {
+                                                <p class="mb-2 text-muted" style="font-size: 0.9rem; line-height: 1.5;">
+                                                    <span class="text-muted">Ghi chú:</span> @cc.GhiChu
+                                                </p>
+                                            }
+
+                                            <div class="d-flex flex-wrap gap-4 mt-3 pt-2 text-muted" style="font-size: 0.85rem; border-top: 1px dashed #e5e7eb;">
+                                                @if (!string.IsNullOrEmpty(cc.SoChungChi))
+                                                {
+                                                    <span><i class="bi bi-hash me-1"></i> Số CC: @cc.SoChungChi</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(cc.TrinhDoDaoTao))
+                                                {
+                                                    <span><i class="bi bi-bar-chart me-1"></i> Trình độ: @cc.TrinhDoDaoTao</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(cc.DiemSo))
+                                                {
+                                                    <span><i class="bi bi-bullseye me-1"></i> Điểm số: <strong class="text-dark">@cc.DiemSo</strong></span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(cc.XepLoai))
+                                                {
+                                                    <span><i class="bi bi-star me-1"></i> Xếp loại: @cc.XepLoai</span>
+                                                }
+
+                                                @if (cc.NgayHetHan.HasValue && cc.NgayHetHan.Value < DateTime.Now)
+                                                {
+                                                    <span class="text-danger fw-medium"><i class="bi bi-exclamation-triangle me-1"></i> Đã hết hạn</span>
+                                                }
+
+                                                @if (!string.IsNullOrEmpty(cc.TepDinhKem))
+                                                {
+                                                    <a href="~/uploads/chungchi/@cc.TepDinhKem" target="_blank" class="text-primary text-decoration-none ms-auto">
+                                                        <i class="bi bi-paperclip"></i> Xem đính kèm
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 bg-light rounded-3 border" style="border-style: dashed !important;">
+                            <i class="bi bi-patch-check text-secondary mb-3 d-block" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                            <h6 class="text-dark">Chưa có thông tin chứng chỉ</h6>
+                            <p class="text-muted small mb-0">Hồ sơ này chưa cập nhật các chứng chỉ chuyên môn liên quan.</p>
+                        </div>
+                    }
+                </div>
+
+                <div class="tab-pane fade" id="v-pills-WorkProcess" role="tabpanel">
+
+                    <div class="tab-title-bar d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="tab-main-title mb-0">Quá trình công tác</h4>
+                    </div>
+
+                    @if (Model.QuaTrinhCongTacs != null && Model.QuaTrinhCongTacs.Any())
+                    {
+                        <div class="experience-list mt-3">
+                            @* Sắp xếp thời gian mới nhất lên đầu *@
+                            @foreach (var qt in Model.QuaTrinhCongTacs.OrderByDescending(x => x.TuNgay))
+                            {
+                                <div class="experience-item mb-4 pb-3 border-bottom">
+                                    <div class="row">
+                                        <div class="col-md-3 text-muted fw-medium" style="font-size: 0.95rem;">
+                                            <i class="bi bi-clock-history me-2"></i>
+                                            Từ: @(qt.TuNgay.ToString("dd/MM/yyyy"))
+                                        </div>
+
+                                        <div class="col-md-9 ps-md-4 border-start">
+                                            <p class="text-primary mb-2 fw-medium" style="font-size: 1.05rem;">
+                                                <i class="bi bi-briefcase-fill me-1"></i> @(qt.ViTriCongViec?.TenViTri ?? "-")
+                                            </p>
+
+                                            <div class="mb-2 text-dark" style="font-size: 0.95rem;">
+                                                <span class="fw-bold"><i class="bi bi-building me-1"></i> @(qt.PhongBan?.TenPhongBan ?? "-")</span>
+                                            </div>
+
+                                            <div class="row mt-3 mb-2 text-dark" style="font-size: 0.85rem;">
+                                                <div class="col-md-6">
+                                                    <div class="mb-1"><span class="text-muted">Tính chất:</span> @(qt.TinhChatLaoDong ?? "-")</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-1"><span class="text-muted">Số quyết định:</span> @(qt.SoQuyetDinh ?? "-")</div>
+                                                    <div class="mb-1"><span class="text-muted">Ngày QĐ:</span> @(qt.NgayQuyetDinh?.ToString("dd/MM/yyyy") ?? "-")</div>
+                                                </div>
+                                            </div>
+
+                                            @if (!string.IsNullOrEmpty(qt.GhiChu))
+                                            {
+                                                <p class="mb-2 text-muted" style="font-size: 0.85rem; line-height: 1.5; background: #f8fafc; padding: 10px; border-radius: 6px;">
+                                                    <span class="fw-medium text-secondary">Ghi chú:</span> @qt.GhiChu
+                                                </p>
+                                            }
+
+                                            <div class="d-flex flex-wrap gap-4 mt-3 pt-2 text-muted" style="font-size: 0.85rem; border-top: 1px dashed #e5e7eb;">
+                                                @if (qt.QuanLyTrucTiep != null)
+                                                {
+                                                    <span><i class="bi bi-person-badge me-1"></i> QL Trực tiếp: <span class="text-dark fw-medium">@qt.QuanLyTrucTiep.HoTen</span></span>
+                                                }
+
+                                                @if (!string.IsNullOrEmpty(qt.TepDinhKem))
+                                                {
+                                                    <a href="~/uploads/quatrinhcongtac/@qt.TepDinhKem" target="_blank" class="text-primary text-decoration-none ms-auto">
+                                                        <i class="bi bi-paperclip"></i> Xem tài liệu đính kèm
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 bg-light rounded-3 border" style="border-style: dashed !important;">
+                            <i class="bi bi-clock-history text-secondary mb-3 d-block" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                            <h6 class="text-dark">Chưa có quá trình công tác</h6>
+                            <p class="text-muted small mb-0">Nhân sự này chưa phát sinh các đợt luân chuyển hay thay đổi vị trí công việc.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

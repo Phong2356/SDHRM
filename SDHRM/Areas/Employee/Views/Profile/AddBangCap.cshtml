@@ -1,0 +1,173 @@
+﻿@model SDHRM.Models.BangCap
+@{
+    ViewData["Title"] = "Thêm Bằng cấp / Trình độ đào tạo";
+}
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-group-row label {
+            width: 35%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 65%;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        outline: none;
+        box-shadow: none;
+    }
+
+        .form-control-custom:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+</style>
+
+<form asp-action="AddBangCap" method="post" enctype="multipart/form-data" class="d-flex flex-column" style="height: calc(100vh - 80px);">
+
+    <input type="hidden" asp-for="NhanSuId" />
+
+    <div class="top-action-bar d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold text-dark mb-0" style="font-size: 1.25rem;"><i class="bi bi-mortarboard me-2"></i>Thêm Bằng cấp</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4 shadow-none">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-primary px-4 shadow-none">Lưu thông tin</button>
+        </div>
+    </div>
+
+    <div class="container-fluid pt-4 flex-grow-1" style="overflow-y: auto; padding-bottom: 50px;">
+        <div class="form-container">
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row">
+                        <label>Nơi đào tạo <span class="text-danger">*</span></label>
+                        <div class="input-wrapper"><input asp-for="NoiDaoTao" class="form-control-custom" required /></div>
+                    </div>
+                    <div class="form-group-row">
+                        <label>Đến năm</label>
+                        <div class="input-wrapper"><input asp-for="DenNam" type="number" class="form-control-custom" /></div>
+                    </div>
+                    <div class="form-group-row">
+                        <label>Chuyên ngành</label>
+                        <div class="input-wrapper"><input asp-for="ChuyenNganh" class="form-control-custom" /></div>
+                    </div>
+                    <div class="form-group-row">
+                        <label>Hình thức</label>
+                        <div class="input-wrapper">
+                            <select asp-for="HinhThuc" class="form-control-custom form-select shadow-none">
+                                <option value="">Chọn hình thức</option>
+                                <option value="Chính quy">Chính quy</option>
+                                <option value="Tại chức">Tại chức</option>
+                                <option value="Đào tạo từ xa">Đào tạo từ xa</option>
+                                <option value="Liên thông">Liên thông</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <label>Đã tốt nghiệp</label>
+                        <div class="input-wrapper">
+                            <div class="form-check m-0">
+                                <input asp-for="DaTotNghiep" class="form-check-input shadow-none" type="checkbox" style="width: 1.2rem; height: 1.2rem;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-row mt-3">
+                        <label>Tệp đính kèm</label>
+                        <div class="input-wrapper">
+                            <input type="file" name="fileDinhKem" class="form-control-custom" />
+                        </div>
+                    </div>
+                    <div class="form-group-row align-items-start mt-3">
+                        <label class="pt-2">Ghi chú</label>
+                        <div class="input-wrapper">
+                            <textarea asp-for="GhiChu" class="form-control-custom" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row">
+                        <label>Từ năm</label>
+                        <div class="input-wrapper"><input asp-for="TuNam" type="number" class="form-control-custom" /></div>
+                    </div>
+                    <div class="form-group-row">
+                        <label>Khoa</label>
+                        <div class="input-wrapper"><input asp-for="Khoa" class="form-control-custom" /></div>
+                    </div>
+                    <div class="form-group-row">
+                        <label>Trình độ đào tạo</label>
+                        <div class="input-wrapper">
+                            <select asp-for="TrinhDoDaoTao" class="form-control-custom form-select shadow-none">
+                                <option value="">Chọn trình độ</option>
+                                <option value="Tiến sĩ">Tiến sĩ</option>
+                                <option value="Thạc sĩ">Thạc sĩ</option>
+                                <option value="Đại học">Đại học</option>
+                                <option value="Cao đẳng">Cao đẳng</option>
+                                <option value="Trung cấp">Trung cấp</option>
+                                <option value="Sơ cấp">Sơ cấp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <label>Xếp loại</label>
+                        <div class="input-wrapper">
+                            <select asp-for="XepLoai" class="form-control-custom form-select shadow-none">
+                                <option value="">Chọn xếp loại</option>
+                                <option value="Xuất sắc">Xuất sắc</option>
+                                <option value="Giỏi">Giỏi</option>
+                                <option value="Khá">Khá</option>
+                                <option value="Trung bình khá">Trung bình khá</option>
+                                <option value="Trung bình">Trung bình</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group-row">
+                        <label>Ngày nhận bằng</label>
+                        <div class="input-wrapper"><input asp-for="NgayNhanBang" type="date" class="form-control-custom" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

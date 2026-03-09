@@ -1,0 +1,265 @@
+﻿@model SDHRM.Models.DonXinNghi
+@{
+    ViewData["Title"] = "Chỉnh sửa đơn xin nghỉ";
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Buttons */
+    .btn-outline-custom {
+        border: 1px solid #d1d5db;
+        color: #374151;
+        background: white;
+        font-weight: 500;
+    }
+
+        .btn-outline-custom:hover {
+            background: #f3f4f6;
+        }
+
+    .btn-primary {
+        background-color: #5a67d8;
+        border-color: #5a67d8;
+        color: white;
+        font-weight: 500;
+    }
+
+        .btn-primary:hover {
+            background-color: #434ce6;
+            border-color: #434ce6;
+        }
+
+    /* Forms */
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.3rem;
+    }
+
+    .form-control, .form-select {
+        border-color: #d1d5db;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        padding: 0.5rem 0.75rem;
+        box-shadow: none;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #5a67d8;
+            box-shadow: 0 0 0 0.2rem rgba(90, 103, 216, 0.25);
+        }
+
+        .form-control[readonly] {
+            background-color: #f3f4f6;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+    /* Chips Lý do */
+    .reason-chip {
+        display: inline-block;
+        padding: 4px 12px;
+        margin-top: 8px;
+        margin-right: 6px;
+        font-size: 0.8rem;
+        color: #4b5563;
+        background-color: white;
+        border: 1px solid #d1d5db;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .reason-chip:hover {
+            border-color: #5a67d8;
+            color: #5a67d8;
+            background-color: #f8fafc;
+        }
+
+    /* File Upload Box */
+    .upload-box {
+        border: 2px dashed #a5b4fc;
+        border-radius: 8px;
+        padding: 35px 20px;
+        text-align: center;
+        background-color: #f8fafc;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+        .upload-box:hover {
+            background-color: #e0e7ff;
+            border-color: #5a67d8;
+        }
+
+    .upload-box-text {
+        color: #5a67d8;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .row-form-group {
+        margin-bottom: 1.25rem;
+        align-items: center;
+    }
+</style>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="FileDinhKem" />
+
+    <div class="container-fluid py-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold mb-0 text-dark">Chỉnh sửa đơn xin nghỉ</h4>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-custom px-4 rounded-3 shadow-sm">Hủy</a>
+                <button type="submit" class="btn btn-primary px-4 rounded-3 shadow-sm">
+                    <i class="bi bi-save me-1"></i> Lưu thay đổi
+                </button>
+            </div>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger shadow-sm border-0 mb-4 rounded-3">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+                    <strong class="mb-0">Có lỗi xảy ra khi lưu đơn:</strong>
+                </div>
+                <div asp-validation-summary="All" class="mb-0 small"></div>
+            </div>
+        }
+
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <h5 class="fw-bold text-dark mb-4">Thông tin chung</h5>
+
+                <div class="row">
+                    <div class="col-lg-6 pe-lg-4 border-end">
+
+                        <div class="row row-form-group">
+                            <label class="col-sm-4 col-form-label">Từ ngày <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="TuNgay" class="form-control" type="datetime-local" required>
+                            </div>
+                        </div>
+
+                        <div class="row row-form-group">
+                            <label class="col-sm-4 col-form-label">Đến ngày <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="DenNgay" class="form-control" type="datetime-local" required>
+                            </div>
+                        </div>
+
+                        <div class="row row-form-group">
+                            <label class="col-sm-4 col-form-label">
+                                Số ngày nghỉ <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <input asp-for="SoNgayNghi" class="form-control" type="number" step="0.5" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="row row-form-group">
+                            <label class="col-sm-4 col-form-label">Loại nghỉ <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <select asp-for="LoaiNghiPhepId" asp-items="ViewBag.LoaiNghiPheps" class="form-select" required>
+                                    <option value="">-- Chọn loại nghỉ --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 ps-lg-4 mt-4 mt-lg-0">
+
+                        <div class="row row-form-group">
+                            <label class="col-sm-4 col-form-label text-muted">Số phép khả dụng (đến hiện tại)</label>
+                            <div class="col-sm-8"><input type="text" class="form-control" value="@ViewBag.TongPhep" readonly></div>
+                        </div>
+                        <div class="row row-form-group">
+                            <label class="col-sm-4 col-form-label text-muted">Số phép đã nghỉ</label>
+                            <div class="col-sm-8"><input type="text" class="form-control" value="@ViewBag.DaDung" readonly></div>
+                        </div>
+                        <div class="row row-form-group">
+                            <label class="col-sm-4 col-form-label text-muted">Số phép còn lại</label>
+                            <div class="col-sm-8">
+                                @if (ViewBag.ConLai <= 2)
+                                {
+                                    <input type="text" class="form-control text-danger fw-bold bg-danger bg-opacity-10" value="@ViewBag.ConLai" readonly>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control text-success fw-bold bg-success bg-opacity-10" value="@ViewBag.ConLai" readonly>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row row-form-group align-items-start mt-4">
+                            <label class="col-sm-4 col-form-label pt-2">Lý do nghỉ <span class="text-danger">*</span></label>
+                            <div class="col-sm-8">
+                                <textarea asp-for="LyDo" class="form-control" rows="3" id="lyDoTextarea" required placeholder="Nhập lý do hoặc chọn gợi ý bên dưới..."></textarea>
+                                <div class="d-flex flex-wrap mt-2">
+                                    <span class="reason-chip" onclick="dienNhanhLyDo('Em xin nghỉ do có việc cá nhân')">Việc cá nhân</span>
+                                    <span class="reason-chip" onclick="dienNhanhLyDo('Em xin nghỉ ốm')">Nghỉ ốm</span>
+                                    <span class="reason-chip" onclick="dienNhanhLyDo('Về quê thăm gia đình')">Về quê</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 mb-5">
+            <div class="card-body p-4 p-md-5">
+                <h5 class="fw-bold text-dark mb-4">Tài liệu đính kèm (Nghỉ ốm, thai sản...)</h5>
+
+                @if (!string.IsNullOrEmpty(Model.FileDinhKem))
+                {
+                    <div class="alert alert-info mb-4 d-flex align-items-center">
+                        <i class="bi bi-paperclip fs-4 me-3"></i>
+                        <div>
+                            Đang có file đính kèm:
+                            <a href="@Model.FileDinhKem" target="_blank" class="fw-bold text-decoration-none">Xem file gốc</a>
+                            <div class="small text-muted mt-1">(Nếu bạn tải tệp mới lên dưới đây, tệp gốc sẽ bị ghi đè)</div>
+                        </div>
+                    </div>
+                }
+
+                <div class="upload-box" onclick="document.getElementById('fileUpload').click()">
+                    <i class="bi bi-cloud-arrow-up-fill fs-1 text-primary opacity-75 mb-3 d-inline-block"></i>
+                    <div class="upload-box-text">Kéo thả hoặc bấm vào đây để đính kèm file thay thế</div>
+                    <div class="text-muted small mt-2" id="fileNameDisplay">Chưa có tệp nào được chọn.</div>
+
+                    <input type="file" name="fileUpload" id="fileUpload" style="display: none;" accept=".pdf,.jpg,.jpeg,.png" onchange="hienThiTenFile(this)">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+<script>
+    function hienThiTenFile(input) {
+        const display = document.getElementById('fileNameDisplay');
+        if (input.files && input.files[0]) {
+            display.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-file-earmark-check"></i> Đã chọn file mới: ${input.files[0].name}</span>`;
+        } else {
+            display.innerHTML = "Chưa có tệp nào được chọn.";
+        }
+    }
+
+    function dienNhanhLyDo(text) {
+        const textarea = document.getElementById('lyDoTextarea');
+        textarea.value = text;
+        textarea.focus();
+    }
+</script>

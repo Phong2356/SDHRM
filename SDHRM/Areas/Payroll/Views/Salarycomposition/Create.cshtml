@@ -1,0 +1,104 @@
+﻿@model SDHRM.Models.ThanhPhanLuong
+@{
+    ViewData["Title"] = "Thêm thành phần lương";
+}
+<style>
+    body {
+        background-color: #f3f4f6;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-group-row label {
+            width: 30%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 70%;
+            display: flex;
+            align-items: center;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        box-shadow: none;
+        outline: none;
+    }
+
+        .form-control-custom:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+</style>
+
+<form asp-action="Create" method="post" class="d-flex flex-column" style="height: calc(100vh - 80px);">
+    <div class="top-action-bar d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold text-dark mb-0" style="font-size: 1.25rem;">Thêm thành phần lương</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4 shadow-none">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-primary px-4 shadow-none">Lưu thông tin</button>
+        </div>
+    </div>
+
+    <div class="container-fluid pt-4 flex-grow-1" style="overflow-y: auto;">
+        <div class="form-container col-md-8 mx-auto">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-group-row"><label>Mã thành phần <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="MaThanhPhan" class="form-control-custom" required placeholder="VD: LCB, PHUCAP..." /></div></div>
+            <div class="form-group-row"><label>Tên thành phần <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="TenThanhPhan" class="form-control-custom" required placeholder="VD: Lương cơ bản" /></div></div>
+            <div class="form-group-row">
+                <label>Loại thành phần</label>
+                <div class="input-wrapper">
+                    <select asp-for="LoaiThanhPhan" class="form-control-custom form-select shadow-none">
+                        <option value="Lương">Lương</option>
+                        <option value="Phụ cấp">Phụ cấp</option>
+                        <option value="Bảo hiểm - Công đoàn">Bảo hiểm - Công đoàn</option>
+                        <option value="Thuế TNCN">Thuế TNCN</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group-row"><label>Tính chất</label><div class="input-wrapper"><select asp-for="TinhChat" class="form-control-custom form-select shadow-none"><option value="Thu nhập">Thu nhập (+)</option><option value="Khấu trừ">Khấu trừ (-)</option><option value="Khác">Khác</option></select></div></div>
+            <div class="form-group-row"><label>Kiểu giá trị</label><div class="input-wrapper"><select asp-for="KieuGiaTri" class="form-control-custom form-select shadow-none"><option value="Tiền tệ">Tiền tệ</option><option value="Số">Số</option><option value="Chữ">Chữ</option><option value="Công thức">Công thức</option></select></div></div>
+            <div class="form-group-row align-items-start mt-3"><label class="pt-2">Giá trị / Công thức</label><div class="input-wrapper"><textarea asp-for="GiaTri" class="form-control-custom" rows="3" placeholder="Nhập giá trị cố định hoặc công thức (bắt đầu bằng dấu =, VD: =LCB*0.08)"></textarea></div></div>
+            <div class="form-group-row">
+                <label>Trạng thái</label>
+                <div class="input-wrapper">
+                    <div class="form-check form-switch mt-1">
+                        <input class="form-check-input shadow-none" type="checkbox" asp-for="KichHoat" checked>
+                        <label class="form-check-label ms-2" for="KichHoat">Đang kích hoạt</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,246 @@
+﻿@model IEnumerable<SDHRM.Models.BangChamCong>
+@{
+    ViewData["Title"] = "Bảng chấm công chi tiết";
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .page-header {
+        background-color: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        background: white;
+        border: 1px solid #e2e8f0;
+        min-height: calc(100vh - 160px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .custom-table th {
+        background-color: #f8fafc;
+        color: #475569;
+        font-weight: 600;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+    }
+
+    .custom-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .table-toolbar {
+        padding: 10px 16px;
+        border-bottom: 1px solid #e2e8f0;
+        background: white;
+    }
+
+    /* Tùy chỉnh Modal */
+    .modal-header {
+        background-color: white;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .modal-title {
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .btn-orange {
+        background-color: #ea580c;
+        color: white;
+        font-weight: 500;
+    }
+
+        .btn-orange:hover {
+            background-color: #c2410c;
+            color: white;
+        }
+</style>
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h5 class="fw-bold mb-0 text-dark">Bảng chấm công chi tiết</h5>
+    <button class="btn btn-sm btn-orange shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#createModal">
+        <i class="bi bi-plus-lg me-1"></i> Thêm
+    </button>
+</div>
+
+<div class="container-fluid p-3">
+    <div class="table-wrapper shadow-sm">
+        <div class="table-toolbar d-flex justify-content-between align-items-center">
+            <div class="input-group input-group-sm w-25">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm...">
+            </div>
+
+            <div class="d-flex gap-2">
+                <select class="form-select form-select-sm shadow-none w-auto text-muted">
+                    <option>Tất cả đơn vị</option>
+                </select>
+                <button class="btn btn-sm btn-light border shadow-none"><i class="bi bi-arrow-counterclockwise"></i></button>
+                <button class="btn btn-sm btn-light border shadow-none"><i class="bi bi-gear"></i></button>
+            </div>
+        </div>
+
+        <div class="flex-grow-1 overflow-auto">
+            <table class="table custom-table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" class="form-check-input shadow-none"></th>
+                        <th>Thời gian</th>
+                        <th>Tên bảng chấm công</th>
+                        <th>Đơn vị áp dụng</th>
+                        <th>Vị trí áp dụng</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="7" class="text-center py-5 text-muted">Chưa có bảng chấm công nào.</td></tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input shadow-none"></td>
+                                <td>@item.TuNgay.ToString("dd/MM/yyyy") - @item.DenNgay.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a asp-action="Detail" asp-route-id="@item.Id" class="text-decoration-none text-dark fw-medium">
+                                        @item.TenBangChamCong
+                                    </a>
+                                </td>
+                                <td>@item.DonViApDung</td>
+                                <td>@item.ViTriApDung</td>
+                                <td>
+                                    @if (item.TrangThai == "Chưa khóa")
+                                    {
+                                        <span class="text-secondary"><i class="bi bi-unlock me-1"></i> Chưa khóa</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success"><i class="bi bi-lock-fill me-1"></i> Đã khóa</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-white border-top p-2 px-3 d-flex justify-content-between align-items-center mt-auto">
+            <span class="text-muted">Tổng số bản ghi: <strong class="text-dark">@Model.Count()</strong></span>
+            <div class="d-flex align-items-center gap-3">
+                <select class="form-select form-select-sm shadow-none w-auto py-1"><option>50</option></select>
+                <span class="text-muted">Từ <strong>1</strong> đến <strong>@Model.Count()</strong> bản ghi</span>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-light border shadow-none disabled"><i class="bi bi-chevron-left"></i></button>
+                    <button class="btn btn-sm btn-light border shadow-none disabled"><i class="bi bi-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5">Thêm bảng chấm công chi tiết</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Create" method="post">
+                <div class="modal-body p-4">
+
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-3"><label class="form-label fw-medium mb-0">Đơn vị áp dụng <span class="text-danger">*</span></label></div>
+                        <div class="col-md-9">
+                            <select name="DonViApDung" class="form-select shadow-none">
+                                <option value="Tất cả đơn vị">Tất cả đơn vị</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2 align-items-center">
+                        <div class="col-md-3"><label class="form-label fw-medium mb-0">Vị trí áp dụng</label></div>
+                        <div class="col-md-9">
+                            <select name="ViTriApDung" class="form-select shadow-none text-muted">
+                                <option value="Tất cả vị trí trong đơn vị">Tất cả vị trí trong đơn vị</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    
+
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-3"><label class="form-label fw-medium mb-0">Thời gian <span class="text-danger">*</span></label></div>
+                        <div class="col-md-9">                            
+                            <div class="d-flex gap-2">
+                                <input type="date" name="TuNgay" id="TuNgay" class="form-control shadow-none" required />
+                                <input type="date" name="DenNgay" id="DenNgay" class="form-control shadow-none" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-3"><label class="form-label fw-medium mb-0">Tên bảng chấm công <span class="text-danger">*</span></label></div>
+                        <div class="col-md-9">
+                            <input type="text" name="TenBangChamCong" id="TenBangChamCong" class="form-control shadow-none" required />
+                        </div>
+                    </div>
+
+                    
+
+                </div>
+                <div class="modal-footer bg-light border-top-0 d-flex justify-content-end">
+                    <button type="button" class="btn btn-white border px-4 shadow-none" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-orange px-4 shadow-sm">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JS Tự động điền ngày đầu tháng/cuối tháng hiện tại và sinh Tên bảng chấm công
+    document.addEventListener("DOMContentLoaded", function () {
+        const tuNgayInput = document.getElementById("TuNgay");
+        const denNgayInput = document.getElementById("DenNgay");
+        const tenBangInput = document.getElementById("TenBangChamCong");
+
+        // Thiết lập tháng hiện tại
+        const date = new Date();
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+        tuNgayInput.value = firstDay.toISOString().split('T')[0];
+        denNgayInput.value = lastDay.toISOString().split('T')[0];
+
+        // Hàm cập nhật Tên
+        function updateName() {
+            if(tuNgayInput.value && denNgayInput.value) {
+                let tu = tuNgayInput.value.split('-').reverse().join('/');
+                let den = denNgayInput.value.split('-').reverse().join('/');
+                tenBangInput.value = `Bảng chấm công từ ngày ${tu} đến ngày ${den}`;
+            }
+        }
+
+        updateName();
+        tuNgayInput.addEventListener('change', updateName);
+        denNgayInput.addEventListener('change', updateName);
+    });
+</script>

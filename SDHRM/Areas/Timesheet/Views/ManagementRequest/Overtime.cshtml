@@ -1,0 +1,294 @@
+﻿@model IEnumerable<SDHRM.Models.DonTangCa>
+@{
+    ViewData["Title"] = "Quản lý Đơn Tăng ca";
+    string GetInitials(string fullName) { if (string.IsNullOrWhiteSpace(fullName)) return "NV"; var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries); if (parts.Length == 1) return parts[0].Substring(0, 1).ToUpper(); return (parts[0].Substring(0, 1) + parts[^1].Substring(0, 1)).ToUpper(); }
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .page-header {
+        background-color: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        background: white;
+        border: 1px solid #e2e8f0;
+        height: calc(100vh - 160px);
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .grid-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 100%;
+        margin-bottom: 0;
+    }
+
+        .grid-table th {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            font-size: 0.8rem;
+        }
+
+        .grid-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+    .btn-outline-custom {
+        border: 1px solid #d1d5db;
+        color: #374151;
+        background: white;
+        text-decoration: none;
+    }
+
+        .btn-outline-custom:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+    .avatar-circle {
+        width: 28px;
+        height: 28px;
+        color: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+</style>
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+        <h5 class="fw-bold mb-0 text-dark">Đăng ký Tăng ca (OT)</h5>
+        
+    </div>
+    <div class="d-flex gap-2">
+        
+        <button class="btn btn-sm btn-success shadow-sm px-3 fw-medium">
+            <i class="bi bi-file-earmark-excel me-1"></i> Xuất Excel
+        </button>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+     <div class="alert alert-success m-3 py-2">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+     <div class="alert alert-danger m-3 py-2 fw-bold">@TempData["ErrorMessage"]</div>
+}
+
+<div class="container-fluid p-3">
+    <div class="table-wrapper shadow-sm">
+        <div class="p-2 border-bottom bg-white d-flex justify-content-between align-items-center">
+            <div class="input-group input-group-sm w-25">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="searchInput" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm theo tên, lý do..." onkeyup="searchTable()">
+            </div>
+
+            <div class="d-flex gap-2 align-items-center">
+                <select class="form-select form-select-sm shadow-none w-auto text-muted" id="filterStatus" onchange="filterStatus()">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="Chờ duyệt">Chờ duyệt</option>
+                    <option value="Đã duyệt">Đã duyệt</option>
+                    <option value="Từ chối">Từ chối</option>
+                </select>
+                <button class="btn btn-sm btn-outline-custom shadow-none" onclick="location.reload()"><i class="bi bi-arrow-counterclockwise"></i></button>
+            </div>
+        </div>
+
+        <div class="flex-grow-1" style="overflow-y: auto;">
+            <table class="table grid-table table-hover mb-0" id="mainTable">
+                <thead>
+                    <tr>
+                        <th>Người tạo đơn</th>
+                        <th>Ngày tăng ca</th>
+                        <th class="text-primary">Khung giờ OT</th>
+                        <th class="text-danger">Số giờ</th>
+                        <th>Lý do / Công việc</th>
+                        <th>Ngày tạo</th>
+                        <th>Trạng thái</th>
+                        <th>Người duyệt</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <div class="text-muted d-flex flex-column align-items-center my-4">
+                                    <i class="bi bi-moon-stars text-black-50" style="font-size: 3rem; opacity: 0.3;"></i>
+                                    <span class="mt-2">Chưa có đơn đăng ký tăng ca nào</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="data-row">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle" style="background-color: #10b981;">@GetInitials(item.NhanSu?.HoTen)</div>
+                                        <div>
+                                            <div class="fw-medium text-dark search-name">@item.NhanSu?.HoTen</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">@(item.NhanSu?.PhongBan?.TenPhongBan ?? "NV000" + item.NhanSuId)</div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="fw-medium text-dark">@item.NgayTangCa.ToString("dd/MM/yyyy")</td>
+
+                                <td class="text-primary fw-medium"><i class="bi bi-clock me-1"></i> @item.TuGio - @item.DenGio</td>
+
+                                <td class="fw-bold text-danger fs-6">@item.SoGio h</td>
+
+                                <td class="text-wrap search-reason" style="max-width: 200px;">@item.LyDoTangCa</td>
+                                <td class="text-muted">@item.NgayTao.ToString("dd/MM/yyyy HH:mm")</td>
+
+                                <td class="status-cell">
+                                    @if (item.TrangThai == "Chờ duyệt")
+                                    {
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> Chờ duyệt</span>
+                                    }
+                                    else if (item.TrangThai == "Đã duyệt")
+                                    {
+                                        <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Đã duyệt</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> Từ chối</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @(item.NguoiDuyet != null ? item.NguoiDuyet.HoTen : "-")
+                                </td>
+
+                                <td class="text-center">
+                                    @if (item.TrangThai == "Chờ duyệt")
+                                    {
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-success shadow-none py-0" title="Duyệt OT" onclick="openApprovalModal(@item.Id, 'Đã duyệt')"><i class="bi bi-check-lg"></i></button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger shadow-none py-0" title="Từ chối OT" onclick="openApprovalModal(@item.Id, 'Từ chối')"><i class="bi bi-x-lg"></i></button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-light border shadow-none py-0 text-muted" title="Ghi chú: @item.GhiChuCuaNguoiDuyet"><i class="bi bi-eye"></i></button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-white border-top p-2 px-3 d-flex justify-content-between align-items-center mt-auto" style="position: sticky; bottom: 0; z-index: 5;">
+            <span class="text-muted">Tổng số bản ghi: <strong class="text-dark">@Model.Count()</strong></span>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="approvalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form asp-action="XuLyDonTangCa" method="post">
+                <div class="modal-header border-bottom-0 bg-light">
+                    <h5 class="modal-title fw-bold" id="modalTitle">Xử lý đơn OT</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" name="id" id="modalDonId" />
+                    <input type="hidden" name="trangThai" id="modalTrangThai" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium text-dark">Ghi chú của người duyệt</label>
+                        <textarea class="form-control shadow-none" name="ghiChu" rows="4" placeholder="Nhập lời nhắn cho nhân viên (VD: Nhớ khóa cửa VP khi về muộn)..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0 pb-4 px-4 d-flex justify-content-between">
+                    <button type="button" class="btn btn-light border shadow-none" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="submit" class="btn shadow-sm px-4" id="btnSubmitModal">Xác nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function searchTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".data-row");
+        rows.forEach(row => {
+            let name = row.querySelector(".search-name").innerText.toLowerCase();
+            let reason = row.querySelector(".search-reason").innerText.toLowerCase();
+            row.style.display = (name.includes(input) || reason.includes(input)) ? "" : "none";
+        });
+    }
+
+    function filterStatus() {
+        let statusFilter = document.getElementById("filterStatus").value;
+        let rows = document.querySelectorAll(".data-row");
+        rows.forEach(row => {
+            let statusText = row.querySelector(".status-cell").innerText.trim();
+            if(statusFilter === "all" || statusText.includes(statusFilter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    function openApprovalModal(id, trangThai) {
+        document.getElementById('modalDonId').value = id;
+        document.getElementById('modalTrangThai').value = trangThai;
+
+        let modalTitle = document.getElementById('modalTitle');
+        let btnSubmit = document.getElementById('btnSubmitModal');
+
+        if (trangThai === 'Đã duyệt') {
+            modalTitle.innerText = 'Xác nhận duyệt OT';
+            modalTitle.className = 'modal-title fw-bold text-success';
+            btnSubmit.className = 'btn btn-success shadow-sm px-4';
+            btnSubmit.innerText = 'Duyệt đơn này';
+        } else {
+            modalTitle.innerText = 'Xác nhận từ chối OT';
+            modalTitle.className = 'modal-title fw-bold text-danger';
+            btnSubmit.className = 'btn btn-danger shadow-sm px-4';
+            btnSubmit.innerText = 'Từ chối đơn này';
+        }
+
+        var myModal = new bootstrap.Modal(document.getElementById('approvalModal'));
+        myModal.show();
+    }
+</script>

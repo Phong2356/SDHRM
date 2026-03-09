@@ -1,0 +1,336 @@
+﻿@model IEnumerable<SDHRM.Models.NhanSu>
+
+@{
+    ViewData["Title"] = "Quản lý nhân viên";
+}
+
+<style>
+
+    /* Thanh công cụ (Toolbar) */
+    .toolbar {
+        background-color: #fff;
+        padding: 12px 15px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    /* Bảng dữ liệu */
+    .table-custom {
+        margin-bottom: 0;
+        white-space: nowrap; /* Tránh rớt dòng nội dung bảng */
+    }
+
+        .table-custom thead th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .table-custom tbody td {
+            font-size: 0.85rem;
+            vertical-align: middle;
+            padding: 10px 15px;
+            color: #333;
+        }
+
+    /* Avatar chữ cái (Hình tròn màu) */
+    .avatar-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-right: 10px;
+    }
+    /* Class dùng để bo tròn ảnh thật */
+    .avatar-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+        border: 1px solid #e9ecef;
+    }
+    /* Trạng thái Đang làm việc */
+    .badge-working {
+        color: #0fb981;
+        background-color: transparent;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+    /* Footer phân trang */
+    .table-footer {
+        background-color: #fff;
+        padding: 12px 15px;
+        border-top: 1px solid #dee2e6;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .btn-action-blue {
+        background-color: #2476d0;
+        color: white;
+        border: none;
+    }
+
+    .badge-soft-success {
+        background-color: #e6f8f0;
+        color: #0fb981;
+        border: 1px solid #bdf0db;
+        font-weight: 500;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+
+    .badge-soft-danger {
+        background-color: #e6f8f0;
+        color: #9A9C9F;
+        border: 1px solid #bdf0db;
+        font-weight: 500;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+</style>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="h-100 d-flex flex-column">
+
+    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+        <h4 class="mb-0 fw-normal">Nhân viên</h4>
+        <div class="d-flex gap-2">
+            <a class="btn btn-action-blue btn-sm d-flex align-items-center gap-1" asp-area="Systems" asp-controller="Category" asp-action="CreateMember">
+                <i class="bi bi-plus-lg p-1"></i> Thêm nhân viên
+            </a>
+        </div>
+    </div>
+
+    <div class="toolbar d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="input-group input-group-sm" style="max-width: 300px;">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm kiếm theo tên, email, số điện thoại...">
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small">Trạng thái:</span>
+                <select class="form-select form-select-sm" style="width: 130px;">
+                    <option>Tất cả</option>
+                    <option>Đang làm việc</option>
+                </select>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small">Vị trí công việc:</span>
+                <select class="form-select form-select-sm" style="width: 150px;">
+                    <option>Tất cả vị trí</option>
+                </select>
+            </div>
+
+            <div class="d-flex gap-1">
+                <button class="btn btn-light border btn-sm"><i class="bi bi-box-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-grow-1 bg-white overflow-auto">
+    <table class="table table-hover table-custom">
+        <thead>
+            <tr>
+                <th style="width: 40px;"><input class="form-check-input" type="checkbox"></th>
+                <th>Mã nhân viên</th>
+                <th>Họ và tên</th>
+                <th>Phòng Ban</th>
+                <th>Vị trí công việc</th>
+                <th>Trạng thái lao động</th>
+                <th>Chức danh</th>
+                <th>Quản lí trực tiếp</th>
+                <th>Điện thoại</th>
+                <th>Email</th>
+                <th class="text-center"><i class="bi bi-three-dots"></i></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    var initials = string.Join("", item.HoTen.Split(' ').Where(w => w.Length > 0).Select(w => w[0])).ToUpper();
+                    var shortInitials = initials.Length > 2 ? initials.Substring(initials.Length - 2) : initials;
+
+                    var colors = new[] { "#ff7675", "#0984e3", "#6c5ce7", "#e84393", "#00b894" };
+                    var bgColor = colors[item.HoTen.Length % colors.Length];
+
+                    <tr>
+                            
+                        <td><input class="form-check-input" type="checkbox"></td>
+                        <td>@item.Id</td>
+                        <td>
+                                <a href="javascript:void(0);" onclick="openDetailPanel(@item.Id)" class="text-decoration-none text-dark">
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(item.AnhDaiDien))
+                                        {
+                                            <img src="@item.AnhDaiDien" alt="Avatar" class="avatar-img" />
+                                        }
+                                        else
+                                        {
+                                            <span class="avatar-circle" style="background-color: @bgColor;">@shortInitials</span>
+                                        }
+                                        <span class="fw-medium">@item.HoTen</span>
+                                    </div>
+                                </a>
+                            </td>
+                        <td>@(item.PhongBan?.TenPhongBan ?? "-")</td>
+                        <td>@(item.ViTriCongViec?.TenViTri ?? "-")</td>
+                        <td>
+                                @if (item.TrangThai == "Đang làm việc")
+                                {
+                                    <span class="badge-soft-success">● @item.TrangThai</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-soft-danger">● @item.TrangThai</span>
+                                }
+                        </td>
+                        <td>@(item.ViTriCongViec?.NhomCongViec ?? "--")</td>
+                        <td>@(item.QuanLy?.HoTen ?? "--")</td>
+                        <td>@(item.SoDienThoai ?? "--")</td>
+                        <td>@(item.Email ?? "--")</td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn btn-light btn-sm rounded-circle border-0"
+                                            type="button"
+                                            data-bs-toggle="dropdown"
+                                            data-bs-boundary="viewport"
+                                            aria-expanded="false"
+                                            style="width: 32px; height: 32px;">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="min-width: 200px;">                                        
+                                        <li>
+                                            <a class="dropdown-item py-2" asp-action="EditMember" asp-route-id="@item.Id">
+                                                <i class="bi bi-pencil me-2 text-muted"></i> Sửa
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <form asp-action="ToggleStatusMember" asp-route-id="@item.Id" method="post" style="display: inline;">
+
+                                                @if (item.TrangThai == "Đang làm việc")
+                                                {
+                                                    <button type="submit" class="dropdown-item py-2 text-warning"
+                                                            onclick="return confirm('Bạn muốn cho nhân viên này NGHỈ VIỆC?');">
+                                                        <i class="bi bi-dash-circle me-2"></i> Nghỉ việc
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="submit" class="dropdown-item py-2 text-success"
+                                                            onclick="return confirm('Bạn muốn cho nhân viên này ĐI LÀM LẠI?');">
+                                                        <i class="bi bi-check-circle me-2"></i> Kích hoạt (Đi làm)
+                                                    </button>
+                                                }
+
+                                            </form>
+                                        </li>
+                                        <li>
+                                            <form asp-action="DeleteMember" asp-route-id="@item.Id" method="post" style="display: inline;">
+                                                <button type="submit" class="dropdown-item py-2 text-danger w-100"
+                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa phòng ban: @item.HoTen?');">
+                                                    <i class="bi bi-trash3 me-2"></i> Xóa
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="12" class="text-center py-4 text-muted">Không có dữ liệu nhân viên</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+
+    <div class="table-footer d-flex justify-content-between align-items-center mt-auto">
+        <div>
+            Tổng số bản ghi: <strong>@(Model?.Count() ?? 0)</strong>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <select class="form-select form-select-sm" style="width: auto;">
+                <option>20 bản ghi trên trang</option>
+                <option>50 bản ghi trên trang</option>
+            </select>
+            <div class="d-flex gap-2">
+                <a href="#" class="text-decoration-none text-muted"><i class="bi bi-chevron-left"></i></a>
+                <span>1 đến @(Model?.Count() ?? 0)</span>
+                <a href="#" class="text-decoration-none text-muted"><i class="bi bi-chevron-right"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="offcanvas offcanvas-end shadow" tabindex="-1" id="detailOffcanvas" style="width: 800px; border-left: none;">
+
+    <div class="offcanvas-header pb-0 pe-4 pt-3 justify-content-end" style="z-index: 9999; position: absolute; right: 0;">
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body p-0" id="detailOffcanvasBody">
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDetailPanel(id) {
+        var offcanvasElement = document.getElementById('detailOffcanvas');
+        var myOffcanvas = new bootstrap.Offcanvas(offcanvasElement);
+        myOffcanvas.show();
+
+        $('#detailOffcanvasBody').html('<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border text-primary" role="status"></div></div>');
+
+        $.ajax({
+            // SỬA LẠI DÒNG NÀY: Bỏ dòng url cũ đi và thay bằng dòng dùng @Url này
+            url: '@Url.Action("DetailsMember", "Category", new { area = "Systems" })' + '/' + id,
+
+            type: 'GET',
+            success: function (res) {
+                $('#detailOffcanvasBody').html(res);
+            },
+            error: function (xhr, status, error) {
+                // Sửa lại dòng thông báo lỗi một chút để in ra chi tiết lỗi là gì (404 hay 500)
+                console.log("Lỗi chi tiết: ", xhr.responseText);
+                $('#detailOffcanvasBody').html('<div class="p-4 text-danger text-center mt-5"><h5>Đã xảy ra lỗi: ' + xhr.status + ' ' + error + '</h5></div>');
+            }
+        });
+    }
+</script>

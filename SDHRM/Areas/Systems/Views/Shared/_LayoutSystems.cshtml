@@ -1,0 +1,147 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SDHRM</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style_sidebar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SDHRM.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+            <div class="container-fluid d-flex align-items-center justify-content-start">
+                <!-- ICON GRID -->
+                <a  asp-area="" asp-controller="Home" asp-action="Index" class="icon-menu">
+                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                </a>
+                <!-- ICON SYSTEM (SVG) -->
+                <div> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 48 48" fill="none"> 
+                    <path d="M0 24C0 4.8 4.8 0 24 0C43.2 0 48 4.8 48 24C48 43.2 43.2 48 24 48C4.8 48 0 43.2 0 24Z" fill="url(#paint0_linear_177_46)" /> 
+                    <path d="M27.4155 12.0452C27.8376 11.3143 28.7164 10.9635 29.4903 11.2999C29.9678 11.5075 30.4385 11.7442 30.9 12.0107C31.3615 12.2771 31.8017 12.5662 32.2201 12.8757C32.8987 13.3777 33.0341 14.3145 32.6119 15.0455L32.4497 15.3262C32.0481 16.0215 32.1687 16.89 32.65 17.5328C33.1483 18.1982 33.5716 18.923 33.9073 19.6947C34.2263 20.4277 34.9158 20.962 35.7153 20.962H36.0268C36.8699 20.962 37.6128 21.5465 37.7098 22.384C37.7629 22.8433 37.7931 23.3058 37.8001 23.7698V24.1642C37.7938 24.622 37.7647 25.0809 37.7122 25.5391C37.6164 26.3768 36.8734 26.9614 36.0301 26.9614H35.7486C34.9442 26.9614 34.2517 27.5022 33.9354 28.2418C33.5997 29.0264 33.1737 29.7633 32.6706 30.4393C32.1927 31.0814 32.0742 31.9469 32.4744 32.6401L32.613 32.8802C33.0347 33.6104 32.9 34.5462 32.2223 35.048C31.8511 35.3228 31.4675 35.5779 31.0735 35.8126L30.7313 36.01C30.3267 36.2356 29.9118 36.4403 29.4883 36.6237C28.7145 36.9586 27.8369 36.6075 27.4153 35.8774L27.2866 35.6545C26.8855 34.9598 26.0741 34.6301 25.2775 34.7246C24.8587 34.7743 24.4327 34.8001 24.0006 34.8001C23.5682 34.8001 23.1417 34.7744 22.7225 34.7247C21.9256 34.6302 21.114 34.96 20.7129 35.655L20.5844 35.8777C20.1625 36.6088 19.2835 36.96 18.5093 36.6236C18.032 36.4162 17.5615 36.1797 17.1 35.9134C16.6385 35.6469 16.1983 35.3575 15.7799 35.0477C15.1017 34.5455 14.9662 33.6091 15.3881 32.8782L15.5256 32.6399C15.9256 31.9468 15.8069 31.0816 15.3293 30.4395C14.8264 29.7634 14.4007 29.0265 14.0652 28.2418C13.749 27.5022 13.0565 26.9614 12.2521 26.9614H11.9734C11.1302 26.9614 10.3873 26.3769 10.2902 25.5393C10.2361 25.0726 10.2057 24.6024 10.1995 24.1308V23.7769C10.2053 23.313 10.2345 22.8481 10.2877 22.384C10.3837 21.5464 11.1265 20.9619 11.9696 20.9617L12.2858 20.9617C13.085 20.9615 13.7744 20.4273 14.0932 19.6944C14.429 18.9228 14.8522 18.198 15.3504 17.5325C15.8316 16.8899 15.9522 16.0217 15.5509 15.3264L15.3874 15.0433C14.9659 14.313 15.1006 13.3773 15.7781 12.8753C16.1534 12.5973 16.5413 12.3395 16.9401 12.1027L17.2465 11.9257C17.6579 11.6954 18.0801 11.4866 18.5111 11.2999C19.2849 10.9649 20.1626 11.316 20.5841 12.0463L20.7536 12.3399C21.1535 13.0326 21.9616 13.3628 22.7562 13.2713C23.1646 13.2243 23.5798 13.2001 24.0006 13.2001C24.4208 13.2001 24.8354 13.2243 25.2431 13.2711C26.0376 13.3623 26.8454 13.0323 27.2454 12.3398L27.4155 12.0452ZM24 17.9603C20.6863 17.9603 18 20.6466 18 23.9603C18.0001 27.2739 20.6864 29.9602 24 29.9602C27.3136 29.9601 30 27.2738 30 23.9603C30 20.6467 27.3136 17.9604 24 17.9603Z" fill="white" /> 
+                    <defs> 
+                        <linearGradient id="paint0_linear_177_46" x1="24" y1="0" x2="24.0331" y2="48" gradientUnits="userSpaceOnUse"> 
+                            <stop stop-color="#5F7FA5" /> 
+                            <stop offset="1" stop-color="#465F7C" /> 
+                        </linearGradient> 
+                    </defs> 
+                    </svg> 
+                </div>
+                <!-- TITLE -->
+                <span class="title-name">
+                    Hệ thống
+                </span>
+            </div>
+            <partial name="_LoginPartial" />
+        </nav>
+    </header>
+    <div class="app-container d-flex">
+        <aside class="sidebar-main d-flex flex-column flex-shrink-0">
+            <ul class="nav nav-pills flex-column mb-auto pt-2">
+                <li class="nav-item">
+                    <a asp-area="Systems"
+                       asp-controller="Structure"
+                       asp-action="Index" class="nav-link">
+                        <i class="bi bi-house-door"></i>
+                        <span class="link-text">Thông tin công ty</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link menu-has-sub" data-target="#submenu-danhmuc">
+                        <i class="bi bi-window-stack"></i>
+                        <span class="link-text">Quản lý danh mục</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-diagram-3"></i>
+                        <span class="link-text">Phân quyền</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-bar-chart-line"></i>
+                        <span class="link-text">Tình hình sử dụng</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-envelope-at"></i>
+                        <span class="link-text">Cấu hình mail server</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-shield-lock"></i>
+                        <span class="link-text">Bảo mật nâng cao</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-tools"></i>
+                        <span class="link-text">Thiết lập chung</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-clock-history"></i>
+                        <span class="link-text">Nhật ký hoạt động</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="bi bi-trash3"></i>
+                        <span class="link-text">Thùng rác</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer mt-auto">
+                <button class="btn-toggle-sidebar" id="toggleSidebar">
+                    <i class="bi bi-chevron-left toggle-icon"></i>
+                    <span class="toggle-label">Thu gọn</span>
+                </button>
+            </div>
+        </aside>
+
+        <aside class="sidebar-sub" id="sub-sidebar" style="display: none;">
+            <div class="sub-sidebar-content">
+
+                <nav class="nav flex-column sub-menu-group" id="submenu-danhmuc" style="display: none;">
+                    <div class="px-3 py-2 text-muted fw-bold small text-uppercase">Quản lý danh mục</div>
+
+                    <a asp-area="Systems" asp-controller="Category" asp-action="Organization" class="nav-link">Cơ cấu tổ chức</a>
+                    <a asp-area="Systems" asp-controller="Category" asp-action="Member" class="nav-link">Đối tượng</a>
+                    <a asp-area="Systems" asp-controller="Category" asp-action="Jobposition" class="nav-link">Vị trí công việc</a>
+                </nav>
+
+            </div>
+        </aside>
+
+        <div class="main-content p-3">
+            <div class="card border-0 shadow-sm h-100">
+                <main role="main" class="h-100 d-flex flex-column">
+                        @RenderBody()
+                </main>
+            </div>
+        </div>
+    </div>
+     
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/js_sidebar.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

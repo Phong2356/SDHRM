@@ -1,0 +1,161 @@
+﻿@{
+    ViewData["Title"] = "Danh mục Báo cáo";
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    .report-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .search-box {
+        max-width: 300px;
+        padding: 15px;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .report-table th {
+            text-align: left;
+            padding: 10px 15px;
+            color: #1e293b;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fafafa;
+        }
+
+        .report-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .report-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+    .report-link {
+        text-decoration: none;
+        color: #334155;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+    }
+
+        .report-link:hover {
+            color: #ea580c;
+        }
+
+    .icon-star {
+        color: #94a3b8;
+        cursor: pointer;
+        font-size: 1.1rem;
+    }
+
+        .icon-star:hover {
+            color: #f59e0b;
+        }
+
+    .icon-image {
+        color: #94a3b8;
+        font-size: 1.1rem;
+    }
+
+    .page-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        padding: 20px 0;
+    }
+</style>
+
+<div class="container-fluid px-4">
+    <h4 class="page-title">Báo cáo</h4>
+
+    <div class="report-card">
+        <div class="search-box">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="reportSearch" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm" onkeyup="filterReports()">
+            </div>
+        </div>
+
+        <table class="report-table" id="reportTable">
+            <thead>
+                <tr>
+                    <th style="width: 40px;"></th>
+                    <th>Tên báo cáo</th>
+                    <th style="width: 60px; text-align: center;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="report-item">
+                    <td><i class="bi bi-star icon-star"></i></td>
+                    <td><a href="@Url.Action("LateEarlyListReport")" class="report-link">Danh sách nhân viên đi muộn, về sớm, nghỉ</a></td>
+                    <td class="text-center"><i class="bi bi-image icon-image"></i></td>
+                </tr>
+
+                <tr class="report-item">
+                    <td><i class="bi bi-star icon-star"></i></td>
+                    <td><a href="@Url.Action("LateEarlyReport")" class="report-link">Tổng hợp tình hình đi muộn, về sớm của nhân viên</a></td>
+                    <td class="text-center"><i class="bi bi-image icon-image"></i></td>
+                </tr>                
+
+                <tr class="report-item">
+                    <td><i class="bi bi-star icon-star"></i></td>
+                    <td><a href="@Url.Action("LeaveReport")" class="report-link">Tổng hợp tình hình nghỉ phép theo kế hoạch</a></td>
+                    <td class="text-center"><i class="bi bi-image icon-image"></i></td>
+                </tr>
+
+                <tr class="report-item">
+                    <td><i class="bi bi-star icon-star"></i></td>
+                    <td><a href="@Url.Action("WorkingHoursReport")" class="report-link">Tổng hợp số giờ làm việc của nhân viên</a></td>
+                    <td class="text-center"><i class="bi bi-image icon-image"></i></td>
+                </tr>
+
+                <tr class="report-item">
+                    <td><i class="bi bi-star icon-star"></i></td>
+                    <td><a href="@Url.Action("OvertimeListReport")" class="report-link">Danh sách nhân viên làm thêm giờ</a></td>
+                    <td class="text-center"><i class="bi bi-image icon-image"></i></td>
+                </tr>               
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Hàm tìm kiếm báo cáo nhanh
+    function filterReports() {
+        let input = document.getElementById("reportSearch").value.toLowerCase();
+        let rows = document.querySelectorAll(".report-item");
+
+        rows.forEach(row => {
+            let text = row.querySelector(".report-link").innerText.toLowerCase();
+            row.style.display = text.includes(input) ? "" : "none";
+        });
+    }
+
+    // Hiệu ứng click vào ngôi sao yêu thích
+    document.querySelectorAll('.icon-star').forEach(star => {
+        star.addEventListener('click', function() {
+            this.classList.toggle('bi-star');
+            this.classList.toggle('bi-star-fill');
+            if(this.classList.contains('bi-star-fill')) {
+                this.style.color = '#f59e0b';
+            } else {
+                this.style.color = '#94a3b8';
+            }
+        });
+    });
+</script>

@@ -1,0 +1,417 @@
+﻿@model IEnumerable<SDHRM.Models.BangChamCongNhanVien>
+@{
+    var bangChamCong = ViewBag.BangChamCong as SDHRM.Models.BangChamCong;
+    var cacNgay = ViewBag.CacNgay as List<DateTime>;
+    ViewData["Title"] = "Chi tiết & Tổng hợp chấm công";
+
+    string GetInitials(string fullName) { if (string.IsNullOrWhiteSpace(fullName)) return "NV"; var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries); if (parts.Length == 1) return parts[0].Substring(0, 1).ToUpper(); return (parts[0].Substring(0, 1) + parts[^1].Substring(0, 1)).ToUpper(); }
+
+    // Tính toán Thống kê nhanh
+    double sumDiLam = Model.Sum(x => x.TongCongThucTe);
+    double sumNghiPhep = Model.Sum(x => x.TongCongNghiPhep);
+    int sumPhutDiMuon = Model.Sum(x => x.TongPhutDiMuonVeSom);
+    double sumGioOT = Model.Sum(x => x.TongGioTangCa);
+    int countVang = Model.Count(x => x.ChiTietNgays.Any(c => c.KyHieuChamCong == "V" || c.KyHieuChamCong == "K"));
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .page-header {
+        background-color: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* Nav Tabs */
+    .nav-tabs .nav-link {
+        color: #64748b;
+        font-weight: 500;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 10px 20px;
+    }
+
+        .nav-tabs .nav-link.active {
+            color: #ea580c;
+            border-bottom: 2px solid #ea580c;
+            background: transparent;
+            font-weight: 600;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: #ea580c;
+        }
+
+    /* Table Settings */
+    .table-wrapper {
+        overflow-x: auto;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #e2e8f0;
+        height: calc(100vh - 320px);
+        border-radius: 0 0 8px 8px;
+        border-top: none;
+    }
+
+    .grid-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 100%;
+        margin-bottom: 0;
+    }
+
+        .grid-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            text-align: center;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            font-size: 0.8rem;
+        }
+
+        .grid-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            height: 45px;
+        }
+
+    /* Freeze Columns */
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background-color: white;
+        z-index: 3;
+        text-align: left !important;
+        min-width: 250px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+    }
+
+    .grid-table th.sticky-col {
+        z-index: 4;
+        background-color: #f8fafc;
+    }
+
+    .sticky-col-1 {
+        position: sticky;
+        left: 0;
+        background-color: white;
+        z-index: 3;
+        box-shadow: inset -1px 0 0 #e2e8f0;
+        text-align: left !important;
+    }
+
+    .sticky-col-2 {
+        position: sticky;
+        left: 100px;
+        background-color: white;
+        z-index: 3;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+        min-width: 220px;
+        text-align: left !important;
+    }
+
+    .grid-table th.sticky-col-1, .grid-table th.sticky-col-2 {
+        z-index: 4;
+        background-color: #f8fafc;
+    }
+
+    /* Colors */
+    .text-sunday {
+        color: #dc3545 !important;
+    }
+
+    .bg-sunday {
+        background-color: #fff5f5 !important;
+    }
+
+    .avatar-circle {
+        width: 24px;
+        height: 24px;
+        color: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    /* Summary Cards */
+    .summary-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 140px;
+        margin-right: 10px;
+    }
+
+    .summary-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+    }
+    /* CSS cho các chấm màu chú thích */
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    /* CSS cho màu tím của Đi muộn (Bootstrap không có sẵn màu này) */
+    .text-purple {
+        color: #a855f7 !important;
+    }
+</style>
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-3">
+        <a asp-action="TimesheetDetail" class="text-dark"><i class="bi bi-arrow-left fs-5"></i></a>
+        <h5 class="fw-bold text-dark">@bangChamCong?.TenBangChamCong</h5>
+        <span class="badge bg-light text-dark border fw-normal px-2 py-1"><i class="bi bi-unlock me-1"></i> @bangChamCong.TrangThai</span>
+        <div class="d-flex gap-3 ms-4 text-muted " style="font-size: 0.8rem;">
+            <span><span class="legend-dot bg-success"></span>Đủ công (X)</span>
+            <span><span class="legend-dot bg-warning"></span>Nghỉ phép (P)</span>
+            <span><span class="legend-dot bg-secondary"></span>Không lương (KL)</span>
+            <span><span class="legend-dot bg-purple" style="background-color:#a855f7;"></span>Muộn/Sớm (MV)</span>
+            <span><span class="legend-dot bg-danger"></span>Khuyết/Vắng (K/V)</span>
+        </div>
+        
+    </div>
+
+    <div class="d-flex gap-2" id="action-buttons">
+        @if (bangChamCong.TrangThai != "Đã khóa")
+        {
+            <form asp-action="SyncData" method="post" class="m-0" id="form-sync">
+                <input type="hidden" name="bangChamCongId" value="@bangChamCong.Id" />
+                <button type="submit" class="btn btn-sm shadow-sm px-3" style="background-color: #ea580c; color: white;" id="btn-sync">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Cập nhật dữ liệu
+                </button>
+            </form>
+            <form asp-action="ChotBangChamCong" method="post" class="m-0" id="form-payroll">
+                <input type="hidden" name="bangChamCongId" value="@bangChamCong.Id" />
+                <button type="submit" class="btn btn-sm btn-success shadow-sm px-3 d-none" id="btn-payroll" onclick="return confirm('Bạn có chắc chắn muốn CHỐT bảng chấm công này? Sau khi chốt sẽ không thể chỉnh sửa dữ liệu!');">
+                    <i class="bi bi-wallet2 me-1"></i> Chốt & Chuyển tính lương
+                </button>
+            </form>
+        }
+        else
+        {
+            <button class="btn btn-sm btn-secondary shadow-sm px-4 disabled">
+                <i class="bi bi-lock-fill me-1"></i> Bảng công đã bị khóa
+            </button>
+        }
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+     <div class="alert alert-success m-2 py-2">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+     <div class="alert alert-danger m-2 py-2">@TempData["ErrorMessage"]</div>
+}
+
+<div class="container-fluid py-2 d-flex">
+    <div class="summary-card shadow-sm"><div class="d-flex align-items-center"><div class="summary-icon bg-success bg-opacity-10 text-success"><i class="bi bi-calendar-check"></i></div><span class="text-muted">Đi làm</span></div><strong class="fs-5 text-dark ms-3">@sumDiLam</strong></div>
+    <div class="summary-card shadow-sm"><div class="d-flex align-items-center"><div class="summary-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-calendar-x"></i></div><span class="text-muted">Nghỉ phép</span></div><strong class="fs-5 text-dark ms-3">@sumNghiPhep</strong></div>
+    <div class="summary-card shadow-sm"><div class="d-flex align-items-center"><div class="summary-icon bg-purple bg-opacity-10" style="color:#a855f7;"><i class="bi bi-clock-history"></i></div><span class="text-muted">Phút đi muộn</span></div><strong class="fs-5 text-dark ms-3">@sumPhutDiMuon</strong></div>
+    <div class="summary-card shadow-sm"><div class="d-flex align-items-center"><div class="summary-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-plus-circle"></i></div><span class="text-muted">Giờ làm thêm</span></div><strong class="fs-5 text-dark ms-3">@sumGioOT</strong></div>
+    <div class="summary-card shadow-sm"><div class="d-flex align-items-center"><div class="summary-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-person-x"></i></div><span class="text-muted">Nhân viên vắng</span></div><strong class="fs-5 text-dark ms-3">@countVang</strong></div>
+</div>
+
+
+
+<div class="container-fluid pb-3">
+    <div class="bg-white border rounded-top p-2 d-flex justify-content-between align-items-center">
+        <div class="input-group input-group-sm w-25">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="searchInput" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm nhân viên..." onkeyup="searchTable()">
+        </div>
+        <button class="btn btn-sm btn-light border shadow-none"><i class="bi bi-file-earmark-excel text-success"></i> Xuất Excel</button>
+    </div>
+
+    <ul class="nav nav-tabs bg-white border-start border-end px-3 pt-2" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="chitiet-tab" data-bs-toggle="tab" data-bs-target="#chitiet" type="button" role="tab">1. Chi tiết chấm công từng ngày</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tonghop-tab" data-bs-toggle="tab" data-bs-target="#tonghop" type="button" role="tab">2. Bảng tổng hợp tính lương</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+
+        <div class="tab-pane fade show active" id="chitiet" role="tabpanel">
+            <div class="table-wrapper">
+                <table class="table grid-table table-hover" id="table-chitiet">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col">Nhân viên</th>
+                            @foreach (var day in cacNgay)
+                            {
+                                var isSunday = day.DayOfWeek == DayOfWeek.Sunday;
+                                <th class="@(isSunday ? "text-sunday" : "")">
+                                    <div style="font-size: 0.7rem; font-weight: normal;">@day.ToString("ddd").Replace("Mon", "T2").Replace("Tue", "T3").Replace("Wed", "T4").Replace("Thu", "T5").Replace("Fri", "T6").Replace("Sat", "T7").Replace("Sun", "CN")</div>
+                                    <div class="fs-6">@day.ToString("dd")</div>
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr><td colspan="@(cacNgay.Count + 1)" class="text-center py-5">Chưa có dữ liệu.</td></tr>
+                        }
+                        @foreach (var nv in Model)
+                        {
+                            <tr class="data-row">
+                                <td class="sticky-col">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle" style="background-color: #ec4899;">@GetInitials(nv.NhanSu?.HoTen)</div>
+                                        <div><div class="fw-medium text-dark search-name">@nv.NhanSu?.HoTen</div><div class="text-muted" style="font-size: 0.7rem;">@(nv.NhanSuId)</div></div>
+                                    </div>
+                                </td>
+                                @foreach (var day in cacNgay)
+                                {
+                                    var chiTiet = nv.ChiTietNgays.FirstOrDefault(c => c.Ngay.Date == day.Date);
+                                    var isSunday = day.DayOfWeek == DayOfWeek.Sunday;
+                                    string textColor = "text-muted", kyHieu = "", tooltip = "";
+                                   
+                                    if (chiTiet != null && !string.IsNullOrEmpty(chiTiet.KyHieuChamCong))
+                                    {
+                                        kyHieu = chiTiet.KyHieuChamCong;
+                                        if (kyHieu == "X") textColor = "text-success fw-bold";
+                                        else if (kyHieu == "P") textColor = "text-warning fw-bold";
+                                        else if (kyHieu == "KL") textColor = "text-secondary fw-bold";
+                                        else if (kyHieu == "MV") { textColor = "text-purple fw-bold"; tooltip = $"Đi muộn {chiTiet.PhutDiMuon}p, Về sớm {chiTiet.PhutVeSom}p"; }
+                                        else if (kyHieu == "V" || kyHieu == "K") textColor = "text-danger fw-bold";
+                                    }
+
+                                    <td class="@(isSunday ? "bg-sunday" : "") @textColor" title="@tooltip">
+                                        @kyHieu
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="tonghop" role="tabpanel">
+            <div class="table-wrapper">
+                <table class="table grid-table table-hover" id="table-tonghop">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col-1" style="min-width: 100px;">Mã NV</th>
+                            <th class="sticky-col-2">Họ và tên</th>
+                            <th>Đơn vị công tác</th>
+                            <th>Ngày thường</th>
+                            <th>Nghỉ phép</th>
+                            <th>Nghỉ không lương</th>
+                            <th>Nghỉ Lễ</th>
+                            <th class="text-primary bg-primary bg-opacity-10">CÔNG THỰC TẾ</th>
+                            <th class="text-success bg-success bg-opacity-10">CÔNG HƯỞNG LƯƠNG</th>
+                            <th>Giờ OT</th>
+                            <th>Trễ/Sớm (Phút)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var nv in Model)
+                        {
+                            <tr class="data-row">
+                                <td class="sticky-col-1 text-muted text-left">@(nv.NhanSuId)</td>
+                                <td class="sticky-col-2 text-left">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle" style="background-color: #3b82f6;">@GetInitials(nv.NhanSu?.HoTen)</div>
+                                        <span class="fw-medium text-dark search-name">@nv.NhanSu?.HoTen</span>
+                                    </div>
+                                </td>
+                                <td class="text-left">@bangChamCong.DonViApDung</td>
+                                <td class="fw-medium">@nv.TongCongThucTe</td>
+                                <td class="text-warning">@(nv.TongCongNghiPhep > 0 ? nv.TongCongNghiPhep.ToString() : "")</td>
+                                <td class="text-danger">@(nv.TongCongKhongLuong > 0 ? nv.TongCongKhongLuong.ToString() : "")</td>
+                                <td>@(nv.TongCongLeTet > 0 ? nv.TongCongLeTet.ToString() : "")</td>
+
+                                <td class="fw-bold text-primary bg-primary bg-opacity-10">@nv.TongCongThucTe</td>
+                                <td class="fw-bold text-success bg-success bg-opacity-10">@nv.TongCongHuongLuong</td>
+
+                                <td class="text-info">@(nv.TongGioTangCa > 0 ? nv.TongGioTangCa.ToString() : "")</td>
+                                <td class="text-danger">@(nv.TongPhutDiMuonVeSom > 0 ? nv.TongPhutDiMuonVeSom.ToString() : "")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="sticky-bottom bg-white border-top shadow-sm" style="bottom: 0;">
+                        <tr>
+                            <td colspan="3" class="text-left fw-bold">TỔNG CỘNG</td>
+                            <td class="fw-bold">@Model.Sum(x => x.TongCongThucTe)</td>
+                            <td class="fw-bold">@Model.Sum(x => x.TongCongNghiPhep)</td>
+                            <td class="fw-bold">@Model.Sum(x => x.TongCongKhongLuong)</td>
+                            <td class="fw-bold">@Model.Sum(x => x.TongCongLeTet)</td>
+                            <td class="fw-bold text-primary bg-primary bg-opacity-10">@Model.Sum(x => x.TongCongThucTe)</td>
+                            <td class="fw-bold text-success bg-success bg-opacity-10">@Model.Sum(x => x.TongCongHuongLuong)</td>
+                            <td class="fw-bold">@Model.Sum(x => x.TongGioTangCa)</td>
+                            <td class="fw-bold text-danger">@Model.Sum(x => x.TongPhutDiMuonVeSom)</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function searchTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".data-row");
+        rows.forEach(row => {
+            let name = row.querySelector(".search-name").innerText.toLowerCase();
+            row.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+
+    // JS Ẩn/Hiện nút khi chuyển Tab (Có thêm điều kiện kiểm tra nút tồn tại)
+    document.getElementById('tonghop-tab').addEventListener('shown.bs.tab', function () {
+        let btnSync = document.getElementById('btn-sync');
+        let btnPayroll = document.getElementById('btn-payroll');
+
+        if(btnSync) btnSync.classList.add('d-none');
+        if(btnPayroll) btnPayroll.classList.remove('d-none');
+    });
+
+    document.getElementById('chitiet-tab').addEventListener('shown.bs.tab', function () {
+        let btnSync = document.getElementById('btn-sync');
+        let btnPayroll = document.getElementById('btn-payroll');
+
+        if(btnSync) btnSync.classList.remove('d-none');
+        if(btnPayroll) btnPayroll.classList.add('d-none');
+    });
+</script>

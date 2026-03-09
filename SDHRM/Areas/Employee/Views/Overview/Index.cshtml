@@ -1,0 +1,293 @@
+﻿@{
+    ViewData["Title"] = "Tổng quan";
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Cấu hình Banner Lời chào */
+    .welcome-banner {
+        background: linear-gradient(to right, #eef2ff, #f3e8ff);
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-text {
+        color: #312e81;
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    /* Các thẻ thống kê bên phải */
+    .stat-card {
+        border-radius: 12px;
+        padding: 20px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 100px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+        .stat-card.bg-orange {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+        }
+
+        .stat-card.bg-purple {
+            background: linear-gradient(135deg, #a855f7, #7e22ce);
+        }
+
+        .stat-card.bg-blue {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .stat-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-card span {
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+    /* Khung danh sách công việc & Đơn từ */
+    .task-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        height: 615px;
+        overflow-y: auto;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .task-header {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Item đơn từ */
+    .pending-item {
+        border-left: 3px solid #f97316;
+        background-color: #fff8f1;
+        padding: 12px 16px;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .pending-item .title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .pending-item .date {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+    /* Tiện ích */
+    .utility-list li {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .utility-list li:hover {
+            transform: translateX(5px);
+        }
+
+        .utility-list li span {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #334155;
+        }
+
+    .utility-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 12px;
+        background-color: #f1f5f9;
+    }
+
+    /* Trạng thái trống */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #94a3b8;
+    }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+        }
+</style>
+
+<div class="container-fluid py-4">
+    <h5 class="fw-bold mb-3 text-dark">Tổng quan</h5>
+
+    <div class="row">
+        <div class="col-lg-8">
+
+            <div class="welcome-banner p-4 mb-4 d-flex align-items-center">
+                <div style="font-size: 3rem; margin-right: 20px;">👋</div>
+                <div>
+                    <div class="welcome-text mb-1">Xin chào @(ViewBag.HoTen?.ToLower() ?? "bạn"),</div>
+                    <p class="text-muted mb-0" style="font-size: 0.95rem;">Chúc bạn một ngày làm việc hiệu quả và tràn đầy năng lượng</p>
+                </div>
+            </div>
+
+            <div class="row gx-3">
+
+                <div class="col-md-6 mb-3">
+                    <div class="task-header">Cần thực hiện</div>
+                    <div class="task-container">
+                        <div class="empty-state">
+                            <i class="bi bi-card-checklist"></i>
+                            <p>Không có công việc cần thực hiện</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="task-header">
+                        Chờ người khác duyệt
+                        @if (ViewBag.TongDonCho > 0)
+                        {
+                            <span class="badge bg-danger rounded-circle ms-2 px-2 py-1" style="font-size: 0.75rem;">@ViewBag.TongDonCho</span>
+                        }
+                    </div>
+
+                    <div class="task-container p-2">
+                        @if (ViewBag.TongDonCho == 0)
+                        {
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <p>Bạn không có đơn nào đang chờ duyệt</p>
+                            </div>
+                        }
+                        else
+                        {
+                            @foreach (var don in ViewBag.DonDiMuon)
+                            {
+                                <div class="pending-item shadow-sm">
+                                    <div>
+                                        <div class="title">Đơn @don.LoaiDangKy.ToLower()</div>
+                                        <div class="date">@don.NgayApDung.ToString("dd/MM/yyyy") - @don.NgayApDung.ToString("dd/MM/yyyy")</div>
+                                    </div>
+                                    <i class="bi bi-file-earmark-text text-muted"></i>
+                                </div>
+                            }                            
+
+                            @foreach (var don in ViewBag.DonXinNghi)
+                            {
+                                <div class="pending-item shadow-sm" style="border-left-color: #3b82f6; background-color: #eff6ff;">
+                                    <div>
+                                        <div class="title">Đơn xin nghỉ</div>
+                                        <div class="date">@don.TuNgay.ToString("dd/MM") - @don.DenNgay.ToString("dd/MM/yyyy")</div>
+                                    </div>
+                                    <i class="bi bi-file-earmark-text text-muted"></i>
+                                </div>
+                            }
+
+                            @if (ViewBag.DonCapNhatCong != null)
+                            {
+                                foreach (var don in ViewBag.DonCapNhatCong)
+                                {
+                                    <div class="pending-item shadow-sm" style="border-left-color: #10b981; background-color: #ecfdf5;">
+                                        <div>
+                                            <div class="title">Đề nghị cập nhật công</div>
+                                            <div class="date">Ngày cập nhật: @don.NgayCapNhat.ToString("dd/MM/yyyy")</div>
+                                        </div>
+                                        <i class="bi bi-file-earmark-text text-muted"></i>
+                                    </div>
+                                }
+                            }
+
+                            @if (ViewBag.DonTangCa != null)
+                            {
+                                foreach (var don in ViewBag.DonTangCa)
+                                {
+                                    <div class="pending-item shadow-sm" style="border-left-color: #a855f7; background-color: #faf5ff;">
+                                        <div>
+                                            <div class="title">Đề nghị tăng ca (OT)</div>
+                                            <div class="date">Ngày làm: @don.NgayTangCa.ToString("dd/MM/yyyy") | Số giờ: <strong class="text-dark">@don.SoGio giờ</strong></div>
+                                        </div>
+                                        <i class="bi bi-clock-history text-muted"></i>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="stat-card bg-orange mb-3">
+                <h3>@ViewBag.TongNgayCong</h3>
+                <span>Tổng ngày công</span>
+            </div>
+
+            <div class="stat-card bg-purple mb-3">
+                <h3>@ViewBag.PhepConLaiCaNam</h3>
+                <span>Ngày phép còn lại cả năm</span>
+            </div>
+
+            <div class="stat-card bg-blue mb-4">
+                <h3>@ViewBag.PhepConLaiDenHienTai</h3>
+                <span>Ngày phép còn lại đến hiện tại</span>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 position-relative overflow-hidden" style="min-height: 420px;">
+                <h6 class="fw-bold mb-4 text-dark">Tiện ích</h6>
+                <ul class="list-unstyled utility-list position-relative" style="z-index: 2;">
+                    <li>
+                        <div class="utility-icon text-warning bg-warning bg-opacity-10"><i class="bi bi-file-earmark-plus"></i></div>
+                        <span>Tạo đơn</span>
+                    </li>
+                    <li>
+                        <div class="utility-icon text-primary bg-primary bg-opacity-10"><i class="bi bi-calendar-check"></i></div>
+                        <span>Kiểm tra công</span>
+                    </li>
+                    <li>
+                        <div class="utility-icon text-info bg-info bg-opacity-10"><i class="bi bi-calendar3"></i></div>
+                        <span>Xem lịch làm việc</span>
+                    </li>
+                </ul>
+                <i class="bi bi-layers-half text-light position-absolute" style="font-size: 8rem; bottom: -20px; right: -20px; z-index: 1;"></i>
+            </div>
+
+        </div>
+    </div>
+</div>

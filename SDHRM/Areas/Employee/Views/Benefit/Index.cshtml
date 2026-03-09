@@ -1,0 +1,56 @@
+﻿@model IEnumerable<SDHRM.Models.PhucLoi>
+@{
+    ViewData["Title"] = "Chương trình Phúc lợi";
+}
+
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <h4 class="fw-bold text-dark"><i class="bi bi-gift-fill text-danger me-2"></i>Các chương trình phúc lợi đang mở</h4>
+        <p class="text-muted">Xem và đăng ký tham gia các hoạt động, sự kiện và chương trình phúc lợi của Công ty.</p>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle px-2 py-1">@item.NhomPhucLoi</span>
+
+                            @if (item.NgayBatDau <= DateTime.Now && item.NgayKetThuc >= DateTime.Now)
+                            {
+                                <span class="badge bg-success bg-opacity-10 text-success"><i class="bi bi-record-circle-fill me-1"></i>Đang diễn ra</span>
+                            }
+                            else if (item.NgayBatDau > DateTime.Now)
+                            {
+                                <span class="badge bg-warning bg-opacity-10 text-warning"><i class="bi bi-clock me-1"></i>Sắp diễn ra</span>
+                            }
+                        </div>
+
+                        <h5 class="card-title fw-bold text-dark mb-2">@item.TenChuongTrinh</h5>
+                        <p class="text-muted small mb-3"><i class="bi bi-calendar3 me-1"></i> @item.NgayBatDau.ToString("dd/MM/yyyy") - @item.NgayKetThuc.ToString("dd/MM/yyyy")</p>
+
+                        <p class="card-text text-muted small" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            @(item.MucDich ?? "Chưa có mô tả.")
+                        </p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 pt-0 pb-3">
+                        <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-outline-primary w-100 shadow-none">
+                            Xem chi tiết & Đăng ký
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-box-seam text-secondary d-block mb-3" style="font-size: 3rem; opacity: 0.5;"></i>
+                <h5 class="text-dark">Hiện chưa có chương trình nào</h5>
+                <p class="text-muted">Các chương trình phúc lợi mới sẽ được cập nhật tại đây.</p>
+            </div>
+        }
+    </div>
+</div>

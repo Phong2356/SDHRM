@@ -1,0 +1,306 @@
+﻿@model SDHRM.Models.NhanSu
+
+@{
+    ViewData["Title"] = "Cập nhật đối tượng";
+}
+
+<style>
+
+    /* Tiêu đề từng nhóm thông tin (THÔNG TIN CHUNG,...) */
+    .section-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+    }
+
+    /* Style cho Label */
+    .form-label-custom {
+        font-weight: 500;
+        color: #495057;
+        font-size: 0.9rem;
+        padding-top: 8px; /* Căn giữa label với input */
+    }
+
+    /* Dấu sao đỏ bắt buộc */
+    .required-star {
+        color: #dc3545;
+        margin-left: 3px;
+    }
+
+    /* Input & Select */
+    .form-control, .form-select {
+        font-size: 0.9rem;
+        border-color: #dce0e4;
+        border-radius: 4px;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #2476d0;
+            box-shadow: 0 0 0 0.2rem rgba(36, 118, 208, 0.1);
+        }
+
+        /* Ô input chỉ đọc (Readonly) */
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+
+    /* Khung Avatar */
+    .avatar-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .avatar-upload-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        border: 1px dashed #ced4da;
+    }
+
+        .avatar-upload-box:hover {
+            background-color: #dde2e6;
+        }
+
+    .avatar-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    /* Nút thêm mới vị trí (+) */
+    .btn-add-outline {
+        border: 1px solid #dce0e4;
+        background: #fff;
+        color: #6c757d;
+    }
+
+        .btn-add-outline:hover {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+    /* Ghi chú thông tin tài khoản */
+    .account-note {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+</style>
+
+<div class="h-100 d-flex flex-column">
+    <form asp-action="EditMember" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="AnhDaiDien" />
+
+        <div class="d-flex justify-content-between align-items-center p-3 bg-white border-bottom sticky-top shadow-sm">
+            <div class="d-flex align-items-center gap-2">
+                <a asp-action="Member" class="text-dark text-decoration-none fs-5 me-2">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="fw-normal">Cập nhật đối tượng</h4>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Member" class="btn btn-white border bg-white text-dark">Hủy</a>
+                <button type="submit" class="btn btn-primary px-4">Lưu cập nhật</button>
+            </div>
+        </div>
+
+        <div asp-validation-summary="All" class="text-danger m-3 fw-bold"></div>
+        <div class="overflow-auto">
+            <div class="bg-white rounded shadow-sm p-4 mx-auto">
+                <div class="avatar-wrapper">
+                    <div class="avatar-upload-box" onclick="document.getElementById('avatarInput').click()">
+                            @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+                            {
+                            <img id="avatarPreview" class="avatar-preview" src="@Model.AnhDaiDien" alt="Avatar" />
+                            <i class="bi bi-camera fs-4 text-white position-absolute d-none" id="cameraIcon" style="z-index:10; text-shadow: 0 0 5px black;"></i>
+                            }
+                            else
+                            {
+                            <i class="bi bi-camera fs-4 text-secondary" id="cameraIcon"></i>
+                            <img id="avatarPreview" class="avatar-preview d-none" src="" alt="Avatar" />
+                            }
+                    </div>
+                    <span class="text-dark fw-medium" style="font-size: 0.9rem;">Ảnh đại diện</span>
+                    <input type="file" id="avatarInput" name="LogoFile" class="d-none" accept="image/*" onchange="previewAvatar(event)">
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4 pe-lg-5 border-end">
+                        <h6 class="section-title">THÔNG TIN CHUNG</h6>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Mã nhân viên <span class="required-star">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="MaDinhDanh" class="form-control" placeholder="Nhập mã nhân viên" required />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Họ và đệm <span class="required-star">*</span></label>
+                            <div class="col-sm-8">
+                                <input type="text" id="inputHoDem" class="form-control" value="@ViewBag.HoDem" placeholder="Nhập họ và đệm" onkeyup="updateFullName()" required />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Tên <span class="required-star">*</span></label>
+                            <div class="col-sm-8">
+                                <input type="text" id="inputTen" class="form-control" value="@ViewBag.Ten" placeholder="Nhập tên" onkeyup="updateFullName()" required />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Họ và tên</label>
+                            <div class="col-sm-8">
+                                <input asp-for="HoTen" id="inputHoTen" class="form-control" readonly tabindex="-1" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Ngày sinh</label>
+                            <div class="col-sm-8">
+                                <input asp-for="NgaySinh" type="date" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Giới tính</label>
+                            <div class="col-sm-8">
+                                <select asp-for="GioiTinh" class="form-select">
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Địa chỉ</label>
+                            <div class="col-sm-8">
+                                <input asp-for="DiaChi" class="form-control" placeholder="Nhập địa chỉ" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-4 ps-lg-5 mt-4 mt-lg-0">
+
+                        <h6 class="section-title">THÔNG TIN CÔNG VIỆC</h6>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Đơn vị công tác <span class="required-star">*</span></label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <select asp-for="PhongBanId" class="form-select" asp-items="ViewBag.PhongBanList" required>
+                                        <option value="">Chọn phòng ban</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Vị trí công việc</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <select asp-for="ViTriCongViecId" class="form-select" asp-items="ViewBag.ViTriList">
+                                        <option value="">Chọn vị trí công việc</option>
+                                    </select>
+                                    <button class="btn btn-add-outline" type="button"><i class="bi bi-plus-lg"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Quản lý trực tiếp</label>
+                            <div class="col-sm-8">
+                                <select asp-for="QuanLyId" class="form-select" asp-items="ViewBag.QuanLyList">
+                                    <option value="">Quản lý trực tiếp</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Trạng thái lao động <span class="required-star">*</span></label>
+                            <div class="col-sm-8">
+                                <select asp-for="TrangThai" class="form-select">
+                                    <option value="Đang làm việc">Đang làm việc</option>
+                                    <option value="Nghỉ việc">Nghỉ việc</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h6 class="section-title mt-5">THÔNG TIN TÀI KHOẢN</h6>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">Email tài khoản <span class="required-star">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="Email" type="email" class="form-control" placeholder="Nhập email" required />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-4 form-label-custom">SĐT tài khoản <span class="required-star">*</span></label>
+                            <div class="col-sm-8">
+                                <input asp-for="SoDienThoai" type="text" class="form-control" placeholder="Nhập số điện thoại" required />
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function updateFullName() {
+        var hoDem = document.getElementById("inputHoDem").value.trim();
+        var ten = document.getElementById("inputTen").value.trim();
+        var hoTenFull = "";
+
+        if (hoDem && ten) {
+            hoTenFull = hoDem + " " + ten;
+        } else if (hoDem) {
+            hoTenFull = hoDem;
+        } else if (ten) {
+            hoTenFull = ten;
+        }
+        document.getElementById("inputHoTen").value = hoTenFull;
+    }
+
+    function previewAvatar(event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('avatarPreview');
+            var icon = document.getElementById('cameraIcon');
+
+            output.src = reader.result;
+            output.classList.remove('d-none'); // Hiện ảnh
+            if(icon) icon.classList.add('d-none'); // Ẩn icon
+        };
+
+        if (event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    }
+</script>

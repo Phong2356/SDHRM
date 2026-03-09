@@ -1,0 +1,317 @@
+﻿/* --- LAYOUT CHUNG --- */
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+    font-family: Inter, sans-serif !important;
+}
+
+
+.app-container {
+    height: calc(100vh - 51px); /* Trừ chiều cao header */
+}
+
+/* --- CỘT 1: MAIN SIDEBAR --- */
+.sidebar-main {
+    width: 230px; /* Rộng mặc định */
+    background-color: #17365a; /* Màu xanh đậm nhất */
+    color: #aebcd5;
+    transition: width 0.3s;
+    z-index: 10; /* Nằm trên lớp nền nếu cần */
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-main-employee {
+    width: 230px; /* Rộng mặc định */
+    background-color: #413A5B; /* Màu xanh đậm nhất */
+    color: #aebcd5;
+    transition: width 0.3s;
+    z-index: 10; /* Nằm trên lớp nền nếu cần */
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-main-timesheet {
+    width: 230px; /* Rộng mặc định */
+    background-color: #161A17; /* Màu xanh đậm nhất */
+    color: #aebcd5;
+    transition: width 0.3s;
+    z-index: 10; /* Nằm trên lớp nền nếu cần */
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-main .nav-link,
+.sidebar-main-employee .nav-link,
+.sidebar-main-timesheet .nav-link {
+    color: #c5ccd5;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap; /* Không xuống dòng chữ */
+    overflow: hidden;
+}
+
+    .sidebar-main .nav-link:hover,
+    .sidebar-main .nav-link.active {
+        background-color: #2476d0; /* Màu highlight xanh sáng */
+        color: white;
+    }
+
+    .sidebar-main-employee .nav-link:hover,
+    .sidebar-main-employee .nav-link.active {
+        background-color: #503FEA;
+        color: white;
+    }
+
+    .sidebar-main-timesheet .nav-link:hover,
+    .sidebar-main-timesheet .nav-link.active {
+        background-color: #FE7011;
+        color: white;
+    }
+
+    .sidebar-main .nav-link i.bi,
+    .sidebar-main-employee .nav-link i.bi,
+    .sidebar-main-timesheet .nav-link i.bi {
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+
+.small-icon {
+    font-size: 0.8rem !important;
+}
+
+/* Nút thu gọn */
+/* --- CSS CHO NÚT THU GỌN (SIDEBAR TOGGLE) --- */
+
+/* 1. Container chứa nút (Footer) */
+.sidebar-footer {
+    /* Tạo khoảng cách xung quanh nút để nó trông như khối riêng biệt */
+    padding: 16px;
+    /* Nếu có viền cũ thì bỏ đi */
+    border-top: none !important;
+}
+
+/* 2. Style mặc định của Nút (Trạng thái mở rộng - Ảnh 5) */
+.btn-toggle-sidebar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    /* Màu nền xanh nhạt hơn sidebar một chút (lấy mẫu từ ảnh) */
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #aebcd5;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 8px; /* Bo tròn góc */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Hiệu ứng chuyển đổi mượt */
+}
+
+    /* Hiệu ứng hover */
+    .btn-toggle-sidebar:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: white;
+    }
+
+/* Icon mũi tên */
+.toggle-icon {
+    font-size: 1.1rem;
+    margin-right: 12px;
+    /* Chuẩn bị sẵn hiệu ứng xoay */
+    transition: transform 0.3s ease, margin 0.3s ease;
+}
+
+/* Chữ "Thu gọn" */
+.toggle-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap; /* Ngăn chữ bị xuống dòng khi sidebar thu nhỏ dần */
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+/* --- TRẠNG THÁI KHI SIDEBAR ĐÃ THU GỌN (class .collapsed) --- */
+
+/* Khi thu gọn, footer cần căn giữa nội dung bên trong */
+.sidebar-main.collapsed .sidebar-footer,
+.sidebar-main-employee.collapsed .sidebar-footer,
+.sidebar-main-timesheet.collapsed .sidebar-footer {
+    padding: 10px 0 !important; /* Giảm padding của khung chứa */
+    display: flex !important;
+    justify-content: center !important;
+}
+
+/* Biến nút thành hình vuông căn giữa (Ảnh 6) */
+.sidebar-main.collapsed .btn-toggle-sidebar,
+.sidebar-main-employee.collapsed .btn-toggle-sidebar,
+.sidebar-main-timesheet.collapsed .btn-toggle-sidebar {
+    width: 40px !important; /* Chiều rộng nút */
+    height: 40px !important; /* Chiều cao nút */
+    padding: 0 !important; /* Bỏ padding để dễ căn giữa */
+
+    display: flex !important;
+    justify-content: center !important; /* Căn giữa ngang */
+    align-items: center !important; /* Căn giữa dọc */
+    margin: 0 auto !important; /* Căn giữa nút trong footer */
+}
+
+/* Ẩn chữ "Thu gọn" đi */
+.sidebar-main.collapsed .toggle-label,
+.sidebar-main-employee.collapsed .toggle-label,
+.sidebar-main-timesheet.collapsed .toggle-label {
+    display: none !important; /* Quan trọng: Bắt buộc ẩn chữ */
+}
+
+/* Xử lý Icon khi thu gọn */
+.sidebar-main.collapsed .toggle-icon,
+.sidebar-main-employee.collapsed .toggle-icon,
+.sidebar-main-timesheet.collapsed .toggle-icon {
+    margin-right: 0 !important; /* Bỏ khoảng cách bên phải icon */
+    font-size: 1.2rem !important; /* Kích thước icon */
+    transform: rotate(180deg); /* Xoay mũi tên */
+}
+
+/* Khi thu gọn cột 1 (Nếu muốn) */
+.sidebar-main.collapsed,
+.sidebar-main-employee.collapsed,
+.sidebar-main-timesheet.collapsed {
+    width: 64px;
+}
+
+    .sidebar-main.collapsed .link-text,
+    .sidebar-main.collapsed .bi-chevron-right,
+    .sidebar-main.collapsed .small-icon,
+    .sidebar-main-employee.collapsed .link-text,
+    .sidebar-main-employee.collapsed .bi-chevron-right,
+    .sidebar-main-employee.collapsed .small-icon,
+    .sidebar-main-timesheet.collapsed .link-text,
+    .sidebar-main-timesheet.collapsed .bi-chevron-right,
+    .sidebar-main-timesheet.collapsed .small-icon {
+        display: none !important;
+    }
+
+    /* 2. Căn chỉnh lại thẻ Link (quan trọng nhất) */
+    .sidebar-main.collapsed .nav-link,
+    .sidebar-main-employee.collapsed .nav-link,
+    .sidebar-main-timesheet.collapsed .nav-link {
+        padding-left: 0; /* Bỏ padding trái */
+        padding-right: 0; /* Bỏ padding phải */
+        justify-content: center; /* Căn giữa icon vào giữa ô */
+        width: 100%; /* Đảm bảo nút rộng bằng đúng sidebar */
+    }
+
+        /* 3. Bỏ khoảng cách thừa bên phải của Icon */
+        .sidebar-main.collapsed .nav-link i.bi,
+        .sidebar-main-employee.collapsed .nav-link i.bi,
+        .sidebar-main-timesheet.collapsed .nav-link i.bi,
+        .sidebar-main-employee.collapsed .nav-link i.bi {
+            margin-right: 0 !important; /* Quan trọng: Reset margin để icon vào đúng giữa */
+            font-size: 1.2rem; /* Có thể tăng nhẹ kích thước icon cho đẹp hơn khi ở chế độ icon */
+        }
+
+        /* (Tùy chọn) Tooltip giả: Khi hover vào icon thu gọn sẽ hiện tên menu */
+        .sidebar-main.collapsed .nav-link:hover::after,
+        .sidebar-main-employee.collapsed .nav-link:hover::after,
+        .sidebar-main-timesheet.collapsed .nav-link:hover::after {
+            content: attr(title); /* Lấy nội dung từ thẻ title="..." trong HTML */
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 1000;
+            font-size: 12px;
+            margin-left: 10px;
+            pointer-events: none;
+        }
+
+/* --- CỘT 2: SUB SIDEBAR (MENU CON) --- */
+.sidebar-sub {
+    width: 0;
+    background-color: #FFFFFF; /* Màu nền tối sẫm */
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: width 0.3s ease;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+    /* Khi mở menu */
+    .sidebar-sub.open {
+        width: 240px;
+    }
+
+.sub-sidebar-content {
+    width: 240px;
+    padding-top: 10px;
+}
+
+/* --- STYLE CHO 3 LINK (NAV-LINK) --- */
+.sidebar-sub .nav-link {
+    color: inherit; /* Màu chữ xám trắng */
+    padding: 12px 20px; /* Khoảng cách bên trong nút */
+    font-size: 0.95rem; /* Cỡ chữ vừa phải */
+    font-weight: 500; /* Chữ hơi đậm một chút */
+    border-radius: 6px; /* Bo tròn góc */
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+    /* Hiệu ứng khi di chuột vào */
+    .sidebar-sub .nav-link:hover {
+        color: #7165e3;
+        background-color: #F8F7FF; /* Sáng lên nhẹ khi hover */
+    }
+
+    /* --- TRẠNG THÁI ACTIVE (Mục đang chọn) --- */
+    .sidebar-sub .nav-link.active {
+        background-color: #2476d0; /* Nền màu xanh dương nổi bật */
+        color: #ffffff !important; /* Chữ trắng tinh */
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25); /* Đổ bóng nhẹ */
+    }
+
+/* --- CỘT 3: MAIN CONTENT --- */
+/* --- CỘT 3: MAIN CONTENT (CẬP NHẬT MỚI NHẤT) --- */
+.main-content {
+    /* 1. Chiếm hết không gian còn lại */
+    flex: 1;
+
+    min-width: 0;
+    /* 2. Cấu hình layout dọc */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Full chiều cao */
+    /* 3. Màu nền xám bao quanh Card */
+    background-color: #f5f5f5 !important;
+    overflow: hidden; /* Ẩn scroll của khung ngoài */
+}
+
+    /* Ép thẻ Card bên trong Main Content phải giãn full chiều cao */
+    .main-content > .card {
+        flex: 1; /* Giãn hết chiều cao còn lại */
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* Để scrollbar nằm bên trong card */
+        height: 100%;
+        margin-bottom: 0 !important; /* Bỏ margin dưới nếu có */
+    }
+
+        /* Ép thẻ Main và nội dung bên trong Card giãn full */
+        .main-content > .card > main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+.link-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #c5ccd5;
+}

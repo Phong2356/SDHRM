@@ -1,0 +1,87 @@
+﻿@model SDHRM.Models.PhucLoi
+@{
+    ViewData["Title"] = "Chi tiết chương trình: " + Model.TenChuongTrinh;
+    bool isDaThamGia = ViewBag.IsDaThamGia ?? false;
+}
+
+<div class="container-fluid py-4">
+    <div class="mb-3">
+        <a href="@Url.Action("Index")" class="text-decoration-none text-muted fw-medium">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-header bg-white border-bottom p-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-primary">@Model.NhomPhucLoi</span>
+                <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i> Thời gian: @Model.NgayBatDau.ToString("dd/MM/yyyy") - @Model.NgayKetThuc.ToString("dd/MM/yyyy")</span>
+            </div>
+            <h3 class="fw-bold text-dark mb-0">@Model.TenChuongTrinh</h3>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-8 pe-md-5">
+                    <h5 class="fw-bold text-dark mb-3">Mục đích / Nội dung chương trình</h5>
+                    <div class="p-3 bg-light rounded-3 mb-4 text-dark" style="line-height: 1.6;">
+                        @Html.Raw(Model.MucDich?.Replace("\n", "<br/>") ?? "Chưa có thông tin.")
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-3">Thông tin tổ chức</h5>
+                    <ul class="list-unstyled mb-4 text-muted">
+                        <li class="mb-2"><i class="bi bi-geo-alt-fill text-danger me-2"></i> <strong>Địa điểm:</strong> @(Model.DiaDiem ?? "Chưa xác định")</li>
+                        <li class="mb-2"><i class="bi bi-play-circle-fill text-success me-2"></i> <strong>Hình thức:</strong> @(Model.HinhThucThucHien ?? "Chưa xác định")</li>
+                        <li class="mb-2"><i class="bi bi-info-circle-fill text-primary me-2"></i> <strong>Trạng thái:</strong> @(Model.TrangThai ?? "Đang mở")</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4 border-start ps-md-4">
+                    <h5 class="fw-bold text-dark mb-3">Chính sách chi phí</h5>
+                    <div class="alert alert-info border-0 shadow-sm mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-dark">Công ty hỗ trợ:</span>
+                            <span class="fw-bold text-success">@((Model.TienCongTyHoTroMoiNguoi ?? 0).ToString("N0")) VNĐ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-dark">Nhân viên đóng:</span>
+                            <span class="fw-bold text-danger">@((Model.TienNVDongMoiNguoi ?? 0).ToString("N0")) VNĐ</span>
+                        </div>
+                        <hr class="my-2 border-info" />
+                        <div class="d-flex justify-content-between">
+                            <span class="text-dark fw-bold">Tổng chi phí/người:</span>
+                            <span class="fw-bold text-primary">@((Model.TongChiPhiMoiNguoi ?? 0).ToString("N0")) VNĐ</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        @if (isDaThamGia)
+                        {
+                            <div class="alert alert-success d-inline-block w-100 py-2 mb-3">
+                                <i class="bi bi-check-circle-fill me-2"></i> Đã xác nhận tham gia
+                            </div>
+                            <form asp-action="ToggleThamGia" method="post">
+                                <input type="hidden" name="phucLoiId" value="@Model.Id" />
+                                <input type="hidden" name="actionType" value="leave" />
+                                <button type="submit" class="btn btn-outline-danger w-100 shadow-none fw-medium" onclick="return confirm('Bạn có chắc chắn muốn hủy tham gia?');">
+                                    Hủy đăng ký
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-3">Đăng ký để xác nhận số lượng tham gia.</p>
+                            <form asp-action="ToggleThamGia" method="post">
+                                <input type="hidden" name="phucLoiId" value="@Model.Id" />
+                                <input type="hidden" name="actionType" value="join" />
+                                <button type="submit" class="btn btn-primary w-100 shadow-none py-2 fw-bold">
+                                    <i class="bi bi-check2-circle me-1"></i> Xác nhận tham gia
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

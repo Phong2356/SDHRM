@@ -1,0 +1,339 @@
+﻿@model IEnumerable<SDHRM.Models.LichSuChamCong>
+@{
+    ViewData["Title"] = "Chấm công & Lịch sử";
+
+    // 1. Logic C# tự động tìm ngày Thứ 2 đầu tuần và Chủ nhật cuối tuần hiện tại
+    DateTime today = DateTime.Today;
+    int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+    DateTime startOfWeek = today.AddDays(-1 * diff).Date;
+}
+
+<style>
+
+    /* CSS cho Bảng 7 ngày */
+        .week-calendar {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr); /* Chia đều 7 cột */
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                overflow: hidden;
+                min-height: 300px;
+
+    }
+
+        .day-column {
+                display: flex;
+                flex-direction: column;
+                border-right: 1px solid #e5e7eb;
+                background-color: #f8fafc;
+
+    }
+
+            .day-column:last-child {
+                    border-right: none;
+
+    }
+
+        .day-header {
+                padding: 12px 10px;
+                text-align: center;
+                font-weight: 600;
+                font-size: 0.9rem;
+                background-color: #f3f4f6;
+                border-bottom: 1px solid #e5e7eb;
+
+    }
+
+        .day-body {
+                padding: 15px 10px;
+                flex-grow: 1;
+
+    }
+
+
+    /* Đổi màu Thứ 7, Chủ nhật (Màu đỏ giống ảnh) */
+        .weekend .day-header {
+                color: #ef4444;
+
+    }
+
+
+    /* Bôi đậm ngày hôm nay (Màu tím giống ảnh) */
+        .day-column.today {
+                background-color: #e0e7ff;
+
+    }
+
+                .day-column.today .day-header {
+                        background-color: #6366f1;
+                        color: white;
+                        border-bottom-color: #6366f1;
+
+        }
+
+
+    /* Thẻ hiển thị giờ chấm công */
+        .time-log-badge {
+                display: block;
+                padding: 8px;
+                border-radius: 6px;
+                margin-bottom: 8px;
+                font-size: 0.85rem;
+                font-weight: 500;
+                text-align: center;
+                background-color: white;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+
+    }
+
+        .log-in {
+                border-left: 3px solid #22c55e;
+
+    }
+
+
+    /* Xanh lá cho Check-In */
+        .log-out {
+                border-left: 3px solid #f97316;
+
+    }
+
+
+    /* Cam cho Check-Out */
+</style>
+
+<div class="container-fluid p-4">
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body text-center">
+            <div class="mb-3">
+                <i class="bi bi-clock-history fs-1 text-primary"></i>
+                <h4 class="fw-bold mt-2 text-dark" id="dongHoRealtime">--:--:--</h4>
+                <p class="text-muted small">Vui lòng kết nối WiFi công ty để thực hiện chấm công.</p>
+            </div>
+            <div class="mt-3 text-center">
+                <button class="btn btn-success me-2" onclick="moKhungCamera('vao')">
+                    <i class="bi bi-box-arrow-in-right"></i> CHẤM CÔNG ĐẾN
+                </button>
+                <button class="btn btn-warning" onclick="moKhungCamera('ra')">
+                    <i class="bi bi-box-arrow-right"></i> CHẤM CÔNG VỀ
+                </button>
+            </div>
+
+            <div id="chamCongMessage" class="mt-3 text-center"></div>
+
+            <div class="modal fade" id="cameraModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Xác thực khuôn mặt</h5>
+                            <button type="button" class="btn-close" onclick="dongKhungCamera()"></button>
+                        </div>
+                        <div class="modal-body d-flex flex-column align-items-center">
+
+                            <div id="cameraBox" class="position-relative bg-dark rounded-3 overflow-hidden shadow-sm" style="width: 300px; height: 300px; border: 3px solid #e2e8f0;">
+
+                                <div id="cameraLoading" class="position-absolute top-50 start-50 translate-middle text-center">
+                                    <div class="spinner-border text-light" role="status"></div>
+                                    <div class="text-white mt-2 small">Đang mở camera...</div>
+                                </div>
+
+                                <video id="cameraStream" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
+                                <canvas id="cameraCanvas" style="display: none;"></canvas>
+
+                                <div class="position-absolute bottom-0 w-100 text-center pb-2" style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); z-index: 10;">
+                                    <span class="text-white small fw-medium"><i class="bi bi-camera me-1"></i> Đưa khuôn mặt vào khung hình</span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" onclick="dongKhungCamera()">Hủy</button>
+                            <button type="button" class="btn btn-primary" id="btnChupVaLuu" onclick="thucHienChupVaChamCong()">
+                                <i class="bi bi-camera-fill"></i> Chụp ảnh & Chấm công
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chamCongMessage" class="mt-4 fw-medium"></div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            <div class="p-3 border-bottom">
+                <h5 class="mb-0 fw-bold text-dark">Lịch sử chấm công (Tuần này)</h5>
+            </div>
+
+            <div class="week-calendar">
+                @for (int i = 0; i < 7; i++)
+                {
+                    DateTime currentDay = startOfWeek.AddDays(i);
+                    bool isToday = currentDay == today;
+                    bool isWeekend = currentDay.DayOfWeek == DayOfWeek.Saturday || currentDay.DayOfWeek == DayOfWeek.Sunday;
+
+                    // Lấy ra các log chấm công của ngày đang vẽ
+                    var logsOfDay = Model?.Where(x => x.ThoiGianCham.Date == currentDay).OrderBy(x => x.ThoiGianCham).ToList() ?? new List<SDHRM.Models.LichSuChamCong>();
+
+                    // Gắn class CSS tương ứng
+                    string colClass = "day-column";
+                    if (isToday) colClass += " today";
+                    if (isWeekend) colClass += " weekend";
+
+                    // Chuyển DayOfWeek sang tiếng Việt
+                    string dayName = currentDay.DayOfWeek switch
+                    {
+                        DayOfWeek.Monday => "Thứ Hai",
+                        DayOfWeek.Tuesday => "Thứ Ba",
+                        DayOfWeek.Wednesday => "Thứ Tư",
+                        DayOfWeek.Thursday => "Thứ Năm",
+                        DayOfWeek.Friday => "Thứ Sáu",
+                        DayOfWeek.Saturday => "Thứ Bảy",
+                        _ => "Chủ Nhật"
+                    };
+
+                    <div class="@colClass">
+                        <div class="day-header">
+                            @dayName, @currentDay.ToString("dd/MM")
+                        </div>
+                        <div class="day-body">
+                            @if (logsOfDay.Any())
+                            {
+                                foreach (var log in logsOfDay)
+                                {
+                                    string badgeClass = log.LoaiChamCong == "CheckIn" ? "log-in" : "log-out";
+                                    string icon = log.LoaiChamCong == "CheckIn" ? "bi-arrow-down-right-circle text-success" : "bi-arrow-up-right-circle text-warning";
+
+                                    <div class="time-log-badge @badgeClass" title="IP: @log.IPNguoiDung - @log.TrangThai">
+                                        <i class="bi @icon me-1"></i> @log.ThoiGianCham.ToString("HH:mm")
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Chạy Đồng hồ Realtime (Bạn đang bị thiếu phần này ở code trên)
+    setInterval(() => {
+        const dongHo = document.getElementById('dongHoRealtime');
+        if (dongHo) dongHo.innerText = new Date().toLocaleTimeString('vi-VN');
+    }, 1000);
+
+    // 2. Các biến toàn cục
+    let isProcessing = false;
+    let loaiChamCongHienTai = '';
+    let currentStream = null;
+    let cameraModal = null; // Chỉ khai báo, KHÔNG khởi tạo ngay ở đây
+
+    // 3. Hàm mở Modal và Bật Camera
+    async function moKhungCamera(loai) {
+        loaiChamCongHienTai = loai;
+        document.getElementById('chamCongMessage').innerHTML = '';
+
+        // SỬA LỖI Ở ĐÂY: Khởi tạo Modal ngay lúc bấm nút để đảm bảo HTML đã tải xong
+        if (!cameraModal) {
+            const modalElement = document.getElementById('cameraModal');
+            // Dùng getOrCreateInstance là cách an toàn nhất của Bootstrap 5
+            cameraModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+        }
+
+        cameraModal.show();
+
+        const video = document.getElementById('cameraStream');
+        const loading = document.getElementById('cameraLoading');
+        loading.style.display = 'block';
+
+        try {
+            const constraints = { video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } } };
+            currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            video.srcObject = currentStream;
+
+            video.onloadedmetadata = () => {
+                video.play();
+                loading.style.display = 'none';
+            };
+        } catch (err) {
+            console.error("Lỗi camera:", err);
+            loading.innerHTML = '<span class="text-danger"><i class="bi bi-slash-circle"></i> Lỗi truy cập Camera</span>';
+        }
+    }
+
+    // 4. Hàm Tắt Camera và Đóng Modal
+    function dongKhungCamera() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+        }
+        if (cameraModal) {
+            cameraModal.hide();
+        }
+    }
+
+    // 5. Hàm Xử lý khi bấm nút "Chụp ảnh & Chấm công"
+    async function thucHienChupVaChamCong() {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const btnChup = document.getElementById('btnChupVaLuu');
+        const msgDiv = document.getElementById('chamCongMessage');
+
+        btnChup.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang lưu...';
+        btnChup.disabled = true;
+
+        try {
+            const video = document.getElementById('cameraStream');
+            const canvas = document.getElementById('cameraCanvas');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+            if (imageBase64 === "data:,") throw new Error("Chưa bắt được hình ảnh. Vui lòng thử lại.");
+
+            dongKhungCamera();
+            msgDiv.innerHTML = '<span class="text-primary"><span class="spinner-border spinner-border-sm me-2"></span> Đang xác thực vị trí và gửi dữ liệu...</span>';
+
+            const ipResponse = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipResponse.json();
+            const ip = ipData.ip;
+
+            const formData = new URLSearchParams();
+            formData.append('loai', loaiChamCongHienTai);
+            formData.append('ipPublic', ip);
+            formData.append('hinhAnh', imageBase64);
+
+            const chamCongResponse = await fetch('/Employee/Timesheet/XuLyChamCong', {
+                method: 'POST',
+                body: formData
+            });
+
+            const res = await chamCongResponse.json();
+
+            if (res.success) {
+                msgDiv.innerHTML = `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i> ${res.message}</span>`;
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                msgDiv.innerHTML = `<span class="text-danger"><i class="bi bi-x-circle-fill me-1"></i> ${res.message}</span>`;
+            }
+
+        } catch (error) {
+            console.error("Lỗi:", error);
+            dongKhungCamera();
+            msgDiv.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i> ${error.message || 'Lỗi hệ thống!'}</span>`;
+        } finally {
+            btnChup.innerHTML = '<i class="bi bi-camera-fill"></i> Chụp ảnh & Chấm công';
+            btnChup.disabled = false;
+            isProcessing = false;
+        }
+    }
+</script>

@@ -1,0 +1,420 @@
+﻿@model IEnumerable<SDHRM.Models.QuyPhepNhanVien>
+@{
+    ViewData["Title"] = "Bảng tổng hợp ngày nghỉ";
+
+    string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName)) return "NV";
+        var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0].Substring(0, 1).ToUpper();
+        return (parts[0].Substring(0, 1) + parts[^1].Substring(0, 1)).ToUpper();
+    }
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    /* Toolbar & Buttons */
+    .toolbar-top {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 10px 16px;
+    }
+
+    .btn-orange {
+        background-color: #f97316;
+        color: white;
+        font-weight: 500;
+    }
+
+        .btn-orange:hover {
+            background-color: #ea580c;
+            color: white;
+        }
+
+    .form-switch .form-check-input {
+        width: 2em;
+        cursor: pointer;
+    }
+
+    /* Table Styling for massive horizontal scroll */
+    .table-wrapper {
+        overflow-x: auto;
+        white-space: nowrap;
+        max-width: 100vw;
+        height: calc(100vh - 200px);
+        background: white;
+    }
+
+    .complex-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 2500px;
+    }
+
+        .complex-table th, .complex-table td {
+            border-bottom: 1px solid #e0e0e0;
+            border-right: 1px solid #e0e0e0;
+            padding: 10px 12px;
+            vertical-align: middle;
+        }
+
+        .complex-table thead th {
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+            text-align: center;
+            color: #111827;
+        }
+
+    /* Sticky First Columns (To scroll horizontally without losing names) */
+    .sticky-col-1 {
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 5;
+        width: 40px;
+    }
+
+    .sticky-col-2 {
+        position: sticky;
+        left: 51px;
+        background: white;
+        z-index: 5;
+        width: 120px;
+    }
+
+    .sticky-col-3 {
+        position: sticky;
+        left: 171px;
+        background: white;
+        z-index: 5;
+        min-width: 200px;
+    }
+    /* Bring headers of sticky columns above normal sticky headers */
+    .complex-table thead th.sticky-col-1, .complex-table thead th.sticky-col-2, .complex-table thead th.sticky-col-3 {
+        z-index: 15;
+        background-color: #f8f9fa;
+    }
+
+    /* Highlights */
+    .highlight-col {
+        background-color: #fff8f1 !important;
+    }
+    /* Cột cam nhạt như trong ảnh */
+
+    /* Utilities */
+    .avatar-circle {
+        width: 28px;
+        height: 28px;
+        background-color: #e81cff;
+        color: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .bg-avatar-2 {
+        background-color: #8b5cf6;
+    }
+</style>
+
+<div class="toolbar-top d-flex justify-content-between align-items-center bg-white">
+    <div class="d-flex align-items-center">
+        <h5 class="fw-bold mb-0 me-2 text-dark">Bảng tổng hợp ngày nghỉ phép</h5>
+    </div>
+</div>
+
+<div class="toolbar-top d-flex justify-content-between align-items-center border-top-0">
+    <div class="d-flex align-items-center gap-4">
+        <div class="input-group input-group-sm" style="width: 250px;">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="searchInput" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm" onkeyup="filterTable()">
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">       
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light border shadow-none"><i class="bi bi-arrow-left"></i></button>
+            <button class="btn btn-sm btn-light border shadow-none"><i class="bi bi-arrow-right"></i></button>
+        </div>
+
+        <form method="get" class="d-flex m-0">
+            <select name="year" class="form-select form-select-sm shadow-none w-auto rounded-end-0" onchange="this.form.submit()">
+                <option value="2025" selected="@(ViewBag.SelectedYear == 2025)">2025</option>
+                <option value="2026" selected="@(ViewBag.SelectedYear == 2026)">2026</option>
+            </select>
+            <button class="btn btn-sm border border-start-0 bg-white shadow-none rounded-start-0"><i class="bi bi-calendar3 text-muted"></i></button>
+        </form>
+
+        <select class="form-select form-select-sm shadow-none" style="width: 150px;">
+            <option>Tất cả đơn vị</option>
+        </select>
+        <form asp-area="Timesheet" asp-controller="ManagementRequest" asp-action="KhoiTaoQuyPhep" method="post" class="m-0">
+            <input type="hidden" name="year" value="@ViewBag.SelectedYear" />
+            <button type="submit" class="btn btn-outline-success shadow-sm" onclick="return confirm('Bạn có muốn tự động tạo quỹ phép 12 ngày cho những nhân viên chưa có trong năm @ViewBag.SelectedYear không?')">
+                <i class="bi bi-magic me-1"></i> Khởi tạo quỹ phép
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="table-wrapper">
+    <table class="table complex-table table-hover mb-0" id="empTable">
+        <thead>
+            <tr>
+                <th rowspan="2" class="sticky-col-1"><input type="checkbox" class="form-check-input shadow-none"></th>
+                <th rowspan="2" class="sticky-col-2">Mã nhân viên</th>
+                <th rowspan="2" class="sticky-col-3 text-start">Họ và tên</th>
+                <th rowspan="2">Vị trí công việc</th>
+                <th rowspan="2">Đơn vị công tác</th>
+                <th rowspan="2">Số NP tiêu chuẩn<br><span class="text-muted fw-normal">(1)</span></th>
+                <th rowspan="2">Số NP năm nay<br><span class="text-muted fw-normal">(2)</span></th>
+                <th rowspan="2">Số NP<br>năm trước chuyển sang<br><span class="text-muted fw-normal">(3)</span></th>
+                <th colspan="4" class="">Số NP được sử dụng</th>
+                <th colspan="3" class=" highlight-col">Số NP đã sử dụng</th>
+                <th colspan="2" class="">Số NP còn lại</th>
+            </tr>
+            <tr>
+                <th>Số NP<br>tăng theo thâm niên<br><span class="text-muted fw-normal">(4)</span></th>
+                <th>Số NP<br>được thưởng khác<br><span class="text-muted fw-normal">(5)</span></th>
+                <th>Tổng số NP<br>được sử dụng cả năm<br><span class="text-muted fw-normal">(7)=(2)+(3)+(4)+(5)</span></th>
+                <th>Số NP được sử dụng<br>đến tháng hiện tại<br><span class="text-muted fw-normal">(8)</span></th>
+
+                <th class="highlight-col">Không theo đơn<br><span class="text-muted fw-normal">(9)</span></th>
+                <th class="highlight-col">Theo đơn<br><span class="text-muted fw-normal">(10)</span></th>
+                <th class="highlight-col">Tổng số NP đã sử dụng<br><span class="text-muted fw-normal">(11) = (9) + (10)</span></th>
+
+                <th>Số NP còn lại cả năm<br><span class="text-muted fw-normal">(12) = (7) - (11)</span></th>
+                <th>Số NP còn lại<br>đến tháng hiện tại<br><span class="text-muted fw-normal">(13) = (8) - (11)</span></th>
+
+                
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="28" class="text-center text-muted py-5">Chưa có dữ liệu.</td></tr>
+            }
+            else
+            {
+                int count = 1;
+                int currentYear = DateTime.Now.Year;
+                int currentMonth = DateTime.Now.Month;
+                int selectedYear = ViewBag.SelectedYear;
+
+                int thangTinhPhep = 0;
+                if (selectedYear < currentYear)
+                {
+                    thangTinhPhep = 12; // Năm cũ: Full 12 tháng
+                }
+                else if (selectedYear == currentYear)
+                {
+                    thangTinhPhep = currentMonth; // Năm nay: Tháng hiện tại
+                }
+                else
+                {
+                    thangTinhPhep = 0; // Năm tương lai: Chưa tích lũy
+                }
+
+                foreach (var item in Model)
+                {
+                    double tieuChuan = 12;
+                    double tongSuDungCaNam = item.TongPhepNam + item.PhepTonNamTruoc + item.PhepThamNien + item.PhepThuong; // Cột 7
+
+                   
+                    double suDungDenThangHienTai = Math.Round((tongSuDungCaNam / 12) * thangTinhPhep, 1); // Cột 8
+
+                    double khongTheoDon = 0; // Cột 9 (Giả lập)
+
+                    <tr>
+                        <td class="sticky-col-1 text-center">
+                            <button class="btn btn-sm btn-light border rounded-circle p-1 shadow-none text-secondary" style="width: 26px; height: 26px; display: flex; align-items:center; justify-content:center;" onclick="openEditModal(@item.Id, '@item.NhanSu?.HoTen', @item.TongPhepNam, @item.PhepTonNamTruoc, @item.PhepThamNien, @item.PhepThuong, @item.SoPhepDaDung)">
+                                <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                            </button>
+                        </td>
+                        <td class="sticky-col-2">@item.NhanSu?.Id</td>
+                        <td class="sticky-col-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle @(count%2==0 ? "bg-avatar-2" : "")">@GetInitials(item.NhanSu?.HoTen)</div>
+                                <span class="fw-medium emp-name">@item.NhanSu?.HoTen</span>
+                            </div>
+                        </td>
+                        <td>@(item.NhanSu?.ViTriCongViec?.TenViTri ?? "-")</td>
+                        <td>@(item.NhanSu?.PhongBan?.TenPhongBan ?? "-")</td>
+
+                        <td class="text-end">@tieuChuan</td>
+                        <td class="text-end">@item.TongPhepNam</td>
+                        <td class="text-end text-warning">@item.PhepTonNamTruoc</td>
+
+                        <td class="text-end">@item.PhepThamNien</td>
+                        <td class="text-end">@item.PhepThuong</td>
+                        <td class="text-end fw-bold">@tongSuDungCaNam</td>
+                        <td class="text-end">@suDungDenThangHienTai</td>
+                        <td class="text-end highlight-col">@khongTheoDon</td>
+                        <td class="text-end highlight-col">@item.SoPhepDaDung</td>
+                        <td class="text-end highlight-col fw-bold">@(khongTheoDon + item.SoPhepDaDung)</td>
+
+                        <td class="text-end fw-bold text-success">@item.SoPhepConLai</td>
+
+                        <td class="text-end fw-bold @((suDungDenThangHienTai - item.SoPhepDaDung) < 0 ? "text-danger" : "")">
+                            @(suDungDenThangHienTai - item.SoPhepDaDung)
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="bg-white border-top p-2 px-3 d-flex justify-content-between align-items-center" style="font-size: 0.85rem;">
+    <span class="text-muted">Tổng số bản ghi: <strong class="text-dark">@Model.Count()</strong></span>
+    <div class="d-flex align-items-center gap-3">
+        <select class="form-select form-select-sm shadow-none w-auto py-1">
+            <option>50</option>
+        </select>
+        <span class="text-muted">Từ <strong>1</strong> đến <strong>@Model.Count()</strong> bản ghi</span>
+        <div class="btn-group">
+            <button class="btn btn-sm btn-light border shadow-none disabled"><i class="bi bi-chevron-left"></i></button>
+            <button class="btn btn-sm btn-light border shadow-none disabled"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editBalanceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark">Cập nhật quỹ phép</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-3 pb-4">
+                <div class="alert alert-info py-2 px-3 small mb-4">
+                    Nhân viên: <strong id="modalEmpName">---</strong>
+                </div>
+                <input type="hidden" id="modalQuyPhepId">
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Tổng phép năm nay (Ngày)</label>
+                    <input type="number" id="modalTongPhep" class="form-control shadow-none" step="0.5" min="0">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium text-muted">Phép năm trước chuyển sang</label>
+                    <input type="number" id="modalPhepTon" class="form-control shadow-none" step="0.5" min="0">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium text-danger">Số phép đã dùng (Theo đơn)</label>
+                    <input type="number" id="modalDaDung" class="form-control shadow-none" step="0.5" min="0">
+                </div>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label fw-medium text-info">Phép thâm niên</label>
+                        <input type="number" id="modalPhepThamNien" class="form-control shadow-none" step="0.5" min="0">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label fw-medium text-warning">Phép thưởng khác</label>
+                        <input type="number" id="modalPhepThuong" class="form-control shadow-none" step="0.5" min="0">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-light rounded-3 px-4 shadow-none border" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-orange rounded-3 px-4 shadow-none" id="btnSaveBalance" onclick="saveBalance()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // FIX QUAN TRỌNG: Phải khởi tạo biến editModal thì lệnh editModal.show() mới hoạt động!
+    let editModal;
+    document.addEventListener("DOMContentLoaded", function () {
+        editModal = new bootstrap.Modal(document.getElementById('editBalanceModal'));
+    });
+
+    function filterTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll("#empTable tbody tr");
+        rows.forEach(row => {
+            let name = row.querySelector(".emp-name");
+            if (name) {
+                row.style.display = name.innerText.toLowerCase().includes(input) ? "" : "none";
+            }
+        });
+    }
+
+    function openEditModal(id, name, tongPhep, phepTon, phepThamNien, phepThuong, daDung) {
+        document.getElementById('modalQuyPhepId').value = id;
+        document.getElementById('modalEmpName').innerText = name;
+        document.getElementById('modalTongPhep').value = tongPhep;
+
+        if(document.getElementById('modalPhepTon')) document.getElementById('modalPhepTon').value = phepTon;
+
+        document.getElementById('modalPhepThamNien').value = phepThamNien;
+        document.getElementById('modalPhepThuong').value = phepThuong;
+        document.getElementById('modalDaDung').value = daDung;
+
+        editModal.show();
+    }
+
+        function saveBalance() {
+        // 1. Lấy dữ liệu và gán mặc định là 0 nếu người dùng lỡ xóa trắng ô
+        const id = document.getElementById('modalQuyPhepId').value;
+        const tongPhep = document.getElementById('modalTongPhep').value || 0;
+        const phepTon = document.getElementById('modalPhepTon').value || 0;
+        const phepThamNien = document.getElementById('modalPhepThamNien').value || 0;
+        const phepThuong = document.getElementById('modalPhepThuong').value || 0;
+        const daDung = document.getElementById('modalDaDung').value || 0;
+
+        const btnSave = document.getElementById('btnSaveBalance');
+        btnSave.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang lưu...';
+        btnSave.disabled = true;
+
+        // 2. Đóng gói dữ liệu
+        const formData = new URLSearchParams();
+        formData.append('id', id);
+        formData.append('tongPhep', tongPhep);
+        formData.append('phepTon', phepTon);
+        formData.append('phepThamNien', phepThamNien);
+        formData.append('phepThuong', phepThuong);
+        formData.append('daDung', daDung);
+
+        const url = '/Timesheet/ManagementRequest/UpdateBalance';
+
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(async res => {
+            // Kiểm tra nếu Server trả về lỗi 404, 400, 500 thì bắt lỗi ngay
+            if (!res.ok) {
+                throw new Error(`HTTP Error: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message);
+                btnSave.innerHTML = 'Lưu thay đổi';
+                btnSave.disabled = false;
+            }
+        })
+        .catch(err => {
+            console.error("Chi tiết lỗi:", err);
+            alert("Lỗi kết nối máy chủ! Vui lòng kiểm tra lại đường dẫn Area trong hàm fetch (nhấn F12 sang tab Console để xem mã lỗi chi tiết).");
+            btnSave.innerHTML = 'Lưu thay đổi';
+            btnSave.disabled = false;
+        });
+    }
+</script>

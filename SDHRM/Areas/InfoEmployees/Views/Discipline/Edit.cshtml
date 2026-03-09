@@ -1,0 +1,239 @@
+﻿@model SDHRM.Models.KyLuat
+@{
+    ViewData["Title"] = "Cập nhật kỷ luật/sự cố";
+}
+
+<style>
+    /* Dùng lại CSS của trang Create.cshtml */
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 6px;
+        padding: 25px 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-group-row label {
+            width: 35%;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group-row .input-wrapper {
+            width: 65%;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+    .form-control-custom {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        outline: none;
+        box-shadow: none;
+    }
+
+    .form-control-readonly {
+        background-color: #f1f5f9;
+        cursor: not-allowed;
+    }
+
+    .text-danger {
+        color: #ef4444 !important;
+    }
+
+    .top-action-bar {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        margin-bottom: 20px;
+    }
+
+    .detail-table th {
+        background-color: #f8fafc;
+        font-weight: 600;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 10px;
+        white-space: nowrap;
+    }
+
+    .detail-table td {
+        padding: 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        white-space: nowrap;
+        color: #1e293b;
+    }
+
+    .avatar-circle {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+</style>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="TepDinhKem" />
+    <input type="hidden" asp-for="NgayTao" />
+
+    <div class="top-action-bar d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold mb-0 text-dark" style="font-size: 1.25rem;">Cập nhật kỷ luật/sự cố</h4>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-light border px-4 shadow-none">Hủy</a>
+            <button type="submit" class="btn btn-sm btn-primary px-4 shadow-none">Lưu thay đổi</button>
+        </div>
+    </div>
+
+    <div class="container-fluid pb-5">
+        <div class="form-container">
+            <h5 class="section-title">Thông tin chung</h5>
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 pe-md-4">
+                    <div class="form-group-row"><label>Tên kỷ luật/sự cố <span class="text-danger">*</span></label><div class="input-wrapper"><input asp-for="TenKyLuat" class="form-control-custom" required /></div></div>
+                    <div class="form-group-row"><label>Ngày xảy ra</label><div class="input-wrapper"><input asp-for="NgayXayRa" type="date" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Nguyên nhân</label><div class="input-wrapper"><select asp-for="NguyenNhan" class="form-control-custom form-select shadow-none"><option value="">Chọn nguyên nhân</option><option value="Vi phạm nội quy">Vi phạm nội quy</option><option value="Sơ suất công việc">Sơ suất công việc</option></select></div></div>
+                    <div class="form-group-row mt-4"><label>Tổng giá trị thiệt hại</label><div class="input-wrapper"><input asp-for="TongGiaTriThietHai" type="number" class="form-control-custom" /></div></div>
+                    <div class="form-group-row"><label>Trạng thái <span class="text-danger">*</span></label><div class="input-wrapper"><select asp-for="TrangThai" class="form-control-custom form-select shadow-none"><option value="Chưa xử lý">Chưa xử lý</option><option value="Đang xử lý">Đang xử lý</option><option value="Đã xử lý">Đã xử lý</option></select></div></div>
+                </div>
+                <div class="col-md-6 ps-md-4">
+                    <div class="form-group-row"><label>Loại kỷ luật/sự cố <span class="text-danger">*</span></label><div class="input-wrapper"><select asp-for="LoaiKyLuat" class="form-control-custom form-select shadow-none" required><option value="Kỷ luật lao động">Kỷ luật lao động</option><option value="Sự cố vận hành">Sự cố vận hành</option></select></div></div>
+                    <div class="form-group-row"><label>Nơi xảy ra</label><div class="input-wrapper"><input asp-for="NoiXayRa" class="form-control-custom" /></div></div>
+                    <div class="form-group-row align-items-start"><label class="pt-2">Mô tả kỷ luật/sự cố</label><div class="input-wrapper"><textarea asp-for="MoTa" class="form-control-custom" rows="3"></textarea></div></div>
+                    <div class="form-group-row mt-3"><label>Đơn vị liên quan <span class="text-danger">*</span></label><div class="input-wrapper"><select asp-for="PhongBanId" asp-items="ViewBag.PhongBanList" class="form-control-custom form-select shadow-none" required><option value="">Chọn đơn vị</option></select></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container px-0 pb-0 overflow-hidden">
+            <h5 class="section-title px-4 mb-3">Danh sách nhân viên</h5>
+            <div class="px-4 pb-3 d-flex gap-2 border-bottom">
+                <button type="button" class="btn btn-sm btn-link text-primary text-decoration-none shadow-none p-0" data-bs-toggle="modal" data-bs-target="#modalThemNhanVien"><i class="bi bi-plus"></i> Thêm nhân viên</button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="table detail-table mb-0" id="tblDanhSachKyLuat">
+                    <thead>
+                        <tr><th>Mã NV</th><th>Họ và tên</th><th>Đơn vị</th><th>Hình thức xử lý</th><th>Số tiền phạt</th><th>Lý do chi tiết</th><th>Trạng thái</th><th class="text-center">Xóa</th></tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ChiTietKyLuats != null && Model.ChiTietKyLuats.Any())
+                        {
+                            int i = 0;
+                            foreach (var ct in Model.ChiTietKyLuats)
+                            {
+                                <tr>
+                                    <td class="text-muted">NV@(ct.NhanSuId.ToString("D6"))</td>
+                                    <td class="fw-medium text-dark"><span class="avatar-circle bg-danger">@(ct.NhanSu?.HoTen?.Substring(0, 1) ?? "N")</span> @ct.NhanSu?.HoTen</td>
+                                    <td>@(ct.NhanSu?.PhongBan?.TenPhongBan ?? "-")</td>
+                                    <td>@ct.HinhThucXuLy</td>
+                                    <td class="text-danger fw-bold">@(ct.SoTienPhat?.ToString("N0") ?? "")</td>
+                                    <td>@(ct.LyDoChiTiet ?? "-")</td>
+                                    <td>@ct.TrangThai</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm text-danger border-0 shadow-none p-0" onclick="this.closest('tr').remove();"><i class="bi bi-trash"></i></button>
+                                        <input type="hidden" name="ChiTietKyLuats[@i].NhanSuId" value="@ct.NhanSuId" />
+                                        <input type="hidden" name="ChiTietKyLuats[@i].HinhThucXuLy" value="@ct.HinhThucXuLy" />
+                                        <input type="hidden" name="ChiTietKyLuats[@i].SoTienPhat" value="@ct.SoTienPhat" />
+                                        <input type="hidden" name="ChiTietKyLuats[@i].LyDoChiTiet" value="@ct.LyDoChiTiet" />
+                                        <input type="hidden" name="ChiTietKyLuats[@i].TrangThai" value="@ct.TrangThai" />
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr id="emptyTextRow"><td colspan="8" class="text-center text-muted fst-italic py-4" id="emptyText">Chưa có dữ liệu</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <h5 class="section-title mb-3">Tài liệu đính kèm mới</h5>
+            <input type="file" name="fileDinhKem" class="form-control-custom w-50" />
+            @if (!string.IsNullOrEmpty(Model.TepDinhKem))
+            {
+                <div class="mt-2"><small class="text-muted">Đang đính kèm: <a href="~/uploads/disciplines/@Model.TepDinhKem" target="_blank">Xem file hiện tại</a></small></div>
+            }
+        </div>
+    </div>
+</form>
+
+<script>
+    let rowIndex = @(Model.ChiTietKyLuats?.Count ?? 0);
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // AJAX Modal lấy info NV
+        const ddlNs = document.getElementById('modalNhanSuId');
+        if (ddlNs) {
+            ddlNs.addEventListener('change', function () {
+                const id = this.value;
+
+                // 1. Nếu người dùng chọn "Chọn nhân viên" (rỗng) thì xóa trắng các ô
+                if (!id) {
+                    document.getElementById('modalMaNV').value = '';
+                    document.getElementById('modalDonVi').value = '';
+                    return;
+                }
+
+                // 2. Gọi API lấy dữ liệu
+                fetch(`/InfoEmployees/Discipline/GetNhanSuInfo?id=${id}`)
+                    .then(res => {
+                        if (!res.ok) throw new Error("Lỗi lấy dữ liệu từ Server");
+                        return res.json();
+                    })
+                    .then(data => {
+                        // Tự động điền dữ liệu vào ô tương ứng
+                        document.getElementById('modalMaNV').value = data.maNV;
+                        document.getElementById('modalDonVi').value = data.tenPhongBan;
+                    })
+                    .catch(err => console.error("Lỗi AJAX:", err));
+            });
+        }
+    });
+
+    // Copy nguyên hàm themNhanVien() từ Create.cshtml dán vào đây
+</script>

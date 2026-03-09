@@ -1,0 +1,328 @@
+﻿@model SDHRM.Models.ViewModels.DashboardChamCongVM
+@{
+    ViewData["Title"] = "Tổng quan Chấm công";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+    .dashboard-wrapper {
+        height: calc(100vh - 60px); /* Trừ đi chiều cao của thanh menu/navbar trên cùng (khoảng 60px) */
+        overflow-y: auto; /* Bật thanh cuộn dọc */
+        overflow-x: hidden; /* Ẩn thanh cuộn ngang cho đỡ rác */
+        padding-bottom: 50px; /* Thêm khoảng trống ở đáy để biểu đồ cuối không bị sát mép */
+    }
+
+        /* Trang trí lại thanh cuộn cho thanh mảnh, hiện đại giống Mac OS */
+        .dashboard-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dashboard-wrapper::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .dashboard-wrapper::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+    body {
+        background-color: #f3f4f6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    .top-card {
+        border-radius: 8px;
+        padding: 20px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        height: 120px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+        .top-card .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .top-card .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            z-index: 2;
+            position: relative;
+        }
+
+        .top-card .card-icon {
+            position: absolute;
+            right: 15px;
+            bottom: 10px;
+            font-size: 4rem;
+            opacity: 0.2;
+            z-index: 1;
+            transform: rotate(-15deg);
+        }
+
+    .bg-orange-custom {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    }
+
+    .bg-blue-custom {
+        background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+    }
+
+    .bg-green-custom {
+        background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        height: 350px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .chart-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .chart-subtitle {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 4px;
+    }
+
+    .chart-unit {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    .chart-body {
+        flex-grow: 1;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<div class="container-fluid py-4 dashboard-wrapper">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="top-card bg-orange-custom">
+                <div class="card-title d-flex justify-content-between"><span>Đi muộn, về sớm</span><span style="font-size: 0.85rem;">Hôm nay <i class="bi bi-chevron-down"></i></span></div>
+                <div class="card-value">@Model.TongDiMuonVeSom</div>
+                <i class="bi bi-clock-history card-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="top-card bg-blue-custom">
+                <div class="card-title d-flex justify-content-between"><span>Thực tế nghỉ</span><span style="font-size: 0.85rem;">Hôm nay <i class="bi bi-chevron-down"></i></span></div>
+                <div class="card-value">@Model.TongThucTeNghi</div>
+                <i class="bi bi-moon-stars card-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="top-card bg-green-custom">
+                <div class="card-title d-flex justify-content-between"><span>Kế hoạch nghỉ</span><span style="font-size: 0.85rem;">Ngày mai <i class="bi bi-chevron-down"></i></span></div>
+                <div class="card-value">@Model.TongKeHoachNghi</div>
+                <i class="bi bi-calendar-check card-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="chart-card">
+                <div class="chart-header d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="chart-title">Tình hình nghỉ theo phòng ban</h6>
+                        <div class="chart-subtitle">Tất cả đơn vị</div>
+                    </div>
+                    <div class="d-flex flex-column align-items-end gap-1">
+                        <span class="chart-unit">ĐVT: Ngày công</span>
+                        <div class="d-flex align-items-center gap-1 mt-1">
+                            <input type="date" id="tuNgay_NghiPB" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 100px;">
+                            <input type="date" id="denNgay_NghiPB" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 100px;">
+                            <button class="btn btn-sm btn-light border p-1 shadow-none" onclick="loadChartNghiTheoPhongBan()"><i class="bi bi-funnel text-muted"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-body"><canvas id="barChartNghiTheoPhongBan"></canvas></div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="chart-card">
+                <div class="chart-header d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="chart-title">Tình hình đi muộn, về sớm theo thời gian</h6>
+                        <div class="chart-subtitle">Tất cả đơn vị</div>
+                    </div>
+                    <div class="d-flex flex-column align-items-end gap-1">
+                        <span class="chart-unit">ĐVT: Số lượt</span>
+                        <div class="d-flex align-items-center gap-1 mt-1">
+                            <input type="date" id="tuNgay_Line" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 100px;">
+                            <input type="date" id="denNgay_Line" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 100px;">
+                            <button class="btn btn-sm btn-light border p-1 shadow-none" onclick="loadChartLineDiMuon()"><i class="bi bi-funnel text-muted"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-body"><canvas id="lineChartDiMuon"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="chart-card">
+                <div class="chart-header d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="chart-title">Phân tích loại nghỉ</h6>
+                        <div class="chart-subtitle">Tất cả đơn vị</div>
+                    </div>
+                    <div class="d-flex flex-column align-items-end gap-1">
+                        <span class="chart-unit">ĐVT: Đơn</span>
+                        <div class="d-flex align-items-center gap-1 mt-1">
+                            <input type="date" id="tuNgay_Loai" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 90px;">
+                            <input type="date" id="denNgay_Loai" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 90px;">
+                            <button class="btn btn-sm btn-light border p-1 shadow-none" onclick="loadChartLoaiNghi()"><i class="bi bi-funnel text-muted"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-body"><canvas id="doughnutChartLoaiNghi" style="display: block;box-sizing: border-box;height: 250px;width: 370.2px;"></canvas></div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="chart-card">
+                <div class="chart-header d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="chart-title">Tình hình làm thêm theo phòng ban</h6>
+                        <div class="chart-subtitle text-truncate" style="max-width: 180px;">Tất cả đơn vị</div>
+                    </div>
+                    <div class="d-flex flex-column align-items-end gap-1">
+                        <span class="chart-unit">ĐVT: Giờ</span>
+                        <div class="d-flex align-items-center gap-1 mt-1">
+                            <input type="date" id="tuNgay_LT" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 90px;">
+                            <input type="date" id="denNgay_LT" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 90px;">
+                            <button class="btn btn-sm btn-light border p-1 shadow-none" onclick="loadChartLamThemPB()"><i class="bi bi-funnel text-muted"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-body"><canvas id="barChartLamThem"></canvas></div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="chart-card">
+                <div class="chart-header d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="chart-title">Tình hình đi muộn, về sớm theo phòng ban</h6>
+                        <div class="chart-subtitle text-truncate" style="max-width: 180px;">Tất cả đơn vị</div>
+                    </div>
+                    <div class="d-flex flex-column align-items-end gap-1">
+                        <span class="chart-unit">ĐVT: Số lần</span>
+                        <div class="d-flex align-items-center gap-1 mt-1">
+                            <input type="date" id="tuNgay_DM" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 90px;">
+                            <input type="date" id="denNgay_DM" class="form-control form-control-sm p-1 shadow-none" style="font-size: 0.7rem; width: 90px;">
+                            <button class="btn btn-sm btn-light border p-1 shadow-none" onclick="loadChartDiMuonPB()"><i class="bi bi-funnel text-muted"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-body"><canvas id="barChartDiMuonPB"></canvas></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // --- HÀM HELPER FETCH API ---
+        function fetchDataAndUpdateChart(chart, apiUrl, tuNgayId, denNgayId) {
+            let tuNgay = document.getElementById(tuNgayId).value;
+            let denNgay = document.getElementById(denNgayId).value;
+            let finalUrl = apiUrl + '?';
+            if (tuNgay) finalUrl += 'tuNgay=' + tuNgay + '&';
+            if (denNgay) finalUrl += 'denNgay=' + denNgay;
+
+            fetch(finalUrl)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        chart.data.labels = res.labels;
+                        chart.data.datasets[0].data = res.data;
+                        chart.update();
+                    }
+                });
+        }
+
+        // 1. BIỂU ĐỒ NGHỈ THEO PHÒNG BAN
+        var barNghiPB = new Chart(document.getElementById('barChartNghiTheoPhongBan').getContext('2d'), {
+            type: 'bar',
+            data: { labels: [], datasets: [{ label: 'Ngày công', data: [], backgroundColor: '#38bdf8', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+        window.loadChartNghiTheoPhongBan = () => fetchDataAndUpdateChart(barNghiPB, '/Timesheet/Dashboard/GetApiNghiTheoPhongBan', 'tuNgay_NghiPB', 'denNgay_NghiPB');
+
+        // 2. BIỂU ĐỒ LINE ĐI MUỘN THEO THỜI GIAN
+        var lineDiMuon = new Chart(document.getElementById('lineChartDiMuon').getContext('2d'), {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Số lượt', data: [], borderColor: '#ea580c', backgroundColor: 'rgba(234, 88, 12, 0.1)', borderWidth: 2, tension: 0.3, fill: true, pointBackgroundColor: 'white', pointBorderColor: '#ea580c', pointBorderWidth: 2 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } } }
+        });
+        window.loadChartLineDiMuon = () => fetchDataAndUpdateChart(lineDiMuon, '/Timesheet/Dashboard/GetApiDiMuonTheoThoiGian', 'tuNgay_Line', 'denNgay_Line');
+
+        // 3. BIỂU ĐỒ PHÂN TÍCH LOẠI NGHỈ
+        var doughnutLoai = new Chart(document.getElementById('doughnutChartLoaiNghi').getContext('2d'), {
+            type: 'doughnut',
+            data: { labels: [], datasets: [{ data: [], backgroundColor: ['#ea580c', '#38bdf8', '#34d399', '#fbbf24'], borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'right' } } }
+        });
+        window.loadChartLoaiNghi = () => fetchDataAndUpdateChart(doughnutLoai, '/Timesheet/Dashboard/GetApiPhanTichLoaiNghi', 'tuNgay_Loai', 'denNgay_Loai');
+
+        // 4. BIỂU ĐỒ LÀM THÊM THEO PHÒNG BAN
+        var barLamThem = new Chart(document.getElementById('barChartLamThem').getContext('2d'), {
+            type: 'bar',
+            data: { labels: [], datasets: [{ label: 'Giờ làm thêm', data: [], backgroundColor: '#f97316', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+        window.loadChartLamThemPB = () => fetchDataAndUpdateChart(barLamThem, '/Timesheet/Dashboard/GetApiLamThemTheoPhongBan', 'tuNgay_LT', 'denNgay_LT');
+
+        // 5. BIỂU ĐỒ ĐI MUỘN THEO PHÒNG BAN
+        var barDiMuonPB = new Chart(document.getElementById('barChartDiMuonPB').getContext('2d'), {
+            type: 'bar',
+            data: { labels: [], datasets: [{ label: 'Số lần', data: [], backgroundColor: '#ef4444', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+        window.loadChartDiMuonPB = () => fetchDataAndUpdateChart(barDiMuonPB, '/Timesheet/Dashboard/GetApiDiMuonTheoPhongBan', 'tuNgay_DM', 'denNgay_DM');
+
+        // GỌI TẤT CẢ CÁC HÀM ĐỂ VẼ BIỂU ĐỒ LẦN ĐẦU TIÊN
+        loadChartNghiTheoPhongBan();
+        loadChartLineDiMuon();
+        loadChartLoaiNghi();
+        loadChartLamThemPB();
+        loadChartDiMuonPB();
+    });
+</script>

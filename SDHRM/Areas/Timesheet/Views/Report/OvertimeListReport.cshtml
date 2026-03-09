@@ -1,0 +1,246 @@
+﻿@model IEnumerable<SDHRM.Models.ViewModels.ChiTietLamThemVM>
+@{
+    var tuNgay = ViewBag.TuNgay as DateTime?;
+    var denNgay = ViewBag.DenNgay as DateTime?;
+    ViewData["Title"] = "Danh sách nhân viên làm thêm giờ";
+}
+
+<style>
+    body {
+        background-color: #f4f6f8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 0.85rem;
+    }
+
+    .report-container {
+        display: flex;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+    }
+
+    .sidebar-filter {
+        width: 280px;
+        background: white;
+        border-right: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        padding: 15px;
+        border-bottom: 1px solid #e2e8f0;
+        font-weight: bold;
+        font-size: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sidebar-body {
+        padding: 15px;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    .sidebar-footer-content {
+        padding: 15px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        background: #fff;
+    }
+
+    .main-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .toolbar-top {
+        background: white;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-wrapper {
+        flex-grow: 1;
+        overflow: auto;
+        background: white;
+    }
+
+    .grid-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: max-content;
+        margin-bottom: 0;
+    }
+
+        .grid-table th {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            font-size: 0.8rem;
+        }
+
+        .grid-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+    .form-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #475569;
+        margin-bottom: 4px;
+    }
+
+    .btn-custom-outline {
+        border: 1px solid #d1d5db;
+        background: white;
+        color: #374151;
+    }
+
+        .btn-custom-outline:hover {
+            background: #f3f4f6;
+        }
+</style>
+
+<div class="bg-white px-3 py-2 border-bottom d-flex align-items-center gap-2">
+    <a href="@Url.Action("Index")" class="text-dark"><i class="bi bi-arrow-left fs-5"></i></a>
+    <h5 class="fw-bold text-dark">Danh sách nhân viên làm thêm giờ</h5>
+</div>
+
+<div class="report-container">
+    <form asp-action="OvertimeListReport" method="get" class="sidebar-filter" id="filterForm">
+        <div class="sidebar-header">
+            Tham số báo cáo
+        </div>
+        <div class="sidebar-body">
+            <div class="mb-3">
+                <label class="form-label">Đơn vị công tác</label>
+                <select name="phongBan" class="form-select form-select-sm shadow-none">
+                    <option value="">Tất cả đơn vị</option>
+                    @if (ViewBag.DanhSachPhongBan != null)
+                    {
+                        foreach (var pb in ViewBag.DanhSachPhongBan)
+                        {
+                            <option value="@pb" selected="@(ViewBag.PhongBanDaChon == pb)">@pb</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Từ ngày</label>
+                <input type="date" name="tuNgay" class="form-control form-control-sm shadow-none" value="@tuNgay?.ToString("yyyy-MM-dd")">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Đến ngày</label>
+                <input type="date" name="denNgay" class="form-control form-control-sm shadow-none" value="@denNgay?.ToString("yyyy-MM-dd")">
+            </div>
+        </div>
+        <div class="sidebar-footer-content">
+            <a href="@Url.Action("OvertimeListReport")" class="btn btn-sm btn-custom-outline px-3 shadow-none">Mặc định</a>
+            <button type="submit" class="btn btn-sm text-white px-4 shadow-none" style="background-color: #ea580c;">Áp dụng</button>
+        </div>
+    </form>
+
+    <div class="main-content">
+        <div class="toolbar-top">
+            <div class="input-group input-group-sm" style="width: 250px;">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="searchInput" class="form-control border-start-0 shadow-none ps-0" placeholder="Tìm kiếm nhân viên..." onkeyup="searchTable()">
+            </div>
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("ExportOvertimeListReport", new { tuNgay = tuNgay?.ToString("yyyy-MM-dd"), denNgay = denNgay?.ToString("yyyy-MM-dd"), phongBan = ViewBag.PhongBanDaChon })" class="btn btn-sm btn-custom-outline shadow-none" title="Xuất Excel">
+                    <i class="bi bi-box-arrow-right"></i> Xuất khẩu
+                </a>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="table grid-table table-hover mb-0" id="mainTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 50px;">STT</th>
+                        <th>Mã nhân viên</th>
+                        <th>Tên nhân viên <i class="bi bi-pin-angle text-muted ms-1"></i></th>
+                        <th>Vị trí công việc</th>
+                        <th>Đơn vị công tác</th>
+                        <th class="text-center">Ngày làm thêm</th>
+                        <th class="text-center text-primary">Tổng giờ</th>
+                        <th>Lý do làm thêm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="10" class="text-center py-5 text-muted my-4">Không có dữ liệu</td></tr>
+                    }
+                    else
+                    {
+                        int stt = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr class="data-row">
+                                <td class="text-center text-muted">@stt</td>
+                                <td class="text-muted">@item.MaNV</td>
+                                <td class="fw-medium text-dark search-name">@item.HoTen</td>
+                                <td>@item.ViTriCongViec</td>
+                                <td>@item.PhongBan</td>
+                                <td class="text-center fw-medium">@item.NgayLamThem.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center fw-bold text-primary bg-light">@item.TongGio</td>
+                                <td class="text-wrap" style="max-width: 200px;">@item.LyDo</td>
+                            </tr>
+                            stt++;
+                        }
+                    }
+                </tbody>
+                @if (Model.Any())
+                {
+                    <tfoot style="position: sticky; bottom: 0; z-index: 2;">
+                        <tr class="bg-white">
+                            <td colspan="6" class="text-start fw-bold fs-6 ps-4">Tổng cộng</td>
+                            <td class="text-center fw-bold text-primary fs-6">@Model.Sum(x => x.TongGio)</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        </div>
+
+        <div class="bg-white p-2 px-3 d-flex justify-content-between align-items-center mt-auto" style="border-top: 1px solid #e2e8f0;">
+            <span class="text-muted">Tổng số bản ghi: <strong class="text-dark">@Model.Count()</strong></span>
+            <div class="d-flex align-items-center gap-3">
+                <select class="form-select form-select-sm shadow-none w-auto py-1"><option>50</option></select>
+                <span class="text-muted">Từ <strong>1</strong> đến <strong>@Model.Count()</strong> bản ghi</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function searchTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".data-row");
+        rows.forEach(row => {
+            let name = row.querySelector(".search-name").innerText.toLowerCase();
+            row.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+</script>
