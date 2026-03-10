@@ -1,0 +1,113 @@
+﻿@model IEnumerable<SDHRM.Models.BangLuong>
+@{
+    ViewData["Title"] = "Quản lý Bảng lương";
+}
+
+<div class="container-fluid py-3 h-100 d-flex flex-column">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-cash-stack text-success me-2"></i>Danh sách Bảng lương</h4>
+        </div>
+        <button class="btn btn-primary shadow-sm fw-bold px-4" data-bs-toggle="modal" data-bs-target="#createPayrollModal">
+            <i class="bi bi-calculator me-2"></i> Chạy tính lương mới
+        </button>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success py-2 border-0 shadow-sm">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger py-2 border-0 shadow-sm">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-3 flex-grow-1 overflow-hidden">
+        <div class="table-responsive bg-white h-100">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted">
+                    <tr>
+                        <th class="ps-4">Tên bảng lương</th>
+                        <th>Kỳ lương</th>
+                        <th>Dữ liệu công</th>
+                        <th>Tổng chi trả</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">@item.TenBangLuong</td>
+                            <td>Tháng @item.Thang / @item.Nam</td>
+                            <td class="text-muted small">@item.BangChamCong?.TenBangChamCong</td>
+                            <td class="fw-bold text-success">@item.TongQuyLuong.ToString("N0") VNĐ</td>
+                            <td><span class="badge bg-warning text-dark border">@item.TrangThai</span></td>
+                            <td class="text-center d-flex justify-content-center gap-1">
+                                <a href="@Url.Action("Detail", new { id = item.Id })" class="btn btn-sm btn-outline-primary border shadow-none">
+                                    <i class="bi bi-eye"></i> Xem
+                                </a>
+
+                                @if (item.TrangThai == "Bản nháp")
+                                {
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bảng lương này? Toàn bộ chi tiết sẽ bị xóa vĩnh viễn!');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger border shadow-none">
+                                            <i class="bi bi-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createPayrollModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form asp-action="Create" method="post">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold">Khởi tạo Bảng tính lương</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Tên bảng lương <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control shadow-none" name="TenBangLuong" required value="Bảng lương tháng @DateTime.Now.Month" />
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted small fw-bold">Tháng</label>
+                            <input type="number" class="form-control shadow-none" name="Thang" required value="@DateTime.Now.Month" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small fw-bold">Năm</label>
+                            <input type="number" class="form-control shadow-none" name="Nam" required value="@DateTime.Now.Year" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Áp dụng Mẫu bảng lương <span class="text-danger">*</span></label>
+                        <select class="form-select shadow-none border-primary text-primary fw-medium" name="MauBangLuongId" asp-items="ViewBag.MauBangLuongList" required>
+                            <option value="">-- Chọn mẫu hiển thị --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Dữ liệu chấm công gốc <span class="text-danger">*</span></label>
+                        <select class="form-select shadow-none" name="BangChamCongId" asp-items="ViewBag.BangChamCongList" required>
+                            <option value="">-- Chọn bảng chấm công đã chốt --</option>
+                        </select>
+                        <div class="form-text small">Chỉ hiển thị các dữ liệu đã được HR Khóa/Chốt.</div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="submit" class="btn btn-primary shadow-none w-100 fw-bold"><i class="bi bi-gear-fill me-1"></i> BẮT ĐẦU CHẠY LƯƠNG</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

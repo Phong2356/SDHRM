@@ -1,5 +1,287 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Tổng quan Tiền lương";
+    var maxCount = (int)ViewBag.MaxCount;
+    // Hàm tính % chiều dài thanh biểu đồ
+    int percent(int count) => maxCount == 0 ? 0 : (int)Math.Round((double)count / maxCount * 100);
 }
+
+<style>
+    html, body {
+        background-color: #f4f5f8;
+        height: 100%;
+    }
+
+    .widget-card {
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+        padding: 20px;
+        height: 100%;
+    }
+
+    .widget-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 5px;
+    }
+
+    .widget-subtitle {
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin-bottom: 15px;
+    }
+
+    /* Banner xanh lá trên cùng */
+    .banner-summary {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 1px solid #bbf7d0;
+        display: flex;
+        align-items: center;
+        padding: 0;
+        overflow: hidden;
+        position: relative;
+        height: 210px;
+    }
+
+    .banner-stats {
+        flex-grow: 1;
+        display: flex;
+        justify-content: space-around;
+        padding: 20px;
+        z-index: 2;
+    }
+
+    .stat-box .label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-box .value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111827;
+        margin-top: 5px;
+    }
+
+    /* CSS Vẽ biểu đồ Bar ngang */
+    .bar-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .bar-label {
+        width: 120px;
+        font-size: 0.85rem;
+        color: #4b5563;
+        text-align: right;
+        padding-right: 15px;
+    }
+
+    .bar-track {
+        flex-grow: 1;
+        height: 24px;
+        background-color: #f3f4f6;
+        border-radius: 4px;
+        position: relative;
+    }
+
+    .bar-fill {
+        height: 100%;
+        background-color: #22c55e;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 10px;
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        min-width: 20px;
+        transition: width 1s ease-in-out;
+    }
+
+    .bar-axis {
+        margin-left: 120px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-top: 5px;
+        padding-top: 5px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    /* Lời nhắc (Reminders) */
+    .reminder-group {
+        margin-bottom: 20px;
+    }
+
+    .reminder-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #4b5563;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .reminder-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+        color: #111827;
+    }
+
+    .avatar-mini {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    /* Hình ảnh Empty State */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 150px;
+        color: #9ca3af;
+    }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #d1d5db;
+            margin-bottom: 10px;
+            opacity: 0.7;
+        }
+</style>
+
+<div class="container-fluid py-4 h-100 overflow-auto">
+    <div class="row g-3">
+
+        <div class="col-xl-9 col-lg-8">
+
+            <div class="widget-card banner-summary mb-3 p-0">
+                <div class="p-4" style="background: url('https://cdn-icons-png.flaticon.com/512/3135/3135673.png') no-repeat center; background-size: contain; width: 150px; height: 120px; opacity: 0.2; position: absolute; left: 0; bottom: 0;"></div>
+
+                <div class="ps-4 z-index-2" style="min-width: 250px; margin-bottom: 100px">
+                    <div class="widget-title mb-0">Tổng hợp lương</div>
+                    <div class="widget-subtitle mb-0">Tất cả đơn vị - Tháng @(ViewBag.BangLuongMoiNhat?.Thang ?? DateTime.Now.Month)</div>
+                </div>
+
+                <div class="banner-stats">
+                    <div class="stat-box">
+                        <div class="label">Tổng lương</div>
+                        <div class="value">@(ViewBag.TongLuong > 0 ? ((decimal)ViewBag.TongLuong).ToString("N0") : "-")</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">Thuế TNCN</div>
+                        <div class="value">@(ViewBag.ThueTNCN > 0 ? ((decimal)ViewBag.ThueTNCN).ToString("N0") : "-")</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">Bảo hiểm khấu trừ</div>
+                        <div class="value">@(ViewBag.BaoHiem > 0 ? ((decimal)ViewBag.BaoHiem).ToString("N0") : "-")</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="widget-card">
+                        <div class="widget-title">Phân tích mức lương nhân viên</div>
+                        <div class="widget-subtitle">Tất cả đơn vị</div>
+
+                        <div class="mt-4">
+                            <div class="text-muted small text-end mb-2 fst-italic">Mức lương (triệu đồng)</div>
+
+                            <div class="bar-row">
+                                <div class="bar-label">Từ 30 trở lên</div>
+                                <div class="bar-track"><div class="bar-fill" style="width: @(percent(ViewBag.Tren30))%;">@(ViewBag.Tren30 > 0 ? ViewBag.Tren30 : "")</div></div>
+                            </div>
+                            <div class="bar-row">
+                                <div class="bar-label">Từ 20 đến dưới 30</div>
+                                <div class="bar-track"><div class="bar-fill" style="width: @(percent(ViewBag.Tu20Den30))%;">@(ViewBag.Tu20Den30 > 0 ? ViewBag.Tu20Den30 : "")</div></div>
+                            </div>
+                            <div class="bar-row">
+                                <div class="bar-label">Từ 10 đến dưới 20</div>
+                                <div class="bar-track"><div class="bar-fill" style="width: @(percent(ViewBag.Tu10Den20))%;">@(ViewBag.Tu10Den20 > 0 ? ViewBag.Tu10Den20 : "")</div></div>
+                            </div>
+                            <div class="bar-row mb-1">
+                                <div class="bar-label">Dưới 10</div>
+                                <div class="bar-track"><div class="bar-fill" style="width: @(percent(ViewBag.Duoi10))%;">@(ViewBag.Duoi10 > 0 ? ViewBag.Duoi10 : "")</div></div>
+                            </div>
+                            <div class="bar-axis">
+                                <span>0</span>
+                                <span>Số lượng nhân viên</span>
+                                <span>@maxCount</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="widget-card">
+                        <div class="widget-title">Cơ cấu thu nhập</div>
+                        <div class="widget-subtitle">Tất cả đơn vị - Quý trước</div>
+                        <div class="empty-state">
+                            <i class="bi bi-file-earmark-text text-success" style="opacity: 0.3;"></i>
+                            <span class="small fst-italic">Không có dữ liệu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="widget-card">
+                        <div class="widget-title">Tình hình thực hiện ngân sách lương <i class="bi bi-info-circle text-warning ms-1" style="font-size: 0.85rem;"></i></div>
+                        <div class="widget-subtitle">Năm nay | Đơn vị tính: Triệu đồng</div>
+                        <div class="empty-state">
+                            <i class="bi bi-speedometer2 text-success" style="opacity: 0.3;"></i>
+                            <span class="small fst-italic">Đang cập nhật...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="widget-card">
+                        <div class="widget-title">Thực hiện ngân sách theo thời gian</div>
+                        <div class="widget-subtitle">01/01/2026 - 31/12/2026</div>
+                        <div class="empty-state">
+                            <i class="bi bi-graph-up text-success" style="opacity: 0.3;"></i>
+                            <span class="small fst-italic">Không có dữ liệu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-lg-4">
+
+            <div class="widget-card mb-3">
+                <div class="widget-title mb-4">Phản hồi phiếu lương</div>
+                <div class="empty-state" style="height: 100px;">
+                    <i class="bi bi-chat-square-text text-success" style="opacity: 0.3;"></i>
+                    <span class="small fst-italic">Không có dữ liệu</span>
+                </div>
+            </div>            
+        </div>
+    </div>
+</div>

@@ -1,0 +1,145 @@
+﻿@model IEnumerable<SDHRM.Models.BangChamCongNhanVien>
+@{
+    var bangChamCong = ViewBag.BangChamCong as SDHRM.Models.BangChamCong;
+    ViewData["Title"] = "Dữ liệu tổng hợp: " + bangChamCong?.TenBangChamCong;
+}
+
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+    }
+
+    .filter-bar {
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+    }
+
+    .search-box {
+        position: relative;
+        width: 350px;
+    }
+
+        .search-box .bi-search {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .search-box input {
+            padding-left: 35px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border: 1px solid #cbd5e1;
+        }
+
+    .table-custom th {
+        background-color: #f8fafc;
+        font-weight: 600;
+        color: #475569;
+        padding: 12px 15px;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .table-custom td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="container-fluid p-0 h-100 d-flex flex-column">
+
+    <div class="page-header mt-2">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="Timekeeping" class="text-dark"><i class="bi bi-arrow-left fs-4"></i></a>
+            <div>
+                <h4 class="fw-bold text-dark mb-1">@bangChamCong?.TenBangChamCong</h4>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle fw-medium"><i class="bi bi-check-circle-fill me-1"></i> Dữ liệu hợp lệ để tính lương</span>
+            </div>
+        </div>
+        <button class="btn btn-primary shadow-sm fw-bold px-4 py-2">
+            <i class="bi bi-calculator me-2"></i> Tạo bảng tính lương
+        </button>
+    </div>
+
+    <div class="filter-bar">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" class="form-control shadow-none" placeholder="Tìm kiếm theo mã, họ tên nhân viên..." onkeyup="searchTable()">
+        </div>
+        <button class="btn btn-sm btn-light border shadow-none fw-medium"><i class="bi bi-file-earmark-excel text-success me-1"></i> Xuất Excel tổng hợp</button>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 flex-grow-1 d-flex flex-column overflow-hidden">
+        <div class="table-responsive flex-grow-1 bg-white">
+            <table class="table table-hover table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Mã NV</th>
+                        <th>Họ và tên</th>
+                        <th class="text-center">Công thực tế</th>
+                        <th class="text-center">Nghỉ phép</th>
+                        <th class="text-center">Nghỉ K.Lương</th>
+                        <th class="text-center text-primary bg-primary bg-opacity-10">CÔNG HƯỞNG LƯƠNG</th>
+                        <th class="text-center">Giờ OT</th>
+                        <th class="text-center">Trễ/Sớm (Phút)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var nv in Model)
+                    {
+                        <tr class="data-row">
+                            <td class="ps-4 text-muted" style="font-size: 0.85rem;">@(nv.NhanSuId)</td>
+                            <td class="fw-bold text-dark search-name">@nv.NhanSu?.HoTen</td>
+                            <td class="text-center fw-medium">@nv.TongCongThucTe</td>
+                            <td class="text-center text-warning fw-medium">@(nv.TongCongNghiPhep > 0 ? nv.TongCongNghiPhep.ToString() : "-")</td>
+                            <td class="text-center text-danger fw-medium">@(nv.TongCongKhongLuong > 0 ? nv.TongCongKhongLuong.ToString() : "-")</td>
+                            <td class="text-center fw-bold text-primary bg-primary bg-opacity-10">@nv.TongCongHuongLuong</td>
+                            <td class="text-center text-info fw-medium">@(nv.TongGioTangCa > 0 ? nv.TongGioTangCa.ToString() : "-")</td>
+                            <td class="text-center text-danger fw-medium">@(nv.TongPhutDiMuonVeSom > 0 ? nv.TongPhutDiMuonVeSom.ToString() : "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3 border-top">
+            <span class="text-muted small">Số lượng nhân sự: <strong>@(Model?.Count() ?? 0)</strong></span>
+            <div class="small text-muted"><strong>1 - @(Model?.Count() ?? 0)</strong> bản ghi</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function searchTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".data-row");
+        rows.forEach(row => {
+            let name = row.querySelector(".search-name").innerText.toLowerCase();
+            row.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+</script>

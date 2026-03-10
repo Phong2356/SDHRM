@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SDHRM.Data;
 
@@ -11,9 +12,11 @@ using SDHRM.Data;
 namespace SDHRM.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260310030939_AddThacMacLuong")]
+    partial class AddThacMacLuong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -629,32 +632,6 @@ namespace SDHRM.Migrations
                     b.HasIndex("ThanhPhanLuongId");
 
                     b.ToTable("ChiTietMauBangLuongs");
-                });
-
-            modelBuilder.Entity("SDHRM.Models.ChiTietPhieuChiLuong", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChiTietBangLuongId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PhieuChiLuongId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("SoTienChi")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChiTietBangLuongId");
-
-                    b.HasIndex("PhieuChiLuongId");
-
-                    b.ToTable("ChiTietPhieuChiLuongs");
                 });
 
             modelBuilder.Entity("SDHRM.Models.ChungChi", b =>
@@ -1496,52 +1473,6 @@ namespace SDHRM.Migrations
                     b.ToTable("NhanSus");
                 });
 
-            modelBuilder.Entity("SDHRM.Models.PhieuChiLuong", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BangLuongId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("GhiChu")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HinhThucChi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("KyTraLuong")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MaPhieuChi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("NgayTao")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("NgayThanhToan")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("SoTienChi")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("TrangThai")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BangLuongId");
-
-                    b.ToTable("PhieuChiLuongs");
-                });
-
             modelBuilder.Entity("SDHRM.Models.PhongBan", b =>
                 {
                     b.Property<int>("Id")
@@ -2215,25 +2146,6 @@ namespace SDHRM.Migrations
                     b.Navigation("ThanhPhanLuong");
                 });
 
-            modelBuilder.Entity("SDHRM.Models.ChiTietPhieuChiLuong", b =>
-                {
-                    b.HasOne("SDHRM.Models.ChiTietBangLuong", "ChiTietBangLuong")
-                        .WithMany()
-                        .HasForeignKey("ChiTietBangLuongId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("SDHRM.Models.PhieuChiLuong", "PhieuChiLuong")
-                        .WithMany("ChiTietPhieuChiLuongs")
-                        .HasForeignKey("PhieuChiLuongId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("ChiTietBangLuong");
-
-                    b.Navigation("PhieuChiLuong");
-                });
-
             modelBuilder.Entity("SDHRM.Models.ChungChi", b =>
                 {
                     b.HasOne("SDHRM.Models.NhanSu", "NhanSu")
@@ -2459,17 +2371,6 @@ namespace SDHRM.Migrations
                     b.Navigation("ViTriCongViec");
                 });
 
-            modelBuilder.Entity("SDHRM.Models.PhieuChiLuong", b =>
-                {
-                    b.HasOne("SDHRM.Models.BangLuong", "BangLuong")
-                        .WithMany()
-                        .HasForeignKey("BangLuongId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BangLuong");
-                });
-
             modelBuilder.Entity("SDHRM.Models.PhongBan", b =>
                 {
                     b.HasOne("SDHRM.Models.NhanSu", "TruongPhong")
@@ -2643,11 +2544,6 @@ namespace SDHRM.Migrations
                     b.Navigation("ThongTinCongViec");
 
                     b.Navigation("ThongTinLienHe");
-                });
-
-            modelBuilder.Entity("SDHRM.Models.PhieuChiLuong", b =>
-                {
-                    b.Navigation("ChiTietPhieuChiLuongs");
                 });
 
             modelBuilder.Entity("SDHRM.Models.PhongBan", b =>

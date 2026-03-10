@@ -37,6 +37,7 @@ namespace SDHRM.Models
         public virtual ICollection<BangCap>? BangCaps { get; set; }
         public virtual ICollection<ChungChi>? ChungChis { get; set; }
         public virtual ICollection<QuaTrinhCongTac>? QuaTrinhCongTacs { get; set; }
+        public virtual HoSoLuong? HoSoLuong { get; set; }
     }
 }
 

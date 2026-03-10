@@ -1,0 +1,61 @@
+﻿@model IEnumerable<SDHRM.Models.ChiTietBangLuong>
+@{
+    ViewData["Title"] = "Phiếu lương của tôi";
+}
+
+<div class="container-fluid py-4 h-100">
+    <div class="mb-4">
+        <h4 class="fw-bold text-dark"><i class="bi bi-wallet2 text-primary me-2"></i>Phiếu lương cá nhân</h4>
+        <p class="text-muted small">Xem, kiểm tra và xác nhận thu nhập hàng tháng của bạn.</p>
+    </div>
+
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 position-relative overflow-hidden">
+                        <div class="position-absolute top-0 bottom-0 start-0" style="width: 5px; background-color: @(item.TrangThaiXacNhan == "Đã xác nhận" ? "#10b981" : (item.TrangThaiXacNhan == "Có thắc mắc" ? "#ef4444" : "#f59e0b"));"></div>
+
+                        <div class="card-body ps-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="fw-bold text-dark mb-0">Tháng @item.BangLuong?.Thang/@item.BangLuong?.Nam</h5>
+
+                                @if (item.TrangThaiXacNhan == "Chờ xác nhận" || item.TrangThaiXacNhan == "Chưa gửi")
+                                {
+                                    <span class="badge bg-warning text-dark rounded-pill px-3">Chờ xác nhận</span>
+                                }
+                                else if (item.TrangThaiXacNhan == "Có thắc mắc")
+                                {
+                                    <span class="badge bg-danger rounded-pill px-3">Đã gửi thắc mắc</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success rounded-pill px-3"><i class="bi bi-check2-all me-1"></i>Đã xác nhận</span>
+                                }
+                            </div>
+                            <p class="text-muted small mb-3">@item.BangLuong?.TenBangLuong</p>
+
+                            <div class="p-3 bg-light rounded-3 mb-3 text-center">
+                                <span class="d-block text-muted small mb-1">THỰC LĨNH</span>
+                                <h4 class="fw-bold text-primary mb-0">@item.ThucLinh.ToString("N0") <span class="fs-6 text-muted">VNĐ</span></h4>
+                            </div>
+
+                            <a href="@Url.Action("Detail", new { id = item.Id })" class="btn btn-outline-primary w-100 rounded-pill shadow-none fw-medium">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 3rem; opacity: 0.5;"></i>
+                <p class="text-muted mt-3">Bạn chưa có phiếu lương nào.</p>
+            </div>
+        }
+    </div>
+</div>

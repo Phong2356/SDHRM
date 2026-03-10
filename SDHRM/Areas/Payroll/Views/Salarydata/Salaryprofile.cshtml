@@ -1,0 +1,286 @@
+﻿@model IEnumerable<SDHRM.Models.NhanSu>
+@{
+    ViewData["Title"] = "Hồ sơ lương nhân viên";
+}
+
+<style>
+    /* Ép chiều cao toàn trang để Flexbox hoạt động */
+    html, body {
+        height: 100%;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px
+    }
+
+    .page-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+
+    /* Thanh công cụ filter giống trang Thành phần lương */
+    .filter-bar {
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+    }
+
+    .search-box {
+        position: relative;
+        width: 350px;
+    }
+
+        .search-box .bi-search {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .search-box input {
+            padding-left: 35px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border: 1px solid #cbd5e1;
+        }
+
+    /* Bảng dữ liệu */
+    .table-custom th {
+        background-color: #f8fafc;
+        font-weight: 600;
+        color: #475569;
+        padding: 12px 15px;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .table-custom td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        font-size: 0.9rem;
+    }
+
+    /* Nút cập nhật nhỏ gọn */
+    .btn-update {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+</style>
+
+<div class="container-fluid p-0 h-100 d-flex flex-column">
+
+    <div class="page-header mt-2">
+        <div>
+            <h2 class="page-title"><i class="bi bi-person-lines-fill text-primary me-2"></i>Hồ sơ lương nhân viên</h2>
+            <p class="text-muted small mb-0 mt-1">Quản lý mức lương cơ bản, lương đóng bảo hiểm và số người phụ thuộc của từng nhân sự.</p>
+        </div>
+        <button class="btn btn-sm btn-light border shadow-none fw-medium"><i class="bi bi-file-earmark-excel text-success me-1"></i> Xuất Excel</button>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success py-2 shadow-sm border-0"><i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]</div>
+    }
+
+    <div class="filter-bar">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" class="form-control shadow-none" placeholder="Tìm kiếm theo mã, họ tên nhân viên..." onkeyup="searchTable()">
+        </div>
+        <div class="filter-actions d-flex gap-2 align-items-center">
+            <select class="form-select form-select-sm shadow-none border-secondary-subtle" style="width: 200px;">
+                <option>Tất cả phòng ban</option>
+            </select>
+            <select class="form-select form-select-sm shadow-none border-secondary-subtle" style="width: 180px;">
+                <option>Trạng thái hồ sơ</option>
+                <option>Đã thiết lập</option>
+                <option>Chưa thiết lập</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 flex-grow-1 d-flex flex-column overflow-hidden">
+        <div class="table-responsive flex-grow-1 bg-white">
+            <table class="table table-hover table-custom mb-0" id="table-hosoluong">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Mã NV</th>
+                        <th>Họ và tên</th>
+                        <th>Phòng ban</th>
+                        <th class="text-end">Lương cơ bản</th>
+                        <th class="text-end">Lương đóng BH</th>
+                        <th class="text-center">Người phụ thuộc</th>
+                        <th class="text-center">Phụ cấp chức vụ</th>
+                        <th class="text-center">Phụ cấp đi lại</th>
+                        <th class="text-center">Phụ cấp ăn trưa</th>
+                        <th class="text-center">Cập nhật cuối</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var nv in Model)
+                    {
+                        var hs = nv.HoSoLuong;
+                        <tr class="data-row">
+                            <td class="ps-4 text-muted" style="font-size: 0.85rem;">@(nv.Id)</td>
+                            <td class="fw-bold text-dark search-name">@nv.HoTen</td>
+                            <td>@(nv.PhongBan?.TenPhongBan ?? "Chưa phân bổ")</td>
+
+                            @if (hs != null)
+                            {
+                                <td class="text-end fw-bold text-primary">@hs.LuongCoBan.ToString("N0") <span class="text-muted fw-normal" style="font-size: 0.75rem;">VNĐ</span></td>
+                                <td class="text-end fw-bold text-success">@hs.LuongDongBaoHiem.ToString("N0") <span class="text-muted fw-normal" style="font-size: 0.75rem;">VNĐ</span></td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border">@hs.SoNguoiPhuThuoc người</span>
+                                </td>
+                                <td class="text-center">@hs.PhuCapChucVu.ToString("N0") <span class="text-muted fw-normal" style="font-size: 0.75rem;">VNĐ</span></td>
+                                <td class="text-center">@hs.PhuCapDiLai.ToString("N0") <span class="text-muted fw-normal" style="font-size: 0.75rem;">VNĐ</span></td>
+                                <td class="text-center">@hs.PhuCapKhac.ToString("N0") <span class="text-muted fw-normal" style="font-size: 0.75rem;">VNĐ</span></td>
+                                <td class="text-center" style="font-size: 0.85rem;">@hs.NgayCapNhat.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td class="text-end text-muted fst-italic">Chưa thiết lập</td>
+                                <td class="text-end text-muted fst-italic">Chưa thiết lập</td>
+                                <td class="text-center text-muted">-</td>
+                                <td class="text-center text-muted">-</td>
+                                <td class="text-center text-muted">-</td>
+                                <td class="text-center text-muted">-</td>
+                                <td class="text-center text-muted">-</td>
+                            }
+
+                            <td class="text-center">
+                                <button type="button" class="btn btn-outline-primary btn-update shadow-none"
+                                        data-bs-toggle="modal" data-bs-target="#editSalaryModal"
+                                        data-id="@nv.Id"
+                                        data-name="@nv.HoTen"
+                                        data-lcb="@(hs?.LuongCoBan ?? 0)"
+                                        data-ldbh="@(hs?.LuongDongBaoHiem ?? 0)"
+                                        data-npt="@(hs?.SoNguoiPhuThuoc ?? 0)"
+                                        data-pccv="@(hs?.PhuCapChucVu ?? 0)"
+                                        data-pcdl="@(hs?.PhuCapDiLai ?? 0)"
+                                        data-pckhac="@(hs?.PhuCapKhac ?? 0)">
+                                    <i class="bi bi-pencil-square"></i> Cập nhật
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3 border-top">
+            <span class="text-muted small">Tổng số nhân sự: <strong>@(Model?.Count() ?? 0)</strong></span>
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 small text-muted">
+                    <span>Số bản ghi/trang</span>
+                    <select class="form-select form-select-sm shadow-none border-secondary-subtle" style="width: 70px;">
+                        <option>25</option>
+                        <option>50</option>
+                    </select>
+                </div>
+                <div class="small text-muted"><strong>1 - @(Model?.Count() ?? 0)</strong> bản ghi</div>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-light border shadow-none" disabled><i class="bi bi-chevron-left"></i></button>
+                    <button class="btn btn-sm btn-light border shadow-none"><i class="bi bi-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editSalaryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold text-dark"><i class="bi bi-wallet2 text-primary me-2"></i>Cập nhật lương: <span id="modalEmpName" class="text-primary"></span></h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CapNhatNhanh" method="post">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="NhanSuId" id="modalEmpId" />
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Lương cơ bản (VNĐ) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control shadow-none" name="LuongCoBan" id="modalLcb" required min="0" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Lương đóng Bảo hiểm (VNĐ) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control shadow-none" name="LuongDongBaoHiem" id="modalLdbh" required min="0" />
+                        <div class="form-text" style="font-size: 0.8rem;">Dùng để trích % đóng BHXH, BHYT, BHTN.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Phụ cấp chức vụ (VNĐ)</label>
+                        <input type="number" class="form-control shadow-none" name="PhuCapChucVu" id="modalPcChucVu" value="0" min="0" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Phụ cấp đi lại/xăng xe (VNĐ)</label>
+                        <input type="number" class="form-control shadow-none" name="PhuCapDiLai" id="modalPcDiLai" value="0" min="0" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Phụ cấp ăn trưa (VNĐ)</label>
+                        <input type="number" class="form-control shadow-none" name="PhuCapKhac" id="modalPcKhac" value="0" min="0" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Số người phụ thuộc <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control shadow-none" name="SoNguoiPhuThuoc" id="modalNpt" required min="0" />
+                        <div class="form-text" style="font-size: 0.8rem;">Dùng để tính giảm trừ gia cảnh Thuế TNCN (4.4 triệu/người).</div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-top-0">
+                    <button type="button" class="btn btn-light border shadow-none" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary shadow-none"><i class="bi bi-save me-1"></i> Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var editModal = document.getElementById('editSalaryModal')
+    editModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        document.getElementById('modalEmpId').value = button.getAttribute('data-id');
+        document.getElementById('modalEmpName').textContent = button.getAttribute('data-name');
+        document.getElementById('modalLcb').value = button.getAttribute('data-lcb');
+        document.getElementById('modalLdbh').value = button.getAttribute('data-ldbh');
+        document.getElementById('modalNpt').value = button.getAttribute('data-npt');
+        document.getElementById('modalPcChucVu').value = button.getAttribute('data-pccv');
+        document.getElementById('modalPcDiLai').value = button.getAttribute('data-pcdl');
+        document.getElementById('modalPcKhac').value = button.getAttribute('data-pckhac');
+    });
+
+    function searchTable() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".data-row");
+        rows.forEach(row => {
+            let name = row.querySelector(".search-name").innerText.toLowerCase();
+            row.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+</script>

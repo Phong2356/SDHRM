@@ -69,37 +69,37 @@
                 </li>
                 <li class="nav-item">
                     <a asp-area="Payroll" asp-controller="salarycomposition" asp-action="Index" class="nav-link">
-                        <i class="bi bi-person-fill"></i>
+                        <i class="bi bi-grid"></i>
                         <span class="link-text">Thành phần lương</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a asp-area="Payroll" asp-controller="Contract" asp-action="Index" class="nav-link">
-                        <i class="bi bi-file-earmark-text"></i>
+                    <a asp-area="Payroll" asp-controller="Payrolltemplate" asp-action="Index" class="nav-link">
+                        <i class="bi bi-layout-text-window"></i>
                         <span class="link-text">Mẫu bảng lương</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a asp-area="Payroll" asp-controller="Reward" asp-action="Index" class="nav-link">
-                        <i class="bi bi-award-fill"></i>
+                    <a href="#" class="nav-link menu-has-sub" data-target="#submenu-chamcong">
+                        <i class="bi bi-database"></i>
                         <span class="link-text">Dữ liệu tính lương</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a asp-area="Payroll" asp-controller="Discipline" asp-action="Index" class="nav-link">
-                        <i class="bi bi-shield-exclamation"></i>
+                    <a asp-area="Payroll" asp-controller="Salary" asp-action="Index" class="nav-link">
+                        <i class="bi bi-calculator"></i>
                         <span class="link-text">Tính lương</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a asp-area="Payroll" asp-controller="Benefit" asp-action="Index" class="nav-link">
-                        <i class="bi bi-gift"></i>
+                    <a asp-area="Payroll" asp-controller="Payment" asp-action="Index" class="nav-link">
+                        <i class="bi bi-bag"></i>
                         <span class="link-text">Chi trả</span>
                     </a>
                 </li>                
                 <li class="nav-item">
                     <a asp-area="Payroll" asp-controller="Setting" asp-action="Index" class="nav-link">
-                        <i class="bi bi-clipboard-data"></i>
+                        <i class="bi bi-pie-chart"></i>
                         <span class="link-text">Báo cáo</span>
                     </a>
                 </li>               
@@ -118,8 +118,8 @@
 
                 <nav class="nav flex-column sub-menu-group" id="submenu-chamcong" style="display: none;">
                     <div class="px-3 py-2 text-muted fw-bold small text-uppercase">Chấm công</div>
-                    <a asp-area="Timesheet" asp-controller="Timekeeping" asp-action="TimesheetDetail" class="nav-link">Bảng chấm công chi tiết</a>
-                    <a asp-area="Timesheet" asp-controller="Timekeeping" asp-action="Timekeeper" class="nav-link">Dữ liệu chấm công</a>
+                    <a asp-area="Payroll" asp-controller="Salarydata" asp-action="Timekeeping" class="nav-link">Dữ liệu chấm công</a>
+                    <a asp-area="Payroll" asp-controller="Salarydata" asp-action="Salaryprofile" class="nav-link">Hồ sơ lương</a>
                 </nav>
 
                 <nav class="nav flex-column sub-menu-group" id="submenu-quanlydon" style="display: none;">

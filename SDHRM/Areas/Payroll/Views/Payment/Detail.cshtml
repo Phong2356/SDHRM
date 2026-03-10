@@ -1,0 +1,335 @@
+﻿@model SDHRM.Models.PhieuChiLuong
+@{
+    ViewData["Title"] = "Bảng chi trả lương: " + Model.MaPhieuChi;
+    var dictDaChi = ViewBag.DaChiTruocDo as Dictionary<int, decimal>;
+    int stt = 1;
+}
+
+<style>
+    html, body {
+        height: 100%;
+        background-color: #f4f5f8;
+    }
+
+    .toolbar-header {
+        background: #fff;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .badge-status {
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background-color: #fff8e1;
+        color: #f59e0b;
+        border: 1px solid #fcd34d;
+    }
+
+    .btn-toolbar-custom {
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 4px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        color: #374151;
+    }
+
+        .btn-toolbar-custom:hover {
+            background: #f9fafb;
+        }
+
+    .filter-section {
+        background: #fff;
+        padding: 10px 20px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .search-box {
+        position: relative;
+        width: 250px;
+    }
+
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .search-box input {
+            padding-left: 32px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            font-size: 0.85rem;
+        }
+
+    .table-container {
+        flex-grow: 1;
+        overflow: auto;
+        background: #fff;
+    }
+
+    .table-amis {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.85rem;
+    }
+
+        .table-amis th {
+            background-color: #f9fafb;
+            color: #374151;
+            font-weight: 600;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            border-right: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .table-amis td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            border-right: 1px solid #e0e0e0;
+            vertical-align: middle;
+            color: #111827;
+        }
+
+            .table-amis th:last-child, .table-amis td:last-child {
+                border-right: none;
+            }
+
+    .input-cell {
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: right;
+        color: inherit;
+        outline: none;
+    }
+
+        .input-cell:focus {
+            border-bottom: 1px solid #3b82f6;
+        }
+
+    .avatar-circle {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    .bg-pink {
+        background-color: #ec4899;
+    }
+
+    .bg-purple {
+        background-color: #a855f7;
+    }
+
+    .bottom-footer {
+        background: #fff;
+        border-top: 1px solid #e0e0e0;
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+
+    .input-bordered {
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        background-color: #fff;
+        padding: 6px 10px;
+        width: 100%;
+        outline: none;
+        transition: all 0.2s;
+        color: #111827;
+    }
+
+        .input-bordered:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Khi phiếu đã thanh toán xong, ô input sẽ trong suốt và mất viền */
+        .input-bordered[readonly] {
+            background-color: transparent;
+            border-color: transparent;
+            padding: 0;
+        }
+</style>
+
+<form asp-action="UpdateChiTiet" method="post" class="d-flex flex-column h-100 m-0">
+    <input type="hidden" name="PhieuChiId" value="@Model.Id" />
+
+    <div class="toolbar-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="Index" class="text-dark"><i class="bi bi-arrow-left fs-5"></i></a>
+            <h5 class="fw-bold text-dark d-flex align-items-center gap-2">
+                Bảng chi trả lương @Model.BangLuong?.TenBangLuong - @Model.KyTraLuong
+                <i class="bi bi-pencil text-muted fs-6 ms-1" style="cursor: pointer;"></i>
+                @if (Model.TrangThai == "Bản nháp")
+                {
+                    <span class="badge-status">Chưa thanh toán</span>
+                }
+                else
+                {
+                    <span class="badge-status" style="background-color: #dcfce7; color: #16a34a; border-color: #86efac;">Đã thanh toán</span>
+                }
+            </h5>
+        </div>
+        <div class="d-flex gap-2">
+            
+
+            @if (Model.TrangThai == "Bản nháp")
+            {
+                <button type="submit" class="btn btn-toolbar-custom" style="background-color: #f3f4f6;" onclick="return confirm('Bạn có chắc chắn muốn thanh toán đợt này?');">
+                    <i class="bi bi-currency-dollar me-1"></i> Thanh toán lương
+                </button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-toolbar-custom text-success border-success" disabled>
+                    <i class="bi bi-check-all me-1"></i> Đã thanh toán
+                </button>
+            }
+            <button type="button" class="btn btn-toolbar-custom"><i class="bi bi-currency-exchange me-1"></i> Trả nợ lương</button>            
+        </div>
+    </div>
+
+    <div class="filter-section d-flex justify-content-between align-items-center">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control shadow-none" placeholder="Tìm kiếm" id="searchInput">
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <select class="form-select form-select-sm shadow-none border-0" style="width: 150px; background-color: transparent; font-size: 0.85rem;">
+                <option>Tất cả đơn vị</option>
+            </select>           
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table-amis">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 40px; left: 0; z-index: 12;"><input type="checkbox" class="form-check-input shadow-none"></th>
+                    <th class="text-center" style="width: 50px;">STT</th>
+                    <th style="min-width: 200px;">Họ và tên</th>
+                    <th style="min-width: 180px;">Đơn vị công tác</th>
+                    <th class="text-end" style="min-width: 130px;">Số phải trả đợt này</th>
+                    <th class="text-end" style="min-width: 130px;">Số trả</th>
+                    <th class="text-end" style="min-width: 130px;">Số còn nợ đợt này</th>
+                    <th class="text-end" style="min-width: 130px;">Trả nợ lương</th>
+                    <th class="text-end" style="min-width: 130px;">Tổng chi trả</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ChiTietPhieuChiLuongs)
+                {
+                    var thucLinh = item.ChiTietBangLuong.ThucLinh;
+                    var daChi = dictDaChi.ContainsKey(item.ChiTietBangLuongId) ? dictDaChi[item.ChiTietBangLuongId] : 0;
+                    var phaiTraDotNay = thucLinh - daChi;
+                    var nameParts = item.ChiTietBangLuong.NhanSu?.HoTen?.Split(' ') ?? new string[] { "N", "V" };
+                    var avatarChars = nameParts.Length > 1
+                    ? nameParts[0].Substring(0, 1) + nameParts[nameParts.Length - 1].Substring(0, 1)
+                    : "NV";
+                    var avatarColor = stt % 2 == 0 ? "bg-purple" : "bg-pink";
+
+                    <tr class="data-row">
+                        <td class="text-center" style="position: sticky; left: 0; background: #fff;"><input type="checkbox" class="form-check-input shadow-none"></td>
+                        <td class="text-center text-muted">@(stt++)</td>
+                        <td class="fw-medium search-name">
+                            <span class="avatar-circle @avatarColor">@avatarChars.ToUpper()</span>
+                            @item.ChiTietBangLuong.NhanSu?.HoTen
+                        </td>
+                        <td>@(item.ChiTietBangLuong.NhanSu?.PhongBan?.TenPhongBan ?? "Chưa phân bổ")</td>
+
+                        <td class="text-end align-middle">@phaiTraDotNay.ToString("N2")</td>
+
+                        <td class="text-end p-2 align-middle" style="min-width: 140px;">
+                            <input type="hidden" name="ChiTietPhieuIds[]" value="@item.Id" />
+                            <input type="number" name="SoTienChis[]" class="input-bordered input-so-tra text-end"
+                                   value="@item.SoTienChi.ToString("0")" min="0" max="@phaiTraDotNay.ToString("0")"
+                                   data-phaitra="@phaiTraDotNay"
+                            @(Model.TrangThai == "Hoàn thành" ? "readonly" : "")
+                                   oninput="tinhToanDong(this)" />
+                        </td>
+
+                        <td class="text-end text-danger align-middle span-con-no">@((phaiTraDotNay - item.SoTienChi).ToString("N2"))</td>
+
+                        <td class="text-end align-middle">0.00</td>
+
+                        <td class="text-end fw-medium align-middle span-tong-chi">@item.SoTienChi.ToString("N2")</td>
+
+                        <td class="p-2 align-middle" style="min-width: 150px;">
+                            <input type="text" name="GhiChus[]" class="input-bordered" placeholder="..."
+                            @(Model.TrangThai == "Hoàn thành" ? "readonly" : "") />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bottom-footer d-flex justify-content-between align-items-center">
+        <div>
+            <span class="fw-bold me-3"><i class="bi bi-list-task me-1"></i> Tổng cộng</span>
+            <span class="text-muted">Tổng số bản ghi: <strong class="text-dark">@(stt - 1)</strong></span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2 text-muted">
+                Số bản ghi/trang
+                <select class="form-select form-select-sm shadow-none border-0" style="width: 60px; background-color: transparent;">
+                    <option>25</option>
+                    <option>50</option>
+                </select>
+            </div>
+            <div class="text-muted"><strong>1 - @(stt - 1)</strong> bản ghi</div>
+            <div class="d-flex gap-2">
+                <i class="bi bi-chevron-left text-muted"></i>
+                <i class="bi bi-chevron-right text-muted"></i>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    // Tự động tính "Số còn nợ" và "Tổng chi trả" trên từng dòng khi nhập "Số trả"
+    function tinhToanDong(inputElement) {
+        let row = inputElement.closest('tr');
+        let phaiTra = parseFloat(inputElement.getAttribute('data-phaitra')) || 0;
+        let soTra = parseFloat(inputElement.value) || 0;
+
+        let conNo = phaiTra - soTra;
+        if (conNo < 0) conNo = 0; // Không cho phép trả âm nợ
+
+        // Format tiền tệ kiểu VN (1.000.000,00)
+        let formatNumber = new Intl.NumberFormat('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        row.querySelector('.span-con-no').innerText = formatNumber.format(conNo);
+        row.querySelector('.span-tong-chi').innerText = formatNumber.format(soTra); // Vì chưa có logic trả nợ cũ nên Tổng = Số trả
+    }
+
+    // JS Tìm kiếm nhanh trên bảng
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+        let input = this.value.toLowerCase();
+        let rows = document.querySelectorAll(".data-row");
+        rows.forEach(row => {
+            let name = row.querySelector(".search-name").innerText.toLowerCase();
+            row.style.display = name.includes(input) ? "" : "none";
+        });
+    });
+</script>

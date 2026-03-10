@@ -1,0 +1,162 @@
+﻿@model IEnumerable<SDHRM.Models.BangChamCong>
+@{
+    ViewData["Title"] = "Dữ liệu chấm công đã chốt";
+}
+
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+    }
+
+    .page-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+
+    .filter-bar {
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+    }
+
+    .search-box {
+        position: relative;
+        width: 350px;
+    }
+
+        .search-box .bi-search {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .search-box input {
+            padding-left: 35px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border: 1px solid #cbd5e1;
+        }
+
+    .table-custom th {
+        background-color: #f8fafc;
+        font-weight: 600;
+        color: #475569;
+        padding: 12px 15px;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .table-custom td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="container-fluid p-0 h-100 d-flex flex-column">
+
+    <div class="page-header mt-2">
+        <div>
+            <h2 class="page-title"><i class="bi bi-shield-check text-success me-2"></i>Dữ liệu chấm công đã chốt</h2>
+            <p class="text-muted small mb-0 mt-1">Danh sách các bảng chấm công hợp lệ được chuyển sang từ bộ phận Nhân sự.</p>
+        </div>
+        <button class="btn btn-sm btn-light border shadow-none fw-medium"><i class="bi bi-file-earmark-excel text-success me-1"></i> Xuất Excel</button>
+    </div>
+
+    <div class="filter-bar">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control shadow-none" placeholder="Tìm kiếm tên bảng chấm công...">
+        </div>
+        <div class="filter-actions d-flex gap-2 align-items-center">
+            <select class="form-select form-select-sm shadow-none border-secondary-subtle" style="width: 150px;">
+                <option>Năm 2026</option>
+                <option>Năm 2025</option>
+            </select>
+            <select class="form-select form-select-sm shadow-none border-secondary-subtle" style="width: 150px;">
+                <option>Tất cả tháng</option>
+                <option>Tháng hiện tại</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 flex-grow-1 d-flex flex-column overflow-hidden">
+        <div class="table-responsive flex-grow-1 bg-white">
+            <table class="table table-hover table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Tên bảng chấm công</th>
+                        <th>Kỳ công</th>
+                        <th>Đơn vị áp dụng</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày chốt</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold text-dark">@item.TenBangChamCong</td>
+                                <td>@item.TuNgay.ToString("dd/MM/yyyy") - @item.DenNgay.ToString("dd/MM/yyyy")</td>
+                                <td>@item.DonViApDung</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success border border-success-subtle"><i class="bi bi-lock-fill me-1"></i> @item.TrangThai</span></td>
+                                <td class="text-muted" style="font-size: 0.85rem;">@(item.NgayTao.ToString("dd/MM/yyyy HH:mm"))</td>
+                                <td class="text-center">
+                                    <a href="@Url.Action("TimekeepingDetail", new { id = item.Id })" class="btn btn-sm btn-outline-primary shadow-none fw-medium" style="font-size: 0.8rem; padding: 4px 10px; border-radius: 6px;">
+                                        <i class="bi bi-eye"></i> Xem dữ liệu
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted fst-italic">
+                                <i class="bi bi-inbox text-secondary mb-3 d-block" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                                Chưa có bảng chấm công nào được chốt từ bộ phận Nhân sự.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3 border-top">
+            <span class="text-muted small">Tổng số bảng công: <strong>@(Model?.Count() ?? 0)</strong></span>
+            <div class="d-flex align-items-center gap-3">
+                <div class="small text-muted"><strong>1 - @(Model?.Count() ?? 0)</strong> bản ghi</div>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-light border shadow-none" disabled><i class="bi bi-chevron-left"></i></button>
+                    <button class="btn btn-sm btn-light border shadow-none" disabled><i class="bi bi-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

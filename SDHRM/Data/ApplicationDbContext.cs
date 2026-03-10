@@ -41,10 +41,14 @@ namespace SDHRM.Data
         public DbSet<ChungChi> ChungChis { get; set; }
         public DbSet<QuaTrinhCongTac> QuaTrinhCongTacs { get; set; }
         public DbSet<ThanhPhanLuong> ThanhPhanLuongs { get; set; }
-
-
-
-
+        public DbSet<HoSoLuong> HoSoLuongs { get; set; }
+        public DbSet<MauBangLuong> MauBangLuongs { get; set; }
+        public DbSet<ChiTietMauBangLuong> ChiTietMauBangLuongs { get; set; }
+        public DbSet<BangLuong> BangLuongs { get; set; }
+        public DbSet<ChiTietBangLuong> ChiTietBangLuongs { get; set; }
+        public DbSet<KetQuaLuong> KetQuaLuongs { get; set; }
+        public DbSet<PhieuChiLuong> PhieuChiLuongs { get; set; }
+        public DbSet<ChiTietPhieuChiLuong> ChiTietPhieuChiLuongs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -59,6 +63,18 @@ namespace SDHRM.Data
                 new LoaiNghiPhep { Id = 5, TenLoai = "Nghỉ bù", TruVaoQuyPhep = false, CoHuongLuong = true, KichHoat = true },
                 new LoaiNghiPhep { Id = 6, TenLoai = "Nghỉ kết hôn/ma chay", TruVaoQuyPhep = false, CoHuongLuong = true, KichHoat = true }
             );
+
+            modelBuilder.Entity<ChiTietPhieuChiLuong>()
+                .HasOne(c => c.PhieuChiLuong)
+                .WithMany(p => p.ChiTietPhieuChiLuongs)
+                .HasForeignKey(c => c.PhieuChiLuongId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ChiTietPhieuChiLuong>()
+                .HasOne(c => c.ChiTietBangLuong)
+                .WithMany()
+                .HasForeignKey(c => c.ChiTietBangLuongId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<QuaTrinhCongTac>()
                 .HasOne(q => q.NhanSu)
