@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Data;
@@ -7,6 +8,7 @@ using SDHRM.Models;
 namespace SDHRM.Areas.Payroll.Controllers
 {
     [Area("Payroll")]
+    [Authorize(Policy = "Payroll.View")]
     public class PaymentController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -44,6 +46,7 @@ namespace SDHRM.Areas.Payroll.Controllers
 
         // 2. TẠO PHIẾU CHI MỚI (CHỈ TẠO VỎ VÀ KÉO DANH SÁCH NHÂN VIÊN)
         [HttpPost]
+        [Authorize(Policy = "Payroll.Manage")]
         public async Task<IActionResult> Create(PhieuChiLuong model)
         {
             var bangLuong = await _context.BangLuongs.FindAsync(model.BangLuongId);
@@ -121,6 +124,7 @@ namespace SDHRM.Areas.Payroll.Controllers
 
         // 4. LƯU SỐ TIỀN & CHỐT PHIẾU CHI
         [HttpPost]
+        [Authorize(Policy = "Payroll.Manage")]
         public async Task<IActionResult> UpdateChiTiet(int PhieuChiId, int[] ChiTietPhieuIds, decimal[] SoTienChis)
         {
             var phieu = await _context.PhieuChiLuongs.FindAsync(PhieuChiId);
@@ -161,6 +165,7 @@ namespace SDHRM.Areas.Payroll.Controllers
 
         // 5. XÓA PHIẾU CHI NHÁP (Tùy chọn)
         [HttpPost]
+        [Authorize(Policy = "Payroll.Manage")]
         public async Task<IActionResult> Delete(int id)
         {
             var phieu = await _context.PhieuChiLuongs.FindAsync(id);

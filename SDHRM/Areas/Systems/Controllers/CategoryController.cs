@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 namespace SDHRM.Areas.Systems.Controllers
 {
     [Area("Systems")]
+    [Authorize(Policy = "Systems.Manage")]
     public class CategoryController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 namespace SDHRM.Areas.InfoEmployees.Controllers
 {
     [Area("InfoEmployees")]
+    [Authorize(Policy = "RewardsDisciplines.Manage")]
     public class DisciplineController : Controller
     {
         private readonly ApplicationDbContext _context;

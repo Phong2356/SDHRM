@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Data;
 using SDHRM.Models;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace SDHRM.Areas.InfoEmployees.Controllers
 {
     [Area("InfoEmployees")]
+    [Authorize(Policy = "EmployeeInfo.View")]
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _context;

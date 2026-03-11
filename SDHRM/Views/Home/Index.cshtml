@@ -1,11 +1,12 @@
-﻿@{
-    ViewData["Title"] = "Trang chủ hệ thống";
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
+@{
+    ViewData["Title"] = "Trang chủ hệ thống";
 }
 
 <style>
     .desktop-container {
-        /* Thay đường dẫn ảnh nền của bạn vào đây, hoặc dùng link ảnh thiên nhiên này làm mẫu */
         background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop');
         background-size: cover;
         background-position: center;
@@ -29,14 +30,18 @@
         padding: 0 20px;
     }
 
+
+
     .glass-btn {
         background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(10px); /* Hiệu ứng kính mờ */
+
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.3);
         color: #ffffff;
         padding: 6px 16px;
         border-radius: 50px; /* Bo tròn hai đầu */
+
         font-size: 0.85rem;
         font-weight: 500;
         cursor: pointer;
@@ -47,18 +52,22 @@
         justify-content: center;
     }
 
+
+
         .glass-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             color: #fff;
         }
 
+
+
         /* Nút đang được chọn */
+
         .glass-btn.active {
             background: rgba(255, 255, 255, 0.35);
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        /* Nút tròn nhỏ cho icon  */
         .glass-btn.icon-only {
             width: 32px;
             height: 32px;
@@ -66,14 +75,12 @@
             border-radius: 50%;
         }
 
-    /* ======================================
-           3. LƯỚI ICON ỨNG DỤNG (APP GRID)
-           ========================================= */
     .app-grid {
         display: flex;
         flex-wrap: wrap;
         /* justify-content: center; */
-        gap: 30px 45px; 
+
+        gap: 30px 45px;
         max-width: 590px;
         padding: 20px;
         margin-top: 60px;
@@ -90,10 +97,9 @@
     }
 
         .app-item:hover {
-            transform: scale(1.05); /* Phóng to nhẹ khi di chuột */
+            transform: scale(1.05);
         }
 
-    /* Ô vuông icon */
     .app-icon-box {
         width: 72px;
         height: 72px;
@@ -106,13 +112,11 @@
         margin-bottom: 10px;
     }
 
-        /* Icon bên trong ô vuông */
         .app-icon-box i.main-icon {
             color: white;
             font-size: 2rem;
         }
 
-    /* Ổ khóa nhỏ ở góc phải dưới */
     .lock-badge {
         position: absolute;
         bottom: -4px;
@@ -132,56 +136,68 @@
             font-size: 0.7rem;
         }
 
-    /* Tên ứng dụng */
     .app-name {
         color: #ffffff;
         font-size: 0.85rem;
         font-weight: 500;
         text-align: center;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); /* Đổ bóng chữ để dễ đọc trên nền sáng/tối */
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); 
+
         line-height: 1.2;
     }
 
-    /* =========================================
-           4. MÀU NỀN CÁC ICON (GRADIENTS)
-           ========================================= */
     .bg-green-1 {
         background: linear-gradient(135deg, #10b981, #059669);
     }
+
     /* Tiền lương, Đánh giá */
+
     .bg-green-2 {
         background: linear-gradient(135deg, #22c55e, #16a34a);
     }
+
     /* BHXH */
+
     .bg-blue-1 {
         background: linear-gradient(135deg, #3b82f6, #2563eb);
     }
+
     /* Tuyển dụng, Thuế TNCN, Mục tiêu, TT Nhân sự */
+
     .bg-purple {
         background: linear-gradient(135deg, #8b5cf6, #7c3aed);
     }
+
     /* Nhân viên */
+
     .bg-orange {
         background: linear-gradient(135deg, #f97316, #ea580c);
     }
-    /* Chấm công */
 </style>
+
 
 <div class="desktop-container">
     <div class="app-grid">
-        <a asp-area="Systems" asp-controller="Structure" asp-action="Index" class="app-item">
-            <div class="app-icon-box bg-blue-1">
-                <i class="bi bi-gear-fill main-icon"></i>
-            </div>          
-            <div class="app-name">Hệ thống</div>
-        </a>
 
-        <a asp-area="Payroll" asp-controller="Dashboard" asp-action="Index" class="app-item">
-            <div class="app-icon-box bg-green-1">
-                <i class="bi bi-currency-dollar main-icon"></i>
-            </div>
-            <div class="app-name">Tiền lương</div>
-        </a>
+        @if ((await AuthorizationService.AuthorizeAsync(User, "Systems.Manage")).Succeeded)
+        {
+            <a asp-area="Systems" asp-controller="Structure" asp-action="Index" class="app-item">
+                <div class="app-icon-box bg-blue-1">
+                    <i class="bi bi-gear-fill main-icon"></i>
+                </div>
+                <div class="app-name">Hệ thống</div>
+            </a>
+        }
+
+        @if ((await AuthorizationService.AuthorizeAsync(User, "Payroll.View")).Succeeded)
+        {
+            <a asp-area="Payroll" asp-controller="Dashboard" asp-action="Index" class="app-item">
+                <div class="app-icon-box bg-green-1">
+                    <i class="bi bi-currency-dollar main-icon"></i>
+                </div>
+                <div class="app-name">Tiền lương</div>
+            </a>
+        }
 
         <a asp-area="Employee" asp-controller="Overview" asp-action="Index" class="app-item">
             <div class="app-icon-box bg-purple">
@@ -190,20 +206,25 @@
             <div class="app-name">Nhân viên</div>
         </a>
 
-        <a asp-area="Timesheet" asp-controller="Dashboard" asp-action="Dashboard" class="app-item">
-            <div class="app-icon-box bg-orange">
-                <i class="bi bi-fingerprint main-icon"></i>
-            </div>
-            <div class="app-name">Chấm công</div>
-        </a>
+        @if ((await AuthorizationService.AuthorizeAsync(User, "Timesheet.View")).Succeeded)
+        {
+            <a asp-area="Timesheet" asp-controller="Dashboard" asp-action="Dashboard" class="app-item">
+                <div class="app-icon-box bg-orange">
+                    <i class="bi bi-fingerprint main-icon"></i>
+                </div>
+                <div class="app-name">Chấm công</div>
+            </a>
+        }
 
-        <a asp-area="InfoEmployees" asp-controller="Dashboard" asp-action="Index" class="app-item">
-            <div class="app-icon-box bg-blue-1">
-                <i class="bi bi-person-lines-fill main-icon"></i>
-            </div>
-            <div class="app-name">Thông tin nhân sự</div>
-        </a>
+        @if ((await AuthorizationService.AuthorizeAsync(User, "EmployeeInfo.View")).Succeeded)
+        {
+            <a asp-area="InfoEmployees" asp-controller="Dashboard" asp-action="Index" class="app-item">
+                <div class="app-icon-box bg-blue-1">
+                    <i class="bi bi-person-lines-fill main-icon"></i>
+                </div>
+                <div class="app-name">Thông tin nhân sự</div>
+            </a>
+        }
 
     </div>
 </div>
-

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Data;
 using SDHRM.Models;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace SDHRM.Areas.Timesheet.Controllers
 {
     [Area("Timesheet")]
+    [Authorize(Policy = "Timesheet.View")]
     public class TimekeepingController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -30,6 +32,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Timesheet.Manage")]
         public async Task<IActionResult> Create(BangChamCong model)
         {
             ModelState.Remove("TrangThai");
@@ -114,6 +117,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Timesheet.Manage")]
         public async Task<IActionResult> SyncData(int bangChamCongId)
         {
             var bangChamCong = await _context.BangChamCongs.FindAsync(bangChamCongId);
@@ -258,6 +262,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Timesheet.Manage")]
         public async Task<IActionResult> Delete(int id)
         {
             var bangChamCong = await _context.BangChamCongs.FindAsync(id);
@@ -296,6 +301,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Timesheet.Manage")]
         public async Task<IActionResult> ChotBangChamCong(int bangChamCongId)
         {
             var bangChamCong = await _context.BangChamCongs.FindAsync(bangChamCongId);

@@ -2,10 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Models;
 using SDHRM.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SDHRM.Areas.Systems.Controllers
 {
     [Area("Systems")]
+    [Authorize(Policy = "Systems.Manage")]
     public class StructureController : Controller
     {
         private readonly ApplicationDbContext _context;

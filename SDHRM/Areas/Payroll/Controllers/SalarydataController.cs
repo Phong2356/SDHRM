@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Data;
 using SDHRM.Models;
@@ -6,6 +7,7 @@ using SDHRM.Models;
 namespace SDHRM.Areas.Payroll.Controllers
 {
     [Area("Payroll")]
+    [Authorize(Policy = "Payroll.View")]
     public class SalarydataController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -52,6 +54,7 @@ namespace SDHRM.Areas.Payroll.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Payroll.Manage")]
         public async Task<IActionResult> CapNhatNhanh(int NhanSuId, decimal LuongCoBan, decimal LuongDongBaoHiem, int SoNguoiPhuThuoc, decimal PhuCapChucVu, decimal PhuCapDiLai, decimal PhuCapKhac)
         {
             var hoSo = await _context.HoSoLuongs.FirstOrDefaultAsync(h => h.NhanSuId == NhanSuId);

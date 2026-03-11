@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace SDHRM.Areas.Systems.Controllers
 {
     [Area("Systems")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "Systems.Manage")]
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;

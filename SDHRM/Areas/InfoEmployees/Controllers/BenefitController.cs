@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Data;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace SDHRM.Areas.InfoEmployees.Controllers
 {
     [Area("InfoEmployees")]
+    [Authorize(Policy = "EmployeeInfo.View")]
     public class BenefitController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -29,6 +31,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public IActionResult Create()
         {
             ViewBag.NhanSuList = new SelectList(_context.NhanSus, "Id", "HoTen");
@@ -45,6 +48,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public async Task<IActionResult> Create(PhucLoi model)
         {       
             if (model.PhucLoiNhanViens != null)
@@ -77,6 +81,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public async Task<IActionResult> Delete(int id)
         {
             var phucLoi = await _context.PhucLois.FindAsync(id);
@@ -89,6 +94,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -107,6 +113,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public async Task<IActionResult> Edit(int id, PhucLoi model)
         {
             if (id != model.Id) return NotFound();
@@ -197,6 +204,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public async Task<IActionResult> GetNhanSuInfo(int id)
         {
             var ns = await _context.NhanSus

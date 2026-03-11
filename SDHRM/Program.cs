@@ -10,9 +10,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddTransient<EmailSender>();
 
-// 1) DbContext (đặt trước)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.LoginPath = "/Identity/Account/Login";
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    foreach (var permission in SDHRM.Models.Constants.Permissions.GenerateAllPermissions())
+    {
+        options.AddPolicy(permission, policy =>
+            policy.RequireClaim("Permission", permission));
+    }
+});
 
 // 2) Identity + Roles (chỉ dùng 1 cái này)
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

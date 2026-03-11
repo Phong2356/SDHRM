@@ -6,22 +6,29 @@
         {
             return new List<string>
             {
-                // Quyền khu vực Tiền lương
-                "Payroll.View",
-                "Payroll.Edit",
-                "Payroll.Approve",
+                // 1. NHÓM QUYỀN HỆ THỐNG (Area: Systems)
+                "Systems.Manage", 
 
-                // Quyền khu vực Chấm công
-                "Timesheet.View",
-                "Timesheet.Edit",
-                "Timesheet.Approve",
+                // 2. NHÓM QUYỀN HỒ SƠ NHÂN SỰ (Area: InfoEmployees)
+                "EmployeeInfo.View",     // Chỉ xem danh sách nhân sự
+                "EmployeeInfo.Manage",   // Thêm, Sửa hồ sơ nhân viên, quản lý phúc lợi
+                "EmployeeInfo.Delete",   // Xóa hồ sơ (Nghỉ việc)
+                "Contracts.View",        // Xem hợp đồng
+                "Contracts.Manage",      // Tạo, gia hạn hợp đồng
+                "RewardsDisciplines.Manage", // Quản lý Khen thưởng & Kỷ luật
 
-                // Quyền khu vực Hồ sơ Nhân sự
-                "EmployeeInfo.View",
-                "EmployeeInfo.Edit",
+                // 3. NHÓM QUYỀN CHẤM CÔNG (Area: Timesheet)
+                "Timesheet.View",        // Xem bảng chấm công tổng hợp
+                "Timesheet.Manage",      // Import công, sửa công tay, cài đặt ca làm
+                "Timesheet.Approve",     // Chấp nhận/Từ chối các loại Đơn xin nghỉ, Tăng ca, Đi muộn về sớm
 
-                // Quyền Hệ thống
-                "Systems.Manage"
+                // 4. NHÓM QUYỀN TIỀN LƯƠNG (Area: Payroll)
+                "Payroll.View",          // Xem bảng lương các tháng
+                "Payroll.Manage",        // Chạy tính lương, thiết lập thành phần/mẫu lương, tạo đợt thanh toán
+                "Payroll.Approve",       // Chốt duyệt bảng lương cuối cùng
+
+                // 5. NHÓM QUYỀN BÁO CÁO (Dành cho Cấp quản lý/Giám đốc)
+                "Reports.View"           // Truy cập các biểu đồ, báo cáo tổng hợp
             };
         }
     }

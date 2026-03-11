@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using SDHRM.Models; // Đổi lại theo namespace của bạn
-using SDHRM.Data;   // Đổi lại theo DbContext của bạn
+using SDHRM.Models;
+using SDHRM.Data;   
 
 namespace SDHRM.Areas.Timesheet.Controllers
 {
@@ -18,6 +19,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Policy = "Timesheet.Approve")]
         public async Task<IActionResult> Attendance()
         {
             var danhSachDon = await _context.DonXinNghis
@@ -32,6 +34,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
 
 
         [HttpPost]
+        [Authorize(Policy = "Timesheet.Approve")]
         public async Task<IActionResult> DuyetDonXinNghi(int donId, string trangThai, string ghiChu)
         {
             // 1. Tìm đơn
@@ -76,6 +79,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
             return Json(new { success = true, message = "Đã xử lý đơn thành công!" });
         }
 
+        [Authorize(Policy = "Timesheet.Manage")]
         public async Task<IActionResult> LeaveSummary(int? year)
         {
             // Mặc định lấy năm hiện tại nếu không chọn
@@ -95,6 +99,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Timesheet.Manage")]
         public async Task<IActionResult> UpdateBalance(int id, double tongPhep, double phepTon, double phepThamNien, double phepThuong, double daDung)
         {
             try
@@ -129,6 +134,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
 
 
         [HttpPost]
+        [Authorize(Policy = "Timesheet.Manage")]
         public async Task<IActionResult> KhoiTaoQuyPhep(int year)
         {
             var tatCaNhanSu = await _context.NhanSus.ToListAsync();
@@ -173,6 +179,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
             return RedirectToAction(nameof(LeaveSummary), new { year = year });
         }
 
+        [Authorize(Policy = "Timesheet.Approve")]
         public async Task<IActionResult> LateInEarlyOut()
         {
             // Lấy danh sách đơn, join với bảng NhanSu (người tạo) và NguoiDuyet (người duyệt nếu có)
@@ -186,6 +193,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Timesheet.Approve")]
         public async Task<IActionResult> XuLyDon(int id, string trangThai, string ghiChu)
         {
             // 1. Lấy mã ID của tài khoản đang đăng nhập từ Identity
@@ -224,6 +232,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
             return RedirectToAction(nameof(LateInEarlyOut));
         }
 
+        [Authorize(Policy = "Timesheet.Approve")]
         public async Task<IActionResult> Overtime()
         {
             // Lấy danh sách đơn, join với bảng NhanSu và lấy luôn PhongBan
@@ -268,6 +277,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
             return RedirectToAction(nameof(Overtime));
         }
 
+        [Authorize(Policy = "Timesheet.Approve")]
         public async Task<IActionResult> UpdateWorking()
         {
             // Lấy danh sách, join bảng Nhân sự và Phòng ban
@@ -282,6 +292,7 @@ namespace SDHRM.Areas.Timesheet.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Timesheet.Approve")]
         public async Task<IActionResult> XuLyDonCapNhatCong(int id, string trangThai, string ghiChu)
         {
             var currentUserId = _userManager.GetUserId(User);

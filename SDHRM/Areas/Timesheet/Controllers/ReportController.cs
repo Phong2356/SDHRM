@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using SDHRM.Models;
 namespace SDHRM.Areas.Timesheet.Controllers
 {
     [Area("Timesheet")]
+    [Authorize(Policy = "Reports.View")]
     public class ReportController : Controller
     {
         private readonly ApplicationDbContext _context;

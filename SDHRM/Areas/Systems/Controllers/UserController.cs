@@ -9,7 +9,7 @@ using SDHRM.Models.ViewModels;
 namespace SDHRM.Areas.Systems.Controllers
 {
     [Area("Systems")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "Systems.Manage")]
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

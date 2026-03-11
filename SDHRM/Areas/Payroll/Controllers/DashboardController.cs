@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Data;
 
 namespace SDHRM.Areas.Payroll.Controllers
 {
     [Area("Payroll")]
+    [Authorize(Policy = "Payroll.View")]
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _context;

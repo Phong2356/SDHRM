@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,6 +17,7 @@ using System.Threading.Tasks;
 namespace SDHRM.Areas.InfoEmployees.Controllers
 {
     [Area("InfoEmployees")]
+    [Authorize(Policy = "EmployeeInfo.View")]
     public class ProfileController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -116,6 +118,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public IActionResult Create()
         {
             ViewBag.ViTriList = new SelectList(_context.ViTriCongViecs, "Id", "TenViTri");
@@ -125,6 +128,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public async Task<IActionResult> Create(SDHRM.Models.NhanSu model, IFormFile? LogoFile)
         {
             if (ModelState.IsValid)
@@ -237,6 +241,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public async Task<IActionResult> EditMember(int? id)
         {
             if (id == null) return NotFound();
@@ -272,6 +277,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public async Task<IActionResult> EditMember(int id, SDHRM.Models.NhanSu model, IFormFile? LogoFile)
         {
             if (id != model.Id) return NotFound();
@@ -366,6 +372,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "EmployeeInfo.Manage")]
         public async Task<IActionResult> ToggleStatusMember(int id)
         {
             var item = await _context.NhanSus.FindAsync(id); // Dùng trực tiếp _context.NhanSus cho gọn
@@ -383,6 +390,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "EmployeeInfo.Delete")]
         public async Task<IActionResult> DeleteMember(int id)
         {
             // 1. Tìm nhân viên cần xóa trong Database

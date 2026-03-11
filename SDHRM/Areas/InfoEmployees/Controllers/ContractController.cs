@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Data;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace SDHRM.Areas.InfoEmployees.Controllers
 {
     [Area("InfoEmployees")]
+    [Authorize(Policy = "Contracts.View")]
     public class ContractController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,6 +24,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Contracts.Manage")]
         public async Task<IActionResult> GetNhanSuInfo(int id)
         {
             var nhanSu = await _context.NhanSus
@@ -69,6 +72,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Contracts.Manage")]
         public IActionResult Create()
         {
             ViewBag.NhanSuList = new SelectList(_context.NhanSus, "Id", "HoTen");
@@ -93,6 +97,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Contracts.Manage")]
         public async Task<IActionResult> Create(HopDong hopDong, IFormFile? fileDinhKem)
         {
             // 1. Gỡ bỏ kiểm tra các trường khóa ngoại
@@ -138,6 +143,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Contracts.Manage")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -153,6 +159,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Contracts.Manage")]
         public async Task<IActionResult> Edit(int id, HopDong hopDong, IFormFile? fileDinhKem)
         {
             if (id != hopDong.Id) return NotFound();
@@ -221,6 +228,7 @@ namespace SDHRM.Areas.InfoEmployees.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Contracts.Manage")]
         public async Task<IActionResult> Delete(int id)
         {
             var hopDong = await _context.HopDongs.FindAsync(id);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Data;
@@ -8,6 +9,7 @@ using System.Data;
 namespace SDHRM.Areas.Payroll.Controllers
 {
     [Area("Payroll")]
+    [Authorize(Policy = "Payroll.View")]
     public class SalaryController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -33,6 +35,7 @@ namespace SDHRM.Areas.Payroll.Controllers
 
         // 2. THUẬT TOÁN CHẠY LƯƠNG ĐỘNG
         [HttpPost]
+        [Authorize(Policy = "Payroll.Manage")]
         public async Task<IActionResult> Create(string TenBangLuong, int BangChamCongId, int MauBangLuongId, int Thang, int Nam)
         {
             // 1. Lấy dữ liệu Dòng (Nhân sự & Chấm công)
@@ -142,6 +145,7 @@ namespace SDHRM.Areas.Payroll.Controllers
 
         // 4. CẬP NHẬT LẠI BẢNG LƯƠNG
         [HttpPost]
+        [Authorize(Policy = "Payroll.Manage")]
         public async Task<IActionResult> Recalculate(int id)
         {
             var bangLuong = await _context.BangLuongs
@@ -230,6 +234,7 @@ namespace SDHRM.Areas.Payroll.Controllers
 
         // 5. XÓA BẢNG LƯƠNG
         [HttpPost]
+        [Authorize(Policy = "Payroll.Manage")]
         public async Task<IActionResult> Delete(int id)
         {
             var bangLuong = await _context.BangLuongs.FindAsync(id);
@@ -258,6 +263,7 @@ namespace SDHRM.Areas.Payroll.Controllers
 
         // 7. DUYỆT BẢNG LƯƠNG
         [HttpPost]
+        [Authorize(Policy = "Payroll.Approve")]
         public async Task<IActionResult> Approve(int id)
         {
             var bangLuong = await _context.BangLuongs.FindAsync(id);
@@ -284,7 +290,5 @@ namespace SDHRM.Areas.Payroll.Controllers
             TempData["SuccessMessage"] = "Đã duyệt bảng lương thành công. Dữ liệu đã được khóa!";
             return RedirectToAction(nameof(Detail), new { id = id });
         }
-
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDHRM.Data;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace SDHRM.Areas.Timesheet.Controllers
 {
     [Area("Timesheet")]
+    [Authorize(Policy = "Timesheet.View")]
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _context;
