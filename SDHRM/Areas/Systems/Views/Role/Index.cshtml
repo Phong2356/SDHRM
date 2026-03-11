@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>
+@{
+    ViewData["Title"] = "Quản lý Vai trò (Roles)";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-dark">Quản lý Vai trò (Roles)</h3>
+
+        <form asp-action="Create" method="post" class="d-flex gap-2 m-0">
+            <input type="text" name="roleName" class="form-control shadow-none" placeholder="Nhập tên Role mới (VD: Kế toán)..." required />
+            <button type="submit" class="btn btn-success text-nowrap"><i class="bi bi-plus"></i> Thêm mới</button>
+        </form>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Tên Vai trò (Role)</th>
+                        <th>Mã ID hệ thống</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var role in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">@role.Name</td>
+                            <td class="text-muted small">@role.Id</td>
+                            <td class="text-end pe-4">
+                                <a asp-action="ManageClaims" asp-route-roleId="@role.Id" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-shield-check"></i> Cấp quyền (Claims)
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

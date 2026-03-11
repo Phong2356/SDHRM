@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NuGet.DependencyResolver;
 using SDHRM.Models;
+using SDHRM.Models.Process;
 
 namespace SDHRM.Data
 {
@@ -49,7 +50,6 @@ namespace SDHRM.Data
         public DbSet<KetQuaLuong> KetQuaLuongs { get; set; }
         public DbSet<PhieuChiLuong> PhieuChiLuongs { get; set; }
         public DbSet<ChiTietPhieuChiLuong> ChiTietPhieuChiLuongs { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

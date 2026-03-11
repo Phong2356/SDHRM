@@ -16,5 +16,6 @@
         public string Email { get; set; }
         public string ViTri { get; set; }
         public string PhongBan { get; set; }
+        public string TrangThai { get; set; }
     }
 }

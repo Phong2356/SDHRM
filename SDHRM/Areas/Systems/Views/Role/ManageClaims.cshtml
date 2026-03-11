@@ -1,0 +1,42 @@
+﻿@model SDHRM.Models.Constants.ManageRoleClaimsViewModel
+@{
+    ViewData["Title"] = "Phân quyền cho: " + Model.RoleName;
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a asp-action="Index" class="btn btn-light border"><i class="bi bi-arrow-left"></i> Quay lại</a>
+        <h4 class="mb-0 fw-bold">Phân quyền chi tiết cho vai trò: <span class="text-primary">@Model.RoleName</span></h4>
+    </div>
+
+    <form asp-action="ManageClaims" method="post">
+        <input type="hidden" asp-for="RoleId" />
+        <input type="hidden" asp-for="RoleName" />
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    @for (int i = 0; i < Model.Claims.Count; i++)
+                    {
+                        <div class="col-md-4">
+                            <div class="form-check form-switch p-3 border rounded bg-light">
+                                <input type="hidden" asp-for="@Model.Claims[i].ClaimType" />
+                                <input type="hidden" asp-for="@Model.Claims[i].ClaimValue" />
+
+                                <input asp-for="@Model.Claims[i].IsSelected" class="form-check-input ms-0 me-2 mt-1" type="checkbox" role="switch" style="cursor: pointer;">
+                                <label class="form-check-label fw-medium" style="cursor: pointer;">
+                                    @Model.Claims[i].ClaimValue
+                                </label>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-footer bg-white text-end py-3">
+                <button type="submit" class="btn btn-primary px-4 fw-bold">
+                    <i class="bi bi-save me-1"></i> Lưu thiết lập quyền
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,255 @@
+﻿@model IEnumerable<SDHRM.Models.ViewModels.UserViewModel>
+@{
+    ViewData["Title"] = "Tài khoản hệ thống";
+}
+
+<style>
+    html, body {
+        background-color: #f4f5f8;
+        height: 100%;
+    }
+
+    .amis-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: #fff;
+    }
+
+    /* 1. THANH TABS */
+    .tab-navigation {
+        background: #fff;
+        padding: 0 20px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .nav-tabs {
+        border-bottom: none;
+        margin-bottom: -1px;
+    }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #6b7280;
+            font-weight: 500;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+        }
+
+            .nav-tabs .nav-link.active {
+                color: #111827;
+                font-weight: 600;
+                border-bottom: 3px solid #22c55e;
+                background: transparent;
+            }
+
+            .nav-tabs .nav-link:hover:not(.active) {
+                border-bottom: 3px solid #d1d5db;
+            }
+
+    /* 2. THANH CÔNG CỤ (TOOLBAR) */
+    .toolbar-container {
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .search-box {
+        position: relative;
+        width: 300px;
+    }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .search-box input {
+            padding-left: 36px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            height: 34px;
+            font-size: 0.85rem;
+        }
+
+            .search-box input:focus {
+                border-color: #22c55e;
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(34,197,94,0.1);
+            }
+
+    .btn-outline-custom {
+        border: 1px solid #d1d5db;
+        color: #374151;
+        font-weight: 500;
+        font-size: 0.85rem;
+        height: 34px;
+        padding: 0 16px;
+        background: #fff;
+    }
+
+        .btn-outline-custom:hover {
+            background: #f9fafb;
+        }
+
+    .btn-primary-custom {
+        background: #22c55e;
+        color: #fff;
+        font-weight: 500;
+        font-size: 0.85rem;
+        height: 34px;
+        padding: 0 16px;
+        border: none;
+        border-radius: 4px;
+    }
+
+        .btn-primary-custom:hover {
+            background: #16a34a;
+            color: #fff;
+        }
+
+    /* 3. BẢNG DỮ LIỆU */
+    .table-container {
+        flex-grow: 1;
+        overflow: auto;
+    }
+
+    .table-amis {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.85rem;
+    }
+
+        .table-amis th {
+            background: #f9fafb;
+            color: #111827;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table-amis td {
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .table-amis tbody tr:hover {
+            background-color: #f0fdf4;
+        }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+        background-color: #22c55e;
+    }
+
+    .action-dots {
+        color: #9ca3af;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 4px 8px;
+    }
+
+        .action-dots:hover {
+            color: #111827;
+        }
+</style>
+
+<div class="amis-container">
+
+    
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success m-3 py-2 border-0 rounded-1"><i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="toolbar-container">
+        <div class="d-flex gap-2">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" class="form-control shadow-none" placeholder="Tìm kiếm tài khoản, nhân viên">
+            </div>
+            <button class="btn btn-outline-custom"><i class="bi bi-funnel me-1"></i> Lọc</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table-amis">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 40px; padding-left: 20px;"><input type="checkbox" class="form-check-input shadow-none"></th>
+                    <th style="width: 150px;">Mã nhân viên</th>
+                    <th style="min-width: 250px;">Họ và tên</th>
+                    <th>Đơn vị công tác</th>
+                    <th>Vị trí công việc</th>
+                    <th>Vai trò</th>
+                    <th style="width: 150px;">Trạng thái</th>
+                    <th class="text-center" style="width: 60px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr onclick="window.location.href='@Url.Action("Manage", new { userId = user.UserId })'">
+                        <td class="text-center" onclick="event.stopPropagation();" style="padding-left: 20px;">
+                            <input type="checkbox" class="form-check-input shadow-none">
+                        </td>
+
+                        <td class="fw-medium">@user.MaNV</td>
+
+                        <td class="fw-medium text-dark">
+                            @user.HoTen
+                            <div class="text-muted small fw-normal">@user.Email</div>
+                        </td>
+
+                        <td>@user.PhongBan</td>
+                        <td>@user.ViTriCongViec</td>
+
+                        <td>
+                            @if (user.Roles.Any())
+                            {
+                                @string.Join(", ", user.Roles)
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">Chưa phân vai trò</span>
+                            }
+                        </td>
+
+                        <td>
+                            <span class="status-dot"></span>Đang hoạt động
+                        </td>
+
+                        <td class="text-center" onclick="event.stopPropagation();">
+                            <div class="dropdown">
+                                <i class="bi bi-three-dots action-dots" data-bs-toggle="dropdown"></i>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-1">
+                                    <li><a class="dropdown-item py-2" asp-action="Manage" asp-route-userId="@user.UserId"><i class="bi bi-person-gear me-2 text-primary"></i> Phân vai trò</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item py-2 text-danger" href="#"><i class="bi bi-lock me-2"></i> Khóa tài khoản</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -62,49 +62,18 @@
                         <span class="link-text">Quản lý danh mục</span>
                     </a>
                 </li>
-
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a asp-area="Systems" asp-controller="Role" asp-action="Index" class="nav-link">
                         <i class="bi bi-diagram-3"></i>
                         <span class="link-text">Phân quyền</span>
                     </a>
-                </li>
+                </li>                
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a asp-area="Systems" asp-controller="User" asp-action="Index" class="nav-link">
                         <i class="bi bi-bar-chart-line"></i>
-                        <span class="link-text">Tình hình sử dụng</span>
+                        <span class="link-text">Phân quyền nhân viên</span>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-envelope-at"></i>
-                        <span class="link-text">Cấu hình mail server</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-shield-lock"></i>
-                        <span class="link-text">Bảo mật nâng cao</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-tools"></i>
-                        <span class="link-text">Thiết lập chung</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-clock-history"></i>
-                        <span class="link-text">Nhật ký hoạt động</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="bi bi-trash3"></i>
-                        <span class="link-text">Thùng rác</span>
-                    </a>
-                </li>
+                </li>             
             </ul>
 
             <div class="sidebar-footer mt-auto">
@@ -120,9 +89,7 @@
 
                 <nav class="nav flex-column sub-menu-group" id="submenu-danhmuc" style="display: none;">
                     <div class="px-3 py-2 text-muted fw-bold small text-uppercase">Quản lý danh mục</div>
-
                     <a asp-area="Systems" asp-controller="Category" asp-action="Organization" class="nav-link">Cơ cấu tổ chức</a>
-                    <a asp-area="Systems" asp-controller="Category" asp-action="Member" class="nav-link">Đối tượng</a>
                     <a asp-area="Systems" asp-controller="Category" asp-action="Jobposition" class="nav-link">Vị trí công việc</a>
                 </nav>
 
